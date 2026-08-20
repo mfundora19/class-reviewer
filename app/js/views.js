@@ -996,6 +996,17 @@
     return { chapter: 'Chapter Focus', random: 'Random Mix', theme: 'Theme Attack', weak: 'Weak Spots', speed: 'Speed Run' }[mode] || mode;
   }
 
+  function quizQuestionTypeLabel(type) {
+    return {
+      mcq: 'Single choice',
+      multi: 'Multiple select',
+      tf: 'True / false',
+      fill: 'Fill in',
+      match: 'Matching',
+      command_match: 'Matching'
+    }[type] || 'Question';
+  }
+
   // Keyboard-shortcut reference panel, opened with ? from any question.
   function showShortcutsModal(mode) {
     var rows = mode === 'exam'

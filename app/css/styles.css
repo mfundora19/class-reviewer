@@ -1478,13 +1478,20 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   padding: 0.5rem 0.75rem;
   transition: border-color var(--dur), background var(--dur);
 }
+/* The row being answered: its popover is open. */
+.match-row.active {
+  border-color: var(--accent-cyan);
+  background: color-mix(in srgb, var(--accent-cyan-dim) 55%, var(--bg-raised));
+}
 .match-row.correct {
   border-color: var(--accent-green);
   background: var(--accent-green-dim);
+  animation: pulse-green 0.45s var(--ease);
 }
 .match-row.wrong {
   border-color: var(--accent-red);
   background: var(--accent-red-dim);
+  animation: shake 0.4s var(--ease);
 }
 .match-item {
   font-family: var(--font-mono);
@@ -1500,15 +1507,167 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   min-width: 3.2rem;
   text-align: center;
 }
-.match-select {
+/* Custom select-only combobox: trigger button + listbox popover. */
+.match-control {
+  position: relative;
   flex: 1;
   min-width: 0;
+}
+.match-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 0.4rem 0.65rem;
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--motion-fast) var(--ease), background var(--motion-fast) var(--ease),
+    box-shadow var(--motion-fast) var(--ease), color var(--motion-fast) var(--ease);
+}
+.match-trigger:hover:not(:disabled):not([aria-expanded="true"]) {
+  border-color: var(--border-glow);
+  background: var(--bg-hover);
+}
+.match-trigger:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+/* Open: form-control style focus ring so the active row reads as "in use". */
+.match-trigger[aria-expanded="true"] {
+  border-color: var(--accent-cyan);
+  background: var(--bg-base);
+  box-shadow: 0 0 0 3px var(--accent-cyan-dim);
+}
+.match-trigger:disabled { cursor: default; opacity: 0.7; }
+.match-row.correct .match-trigger:disabled,
+.match-row.wrong .match-trigger:disabled { opacity: 1; }
+.match-trigger-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.match-trigger.is-empty .match-trigger-value {
+  color: var(--text-muted);
+  font-style: italic;
+}
+/* A made match: cyan text + check that pops in. */
+.match-trigger.has-value { color: var(--accent-cyan); }
+.match-trigger-check {
+  display: none;
+  flex-shrink: 0;
+  color: var(--accent-green);
+  font-weight: 700;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+.match-trigger.has-value .match-trigger-check {
+  display: inline-flex;
+  animation: pop-in var(--motion-fast) var(--ease);
+}
+.match-trigger-chevron {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform var(--motion-fast) var(--ease-smooth);
+}
+.match-trigger[aria-expanded="true"] .match-trigger-chevron { transform: rotate(180deg); }
+.match-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  min-width: 100%;
+  max-width: min(340px, calc(100vw - 2rem));
+  max-height: min(260px, 50vh);
+  overflow-y: auto;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 0.35rem;
+  transform-origin: top left;
+  animation: pop-in var(--motion-fast) var(--ease);
+  transition: background-color var(--motion-normal) var(--ease), border-color var(--motion-normal) var(--ease);
+}
+.match-menu.up {
+  top: auto;
+  bottom: calc(100% + 6px);
+  transform-origin: bottom left;
+}
+.match-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  transition: background var(--motion-fast) var(--ease), color var(--motion-fast) var(--ease);
+}
+.match-option-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.match-option:hover, .match-option.active { background: var(--bg-hover); }
+/* This row's current pick. */
+.match-option.selected { color: var(--accent-cyan); }
+.match-option.selected .match-option-text { color: var(--accent-cyan); }
+.match-option-check {
+  flex-shrink: 0;
+  color: var(--accent-green);
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity var(--motion-fast) var(--ease);
+}
+.match-option.selected .match-option-check { opacity: 1; }
+/* Taken by another row: dimmed with a pill, still pickable (it moves here). */
+.match-option.used { color: var(--text-muted); }
+.match-option.used .match-option-text { opacity: 0.65; }
+.match-option.used.selected { color: var(--accent-cyan); }
+.match-option.used.selected .match-option-text { opacity: 1; }
+.match-option-used {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
 }
 .match-correct {
   font-family: var(--font-mono);
   font-size: 0.82rem;
   color: var(--accent-green);
   white-space: nowrap;
+}
+@media (max-width: 640px) {
+  /* Narrow screens: stack each item above its picker so long text never
+     clips, and let feedback wrap. */
+  .match-row { flex-wrap: wrap; }
+  .match-item {
+    flex: 1 1 100%;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: left;
+  }
+  .match-control { flex: 1 1 100%; }
+  .match-correct { white-space: normal; }
 }
 .match-answer {
   display: flex;
