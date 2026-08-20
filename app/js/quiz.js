@@ -572,8 +572,52 @@
 
   /* ── Generic matching UI builder ────────────────────────── */
   // Shared by the quiz player, exam player and single-question modal.
-  // Renders an optional context banner plus one row per item with a <select>
-  // of shuffled counterparts. Returns { lock } for answer feedback.
+  // Renders an optional context banner plus one row per item. Each row's
+  // counterpart picker is a custom select-only combobox (button + listbox
+  // popover) instead of a native <select>, so the interaction carries the
+  // app's visual language (selected / used / feedback states, fast motion)
+  // without touching the underlying answer model. Returns { lock, read }.
+  //
+  // The answer data is untouched: read() still returns one index into
+  // q._shuffledMatches per row (or null when unanswered), exactly like the
+  // old <select> version, so scoring, validation and saved sessions keep
+  // working. Because a correct matching is always a permutation, a
+  // counterpart already used by another row is shown as "used" and picking
+  // it simply moves the match (the previous row falls back to unanswered) —
+  // the answer space never loses a correct solution.
+  var matchUid = 0;
+  var openMatchMenus = []; // row-state objects whose popover is open
+  var matchDocListenersAttached = false;
+
+  // One shared pair of document listeners for every matching picker: outside
+  // clicks and Escape close whatever popover is open, without leaking a
+  // listener per rendered question. Listeners are only active while a menu
+  // is open.
+  function attachMatchDocListeners() {
+    if (matchDocListenersAttached) return;
+    matchDocListenersAttached = true;
+    document.addEventListener('mousedown', function (e) {
+      openMatchMenus.slice().forEach(function (st) {
+        if (!st.control.contains(e.target)) closeMatchMenu(st);
+      });
+    }, true);
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      openMatchMenus.slice().forEach(function (st) { closeMatchMenu(st); });
+    }, true);
+  }
+
+  function closeMatchMenu(st) {
+    if (!st.open) return;
+    st.open = false;
+    st.row.classList.remove('active');
+    st.trigger.setAttribute('aria-expanded', 'false');
+    st.trigger.removeAttribute('aria-activedescendant');
+    st.menu.hidden = true;
+    var idx = openMatchMenus.indexOf(st);
+    if (idx >= 0) openMatchMenus.splice(idx, 1);
+  }
+
   function renderMatchUI(container, q, opts) {
     opts = opts || {};
     var context = q._matchContext || q.context || q.command || '';
@@ -585,51 +629,211 @@
     container.appendChild(banner);
 
     var rows = el('div', { className: 'match-pairs' });
-    var selects = [];
-    var initial = Array.isArray(opts.initial) ? opts.initial : [];
     var matches = q._shuffledMatches || q._shuffledDescs || [];
+    var initial = Array.isArray(opts.initial) ? opts.initial : [];
+    var values = q._shuffledPairs.map(function (_, i) {
+      var v = initial[i];
+      return Number.isInteger(v) && v >= 0 && v < matches.length ? v : null;
+    });
+    var rowState = [];
+
     q._shuffledPairs.forEach(function (pair, i) {
       var item = pairItem(pair);
       var row = el('div', { className: 'match-row' });
       row.appendChild(el('span', { className: 'match-item', html: renderChoiceHtml(item) }));
-      var sel = el('select', {
-        className: 'form-control match-select',
-        'aria-label': 'Match ' + item + ' with its counterpart'
+
+      var menuId = 'match-menu-' + (++matchUid);
+      var control = el('div', { className: 'match-control' });
+      var trigger = el('button', {
+        type: 'button',
+        className: 'match-trigger is-empty',
+        role: 'combobox',
+        'aria-haspopup': 'listbox',
+        'aria-expanded': 'false',
+        'aria-controls': menuId,
+        'aria-label': 'Match ' + item + ' with its counterpart',
+        onClick: function () { toggleMatchMenu(i); }
       });
-      sel.appendChild(el('option', { value: '', text: '— choose counterpart —' }));
-      matches.forEach(function (match, j) {
-        sel.appendChild(el('option', { value: String(j), html: renderChoiceHtml(match) }));
+      var valueEl = el('span', { className: 'match-trigger-value', text: 'Choose counterpart' });
+      var checkEl = el('span', { className: 'match-trigger-check', 'aria-hidden': 'true', html: '&#10003;' });
+      var chevron = el('span', {
+        className: 'match-trigger-chevron',
+        'aria-hidden': 'true',
+        html: '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
       });
-      if (initial[i] != null) sel.value = String(initial[i]);
-      sel.addEventListener('change', function () {
-        if (opts.onChange) opts.onChange(read());
+      trigger.appendChild(valueEl);
+      trigger.appendChild(checkEl);
+      trigger.appendChild(chevron);
+
+      var menu = el('div', {
+        className: 'match-menu',
+        role: 'listbox',
+        id: menuId,
+        'aria-label': 'Choose a counterpart for ' + item,
+        hidden: 'true'
       });
-      selects.push(sel);
-      row.appendChild(sel);
+      var options = matches.map(function (m, j) {
+        var opt = el('div', {
+          className: 'match-option',
+          role: 'option',
+          id: menuId + '-opt-' + j,
+          'aria-selected': 'false',
+          onClick: function () { chooseMatch(i, j); }
+        }, [
+          el('span', { className: 'match-option-text', html: renderChoiceHtml(m) }),
+          el('span', { className: 'match-option-check', 'aria-hidden': 'true', html: '&#10003;' }),
+          el('span', { className: 'match-option-used', 'aria-hidden': 'true', text: 'used' })
+        ]);
+        menu.appendChild(opt);
+        return opt;
+      });
+      control.appendChild(trigger);
+      control.appendChild(menu);
+      row.appendChild(control);
       rows.appendChild(row);
+
+      var st = {
+        i: i,
+        row: row,
+        control: control,
+        trigger: trigger,
+        valueEl: valueEl,
+        menu: menu,
+        options: options,
+        activeIdx: -1,
+        open: false
+      };
+      rowState.push(st);
+      trigger.addEventListener('keydown', function (e) { onTriggerKey(st, e); });
     });
     container.appendChild(rows);
+    attachMatchDocListeners();
+    // Paint any restored answers (exam player re-renders from the saved
+    // session) into the triggers and used/selected markers.
+    rowState.forEach(function (st) { refreshRow(st); });
 
     function read() {
-      return selects.map(function (s) {
-        return s.value === '' ? null : Number(s.value);
+      return values.slice();
+    }
+
+    function toggleMatchMenu(i) {
+      var st = rowState[i];
+      if (st.open) { closeMatchMenu(st); return; }
+      openMatchMenu(st);
+    }
+
+    function openMatchMenu(st) {
+      if (!st.options.length) return;
+      // Only one row's popover is open at a time.
+      openMatchMenus.slice().forEach(function (other) {
+        if (other !== st) closeMatchMenu(other);
       });
+      st.open = true;
+      st.row.classList.add('active');
+      st.trigger.setAttribute('aria-expanded', 'true');
+      st.menu.hidden = false;
+      st.activeIdx = values[st.i] != null ? values[st.i] : 0;
+      setActiveOption(st, st.activeIdx);
+      // Flip the popover above the row when it would run off the viewport.
+      var rect = st.control.getBoundingClientRect();
+      var menuHeight = st.menu.offsetHeight;
+      st.menu.classList.toggle('up', rect.bottom + menuHeight > window.innerHeight - 12);
+      openMatchMenus.push(st);
+    }
+
+    function setActiveOption(st, j) {
+      var count = st.options.length;
+      st.activeIdx = ((j % count) + count) % count;
+      st.options.forEach(function (opt, k) {
+        opt.classList.toggle('active', k === st.activeIdx);
+      });
+      st.trigger.setAttribute('aria-activedescendant', st.options[st.activeIdx].id);
+      // Keep the highlighted option visible inside a scrollable popover
+      // without scrolling the page.
+      var menuRect = st.menu.getBoundingClientRect();
+      var optRect = st.options[st.activeIdx].getBoundingClientRect();
+      if (optRect.top < menuRect.top) st.menu.scrollTop -= (menuRect.top - optRect.top);
+      else if (optRect.bottom > menuRect.bottom) st.menu.scrollTop += (optRect.bottom - menuRect.bottom);
+    }
+
+    // Assign counterpart index j to row i. A counterpart can only be used
+    // once: picking one another row already holds moves it here and frees
+    // that row (it returns to "Choose counterpart").
+    function chooseMatch(i, j) {
+      if (rowState[i].trigger.disabled) return;
+      values[i] = j;
+      values.forEach(function (v, k) {
+        if (k !== i && v === j) values[k] = null;
+      });
+      rowState.forEach(function (st) { refreshRow(st); });
+      closeMatchMenu(rowState[i]);
+      if (opts.onChange) opts.onChange(read());
+    }
+
+    function refreshRow(st) {
+      var v = values[st.i];
+      var hasValue = v != null;
+      var item = pairItem(q._shuffledPairs[st.i]);
+      st.valueEl.textContent = hasValue ? matches[v] : 'Choose counterpart';
+      st.trigger.classList.toggle('has-value', hasValue);
+      st.trigger.classList.toggle('is-empty', !hasValue);
+      st.trigger.setAttribute('aria-label', hasValue
+        ? 'Matched ' + item + ' with ' + matches[v] + '. Press Enter to change.'
+        : 'Match ' + item + ' with its counterpart');
+      st.options.forEach(function (opt, j) {
+        var used = values.some(function (w, k) { return k !== st.i && w === j; });
+        opt.setAttribute('aria-selected', v === j ? 'true' : 'false');
+        opt.classList.toggle('selected', v === j);
+        opt.classList.toggle('used', used);
+      });
+    }
+
+    function onTriggerKey(st, e) {
+      var key = e.key;
+      var handled = true;
+      if (key === 'ArrowDown' || key === 'ArrowUp' || key === 'Enter' || key === ' ' || key === 'Spacebar') {
+        if (!st.open) {
+          openMatchMenu(st);
+        } else if (key === 'ArrowDown' || key === 'ArrowUp') {
+          setActiveOption(st, key === 'ArrowDown' ? st.activeIdx + 1 : st.activeIdx - 1);
+        } else {
+          chooseMatch(st.i, st.activeIdx);
+        }
+      } else if (key === 'Home') {
+        if (!st.open) return;
+        setActiveOption(st, 0);
+      } else if (key === 'End') {
+        if (!st.open) return;
+        setActiveOption(st, st.options.length - 1);
+      } else if (key === 'Escape') {
+        if (!st.open) return;
+        closeMatchMenu(st);
+      } else {
+        handled = false;
+      }
+      if (handled) {
+        // Keep the quiz/exam players' document-level shortcuts (Enter
+        // submits, Space advances) from firing while the picker owns the key.
+        e.preventDefault();
+        e.stopPropagation();
+      }
     }
 
     var submitBtn = null;
 
     function lock() {
-      selects.forEach(function (s) { s.disabled = true; });
+      openMatchMenus.slice().forEach(function (st) { closeMatchMenu(st); });
+      rowState.forEach(function (st) { st.trigger.disabled = true; });
       if (submitBtn) submitBtn.disabled = true;
       q._shuffledPairs.forEach(function (pair, i) {
-        var row = rows.children[i];
-        var chosen = selects[i].value;
+        var st = rowState[i];
+        var chosen = values[i];
         var correctIdx = (q._correctMatchIdx || q._correctDescIdx || [])[i];
-        if (String(correctIdx) === chosen) {
-          row.classList.add('correct');
+        if (correctIdx === chosen) {
+          st.row.classList.add('correct');
         } else {
-          row.classList.add('wrong');
-          row.appendChild(el('span', {
+          st.row.classList.add('wrong');
+          st.row.appendChild(el('span', {
             className: 'match-correct',
             html: inlineHtml('→ ' + matches[correctIdx])
           }));
@@ -654,7 +858,7 @@
       container.appendChild(submitBtn);
     }
 
-    return { lock: lock, read: read, selects: selects };
+    return { lock: lock, read: read };
   }
 
   // Public compatibility alias for callers that used the command-specific name.
