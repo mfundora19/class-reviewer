@@ -361,6 +361,7 @@
         mobile.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
         mobile.setAttribute('title', open ? 'Close menu' : 'Open menu');
       }
+      setMobileExpanded(false);
       mobile.addEventListener('click', function () {
         var isOpen = sidebar.classList.toggle('open');
         setMobileExpanded(isOpen);
