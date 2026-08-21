@@ -1197,7 +1197,14 @@
     }
     root.appendChild(header);
     var card = el('div', { className: 'question-card' });
-    card.appendChild(el('div', { className: 'question-text', html: App.markdown.renderInline(q.q || '') }));
+    card.appendChild(el('div', { className: 'question-title-row' }, [
+      el('div', { className: 'question-text', html: App.markdown.renderInline(q.q || '') }),
+      el('span', {
+        className: 'chip chip-muted question-type-chip',
+        text: quizQuestionTypeLabel(q.type),
+        'aria-label': 'Question type: ' + quizQuestionTypeLabel(q.type)
+      })
+    ]));
     var optsWrap = el('div', { className: 'options-list' });
     var selectedMulti = {};
     var selectedIdx = null; // single-answer selection (mcq / tf)

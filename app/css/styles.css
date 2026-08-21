@@ -1312,6 +1312,23 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   margin-bottom: 1rem;
   transition: border-color var(--motion-normal) var(--ease), background-color var(--motion-normal) var(--ease);
 }
+.question-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.question-title-row .question-text {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+.question-type-chip {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  white-space: nowrap;
+}
 .question-text {
   font-size: 1.1rem;
   font-weight: 600;
@@ -1638,6 +1655,7 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 .match-option.used.selected { color: var(--accent-cyan); }
 .match-option.used.selected .match-option-text { opacity: 1; }
 .match-option-used {
+  display: none;
   flex-shrink: 0;
   font-family: var(--font-mono);
   font-size: 0.62rem;
@@ -1649,6 +1667,7 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   border-radius: 999px;
   padding: 0.1rem 0.45rem;
 }
+.match-option.used .match-option-used { display: inline-flex; }
 .match-correct {
   font-family: var(--font-mono);
   font-size: 0.82rem;
