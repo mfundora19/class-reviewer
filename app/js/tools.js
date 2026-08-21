@@ -339,6 +339,67 @@
     return { special: special, user: u, group: g, other: o };
   }
 
+  // Apply a symbolic chmod expression (e.g. 'u+x', 'g-w,o+r', 'a-x', 'u=rwx',
+  // 'g+s', 'o+t') to a permission state and return the new state, or null if
+  // the expression is not valid. `state` uses the parseMode shape:
+  // { special: {suid,sgid,sticky}, user:{r,w,x}, group:{...}, other:{...} }.
+  //
+  // Semantics follow chmod: 'a' or a missing who means all classes; '=' sets
+  // the listed bits exactly (clearing the rest of the class); '+' adds and
+  // '-' removes. Special bits apply to their class: s (setuid/user, setgid/
+  // group), t (sticky/other). 's'/'t' imply execute when set, 'S'/'T' set the
+  // special bit without execute.
+  function applyChmodExpr(state, expr) {
+    if (!state || !state.user || !state.group || !state.other) return null;
+    var out = {
+      special: { suid: !!state.special.suid, sgid: !!state.special.sgid, sticky: !!state.special.sticky },
+      user: { r: !!state.user.r, w: !!state.user.w, x: !!state.user.x },
+      group: { r: !!state.group.r, w: !!state.group.w, x: !!state.group.x },
+      other: { r: !!state.other.r, w: !!state.other.w, x: !!state.other.x }
+    };
+    var s = String(expr == null ? '' : expr).trim().replace(/\s+/g, '');
+    if (!s) return null;
+    var parts = s.split(',');
+    if (parts.length < 1 || parts.length > 6) return null;
+    for (var i = 0; i < parts.length; i++) {
+      var m = /^([augo]*)([+=-])([rwxXstST]*)$/.exec(parts[i]);
+      if (!m) return null;
+      var who = m[1] || 'a';
+      var op = m[2];
+      var bits = m[3];
+      var cls = [];
+      if (who.indexOf('a') !== -1) cls = ['user', 'group', 'other'];
+      else {
+        if (who.indexOf('u') !== -1) cls.push('user');
+        if (who.indexOf('g') !== -1) cls.push('group');
+        if (who.indexOf('o') !== -1) cls.push('other');
+      }
+      if (!cls.length) return null;
+      for (var c = 0; c < cls.length; c++) {
+        var key = cls[c];
+        if (op === '=') { out[key].r = false; out[key].w = false; out[key].x = false; }
+        for (var b = 0; b < bits.length; b++) {
+          var ch = bits.charAt(b);
+          var set = op !== '-';
+          if (ch === 'r') out[key].r = set;
+          else if (ch === 'w') out[key].w = set;
+          else if (ch === 'x' || ch === 'X') out[key].x = set;
+          else if (ch === 's' || ch === 'S') {
+            if (key === 'user') out.special.suid = set;
+            else if (key === 'group') out.special.sgid = set;
+            else return null;
+            out[key].x = ch === 's' && set;
+          } else if (ch === 't' || ch === 'T') {
+            if (key !== 'other') return null;
+            out.special.sticky = set;
+            out[key].x = ch === 't' && set;
+          } else return null;
+        }
+      }
+    }
+    return out;
+  }
+
   // Trim and normalize an octal mode: strips redundant leading zeros while
   // keeping at least three digits (0644 -> 644, 000 -> 000). Returns null
   // for anything that is not 3-4 octal digits.
@@ -371,6 +432,7 @@
     permsFromMode: permsFromMode,
     parseMode: parseMode,
     permsFromSymbolic: permsFromSymbolic,
+    applyChmodExpr: applyChmodExpr,
     normalizeMode: normalizeMode,
     getCommonModes: getCommonModes,
     highlightPort: setHighlightPort,
