@@ -40,7 +40,7 @@ function check(label, ok, extra) {
 function canonicalAnswer(ex) {
   if (ex.accepts === 'octal') return E.stateToOctal(ex.answer);
   if (ex.accepts === 'symbolic') return E.stateToSymbolic(ex.answer);
-  if (ex.accepts === 'chmod') return ex.expectedText;
+  if (ex.accepts === 'chmod' || ex.accepts === 'chmod-delta') return ex.expectedText;
   if (ex.accepts === 'mcq') return ex.detail.answerIndex;
   if (ex.accepts === 'matrix') return ex.answer;
   return null;
@@ -262,6 +262,123 @@ check('difficulty generation is seeded-deterministic', JSON.stringify(a1) === JS
 // Invalid difficulty falls back to no filtering (treated as unknown -> all types allowed)
 var exAll = E.generateExercise({ types: [E.TYPE.OCTAL_TO_SYMBOLIC, E.TYPE.SPECIAL_BITS], includeSetuid: true, difficulty: 'bogus' }, 80001);
 check('unknown difficulty treated as all', !exAll.error && [E.TYPE.OCTAL_TO_SYMBOLIC, E.TYPE.SPECIAL_BITS].indexOf(exAll.type) >= 0);
+
+/* ── 10. Domain: applyChmodExpr (symbolic chmod deltas) ── */
+var base644 = T.parseMode('644');
+function octOf(s) { return s ? T.permsFromMode(s.special, s.user, s.group, s.other).octal : null; }
+check('applyChmodExpr g+x', octOf(T.applyChmodExpr(base644, 'g+x')), '654');
+check('applyChmodExpr g+w', octOf(T.applyChmodExpr(base644, 'g+w')), '664');
+check('applyChmodExpr u+x', octOf(T.applyChmodExpr(base644, 'u+x')), '744');
+check('applyChmodExpr o=r', octOf(T.applyChmodExpr(base644, 'o=r')), '644');
+check('applyChmodExpr u=rwx,g=rx,o=r', octOf(T.applyChmodExpr(base644, 'u=rwx,g=rx,o=r')), '754');
+check('applyChmodExpr a+x (default who)', octOf(T.applyChmodExpr(base644, 'a+x')), '755');
+check('applyChmodExpr +x (implicit all)', octOf(T.applyChmodExpr(base644, '+x')), '755');
+check('applyChmodExpr go-r', octOf(T.applyChmodExpr(base644, 'go-r')), '600');
+check('applyChmodExpr u+s sets suid', octOf(T.applyChmodExpr(base644, 'u+s')), '4644');
+check('applyChmodExpr g+s sets setgid', octOf(T.applyChmodExpr(base644, 'g+s')), '2644');
+check('applyChmodExpr o+t sets sticky', octOf(T.applyChmodExpr(base644, 'o+t')), '1644');
+check('applyChmodExpr preserves specials', octOf(T.applyChmodExpr(T.parseMode('4754'), 'g+w')), '4764');
+check('applyChmodExpr invalid who', T.applyChmodExpr(base644, 'x+w') === null);
+check('applyChmodExpr invalid bits', T.applyChmodExpr(base644, 'u=q') === null);
+check('applyChmodExpr empty', T.applyChmodExpr(base644, '') === null);
+check('applyChmodExpr s on other rejected', T.applyChmodExpr(base644, 'o+s') === null);
+
+/* ── 11. Engine: symbolic chmod (delta) type ────────────── */
+var reachedDelta = false, deltaSelfBad = 0;
+for (var d0 = 0; d0 < 300; d0++) {
+  var dx = E.generateExercise({ types: [E.TYPE.SYMBOLIC_CHMOD] }, d0 + 90000);
+  if (dx.error) { deltaSelfBad++; continue; }
+  reachedDelta = true;
+  if (!/^[ugo][+\-][rwx]$/.test(dx.detail.delta)) deltaSelfBad++;
+  if (!E.validateExerciseAnswer(dx, dx.expectedText).correct) deltaSelfBad++;
+  if (!E.validateExerciseAnswer(dx, 'chmod ' + dx.detail.delta).correct) deltaSelfBad++;
+  if (!E.validateExerciseAnswer(dx, 'chmod ' + E.stateToOctal(dx.answer) + ' any.sh').correct) deltaSelfBad++;
+  if (E.validateExerciseAnswer(dx, 'chmod 777 x').correct) deltaSelfBad++;
+  // the delta must actually change the mode
+  if (E.stateToOctal(dx.answer) === E.stateToOctal(dx.detail.initial)) deltaSelfBad++;
+}
+check('symbolic_chmod reachable and self-consistent (300 seeds)', reachedDelta && deltaSelfBad === 0, 'bad=' + deltaSelfBad);
+check('symbolic_chmod full-symbolic answer accepted', (function () {
+  var e = E.generateExercise({ types: [E.TYPE.SYMBOLIC_CHMOD] }, 90001);
+  return E.validateExerciseAnswer(e, 'chmod ' + e.detail.targetSymbolic).correct;
+})());
+check('symbolic_chmod comma delta accepted', (function () {
+  var e = E.generateExercise({ types: [E.TYPE.SYMBOLIC_CHMOD] }, 90002);
+  // compose an extra no-op clause; the meaningful delta still reaches the target
+  return E.validateExerciseAnswer(e, 'chmod ' + e.detail.delta + ',u+r ' + e.detail.filename).correct ||
+    E.validateExerciseAnswer(e, 'chmod u+r,' + e.detail.delta + ' ' + e.detail.filename).correct;
+})());
+check('symbolic_chmod garbage rejected', (function () {
+  var e = E.generateExercise({ types: [E.TYPE.SYMBOLIC_CHMOD] }, 90003);
+  return !E.validateExerciseAnswer(e, 'rm -rf /').correct;
+})());
+
+/* ── 12. Structured feedback detail ─────────────────────── */
+var matEx2 = E.generateExercise({ types: [E.TYPE.PERMISSION_MATRIX] }, 90010);
+var wrong2 = JSON.parse(JSON.stringify(matEx2.answer));
+wrong2.group.w = !wrong2.group.w;
+wrong2.other.x = !wrong2.other.x;
+var mres2 = E.validateExerciseAnswer(matEx2, wrong2);
+check('detail.title set', !!mres2.detail && mres2.detail.title === 'Not quite');
+check('detail.comparison has expected/actual', !!mres2.detail.comparison && !!mres2.detail.comparison.expected && !!mres2.detail.comparison.actual);
+check('detail.points non-empty', !!(mres2.detail.points && mres2.detail.points.length));
+check('detail.points carry tone', mres2.detail.points.every(function (p) { return p.text && p.tone; }));
+check('detail.perClass rows include all classes', (function () {
+  var labels = mres2.detail.perClass.map(function (r) { return r.cls; });
+  return labels.indexOf('user') >= 0 && labels.indexOf('group') >= 0 && labels.indexOf('other') >= 0;
+})());
+check('detail.perClass flags wrong bits', (function () {
+  var g = mres2.detail.perClass.filter(function (r) { return r.cls === 'group'; })[0];
+  return g && g.ok === false && g.issues.some(function (i) { return i.bit === 'w'; });
+})());
+check('detail.remember present for matrix', mres2.detail.remember && mres2.detail.remember.length > 0);
+check('flat feedback still matches detail', mres2.feedback.indexOf('Expected: ' + mres2.expectedText) >= 0);
+check('correct answers get structured detail too', (function () {
+  var ok = E.validateExerciseAnswer(matEx2, matEx2.answer);
+  return ok.correct && ok.detail && ok.detail.title === 'Correct' && ok.detail.points && ok.detail.points.length >= 0;
+})());
+check('octal wrong detail includes breakdown', (function () {
+  var e = E.generateExercise({ types: [E.TYPE.SYMBOLIC_TO_OCTAL] }, 90011);
+  var r = E.validateExerciseAnswer(e, '000');
+  return !r.correct && r.detail.points.some(function (p) { return /[0-7] = /.test(p.text); });
+})());
+
+/* ── 13. Adaptive focus: biasBits and typeWeights ───────── */
+var biasCfg = { types: [E.TYPE.BUILD_PERMISSION], biasBits: [['group', 'x']] };
+var groupXOn = 0, groupXOff = 0;
+for (var b1 = 0; b1 < 200; b1++) {
+  var bx = E.generateExercise(biasCfg, b1 + 100000);
+  var gDigit = E.stateToOctal(bx.answer).charAt(1);
+  if ([1, 3, 5, 7].indexOf(Number(gDigit)) >= 0) groupXOn++; else groupXOff++;
+}
+check('biasBits still yields both outcomes (not deterministic)', groupXOn > 30 && groupXOff > 30, 'on=' + groupXOn + ' off=' + groupXOff);
+var wCfg = { types: [E.TYPE.OCTAL_TO_SYMBOLIC, E.TYPE.SYMBOLIC_TO_OCTAL], typeWeights: { octal_to_symbolic: 9 } };
+var w1 = 0, w2 = 0;
+for (var b2 = 0; b2 < 120; b2++) {
+  var wEx = E.generateExercise(wCfg, b2 + 110000);
+  if (wEx.type === E.TYPE.OCTAL_TO_SYMBOLIC) w1++; else w2++;
+}
+check('typeWeights bias the type pool', w1 > w2 * 2, 'w1=' + w1 + ' w2=' + w2);
+
+/* ── 14. Variety & non-trivial modes ────────────────────── */
+// Medium/hard states must not be all-identical class digits (e.g. 777, 000).
+var uniformBad = 0;
+var seenModes = {};
+for (var v1 = 0; v1 < 400; v1++) {
+  var vEx = E.generateExercise({ types: [E.TYPE.BUILD_PERMISSION, E.TYPE.PERMISSION_MATRIX, E.TYPE.CHMOD_COMMAND], includeSetuid: true, includeSetgid: true, includeSticky: true }, v1 + 120000);
+  if (vEx.error) { uniformBad++; continue; }
+  var octV = E.stateToOctal(vEx.answer);
+  var tail = octV.slice(-3);
+  if (tail.charAt(0) === tail.charAt(1) && tail.charAt(1) === tail.charAt(2)) uniformBad++;
+  seenModes[octV] = true;
+}
+check('medium+ never generates uniform class digits', uniformBad === 0, 'bad=' + uniformBad);
+check('generated modes are varied', Object.keys(seenModes).length >= 20, 'distinct=' + Object.keys(seenModes).length);
+
+/* ── 15. diffStates export ──────────────────────────────── */
+var ds = E.diffStates(T.parseMode('754'), T.parseMode('755'));
+check('diffStates finds differing bits', ds.some(function (d) { return d.cls === 'other' && d.bit === 'x' && d.expected === true; }));
+check('diffStates alias matrixDiff', E.matrixDiff === E.diffStates);
 
 /* ── Summary ─────────────────────────────────────────────── */
 console.log(passed + ' passed, ' + failed + ' failed');
