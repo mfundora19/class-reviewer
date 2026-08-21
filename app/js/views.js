@@ -3886,130 +3886,290 @@
   }
 
 
-  /* ── Permissions exercise UI ───────────────────────────── */
-  function buildPermExerciseSection() {
-    var section = el('div', { className: 'panel-raised mt-2' });
-    var header = el('div', { className: 'flex-between mb-1', style: { alignItems: 'center' } });
-    header.appendChild(el('div', { className: 'label-upper', text: 'Exercise' }));
-    var statsRow = el('div', { className: 'flex gap-sm', style: { flexWrap: 'wrap' } });
-    header.appendChild(statsRow);
-    section.appendChild(header);
-    var body = el('div');
-    section.appendChild(body);
+/* ── Permissions exercise UI ───────────────────────────── */
+  // Session lengths for practice sessions; 0 = endless.
+  var EX_LENGTHS = [
+    { value: 5, label: '5' },
+    { value: 10, label: '10' },
+    { value: 15, label: '15' },
+    { value: 20, label: '20' },
+    { value: 0, label: 'Endless' }
+  ];
+  var EX_DIFF_LABELS = { all: 'All levels', easy: 'Easy', medium: 'Medium', hard: 'Hard' };
+  var EX_BIT_NAMES = { r: 'read', w: 'write', x: 'execute' };
 
-    var session = null;
+  function buildPermExerciseSection() {
+    var section = el('div', { className: 'perm-exercise' });
+    var header = el('div', { className: 'perm-ex-head' });
+    var titleRow = el('div', { className: 'flex-between mb-1', style: { alignItems: 'center' } });
+    titleRow.appendChild(el('div', { className: 'label-upper', text: 'Practice' }));
+    var statsRow = el('div', { className: 'flex gap-sm perm-ex-stats', style: { flexWrap: 'wrap' }, 'aria-live': 'polite' });
+    titleRow.appendChild(statsRow);
+    header.appendChild(titleRow);
+    header.appendChild(el('p', { className: 'text-muted mb-2', style: { fontSize: '0.85rem' },
+      text: 'Procedurally generated permission exercises — conversions, chmod commands, permission matrices, special bits, and directory scenarios. No question bank: every exercise is generated on the fly.' }));
+    var stage = el('div', { className: 'perm-ex-stage' });
+    section.appendChild(header);
+    section.appendChild(stage);
+
+    var session = null; // { config, stats:{n,correct,incorrect}, focus:{}, weak:[], exercise, submitted }
+    var lastConfig = null;
+    var currentSubmit = null;
+
+    // Keyboard interaction while an exercise is on screen: 1-4 picks an MCQ
+    // option, Enter submits. Buttons and text inputs handle their own keys.
+    stage.addEventListener('keydown', function (e) {
+      if (!session || session.submitted || !session.exercise) return;
+      var ex = session.exercise;
+      if (e.key === 'Enter') {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON' || e.target.tagName === 'SELECT')) return;
+        e.preventDefault();
+        if (ex.accepts === 'mcq') {
+          if (stage.querySelector('.option-btn.selected')) submitCurrent();
+        } else if (ex.accepts === 'matrix') {
+          submitCurrent();
+        }
+        return;
+      }
+      if (ex.accepts === 'mcq' && /^[1-9]$/.test(e.key)) {
+        var idx = Number(e.key) - 1;
+        if (idx < ex.detail.options.length) {
+          e.preventDefault();
+          stage.querySelectorAll('.option-btn').forEach(function (b, j) { b.classList.toggle('selected', j === idx); });
+        }
+      }
+    });
+
+    function submitCurrent() {
+      if (currentSubmit) currentSubmit();
+    }
 
     function setStats() {
       statsRow.innerHTML = '';
       if (!session) return;
-      statsRow.appendChild(el('span', { className: 'chip chip-muted', text: 'Question ' + (session.stats.n + 1) }));
-      if (session.stats.correct || session.stats.incorrect) {
-        statsRow.appendChild(el('span', { className: 'chip chip-green', text: session.stats.correct + ' correct' }));
-        statsRow.appendChild(el('span', { className: 'chip chip-red', text: session.stats.incorrect + ' incorrect' }));
+      var total = session.stats.correct + session.stats.incorrect;
+      statsRow.appendChild(el('span', { className: 'chip chip-muted', text: 'Question ' + session.stats.n }));
+      if (session.config.length) {
+        var bar = el('div', { className: 'progress-bar perm-ex-minibar', 'aria-hidden': 'true' });
+        var done = Math.max(0, session.stats.n - 1);
+        bar.appendChild(el('div', { className: 'progress-fill', style: { width: Math.min(100, Math.round(done / session.config.length * 100)) + '%' } }));
+        statsRow.appendChild(bar);
+      }
+      if (session.stats.correct) statsRow.appendChild(el('span', { className: 'chip chip-green', text: session.stats.correct + ' correct' }));
+      if (session.stats.incorrect) statsRow.appendChild(el('span', { className: 'chip chip-red', text: session.stats.incorrect + ' incorrect' }));
+      if (total) statsRow.appendChild(el('span', { className: 'chip chip-cyan', text: Math.round(session.stats.correct / total * 100) + '% accuracy' }));
+    }
+
+    // Replace the stage content with a small exit/enter transition. With
+    // prefers-reduced-motion or animations off, the durations collapse to
+    // ~0ms so the swap is instant.
+    function swapStage(build) {
+      var prev = stage.firstElementChild;
+      if (prev) {
+        prev.classList.add('perm-ex-leaving');
+        setTimeout(function () {
+          stage.innerHTML = '';
+          stage.appendChild(build());
+        }, 150);
+      } else {
+        stage.appendChild(build());
       }
     }
 
     function renderIdle() {
-      body.innerHTML = '';
-      body.appendChild(el('p', { className: 'text-muted', style: { fontSize: '0.85rem' },
-        text: 'Practice procedurally generated permission exercises — octal/symbolic conversion, chmod commands, permission matrices, special bits, and directory/traversal scenarios.' }));
-      body.appendChild(el('button', { className: 'btn btn-primary', text: 'Start exercise', onClick: renderConfig }));
+      session = null;
+      currentSubmit = null;
+      setStats();
+      stage.innerHTML = '';
+      var wrap = el('div', { className: 'perm-ex-idle' });
+      wrap.appendChild(el('p', { className: 'text-muted', style: { fontSize: '0.85rem' },
+        text: 'Choose a configuration to focus on the concepts you want to practice, or jump straight in with your last settings.' }));
+      var row = el('div', { className: 'flex gap-sm mt-2', style: { flexWrap: 'wrap' } });
+      row.appendChild(el('button', { className: 'btn btn-primary', text: 'Start practice', onClick: function () { swapStage(renderConfig); } }));
+      if (lastConfig) {
+        row.appendChild(el('button', {
+          className: 'btn btn-secondary', text: 'Quick start', title: 'Start a session with your previous settings',
+          onClick: function () { startSession(JSON.parse(JSON.stringify(lastConfig))); }
+        }));
+      }
+      wrap.appendChild(row);
+      stage.appendChild(wrap);
     }
 
-    var DIFF_LABELS = { all: 'All levels', easy: 'Easy', medium: 'Medium', hard: 'Hard' };
+    function toggleChip(text, on, onChange, opts) {
+      opts = opts || {};
+      var btn = el('button', {
+        className: 'chip chip-toggle' + (on ? ' on' : '') + (opts.special ? ' special' : ''),
+        'aria-pressed': on ? 'true' : 'false',
+        text: text,
+        title: opts.title,
+        onClick: function () {
+          var next = btn.getAttribute('aria-pressed') !== 'true';
+          btn.setAttribute('aria-pressed', next ? 'true' : 'false');
+          btn.classList.toggle('on', next);
+          onChange(next);
+        }
+      });
+      return btn;
+    }
 
     function renderConfig() {
-      body.innerHTML = '';
-      var difficulty = 'all';
+      var cfg = lastConfig || { difficulty: 'all', types: null, includeSetuid: false, includeSetgid: false, includeSticky: false, length: 10 };
+      var difficulty = cfg.difficulty;
+      var length = cfg.length || 10;
+      var specials = { includeSetuid: !!cfg.includeSetuid, includeSetgid: !!cfg.includeSetgid, includeSticky: !!cfg.includeSticky };
+      var typesOn = {};
+      var wrap = el('div', { className: 'perm-ex-config' });
 
-      function refreshTypeList() {
-        typeWrap.innerHTML = '';
-        var typeIds = Object.keys(App.permExercise.TYPE_META);
-        typeIds.forEach(function (id) {
+      function visibleTypes() {
+        var ids = [];
+        Object.keys(App.permExercise.TYPE_META).forEach(function (id) {
           if (difficulty !== 'all' && App.permExercise.TYPE_META[id].difficulty !== difficulty) return;
-          var lab = el('label', { className: 'chip chip-muted', style: { cursor: 'pointer' } });
-          var cb = el('input', { type: 'checkbox', checked: true, value: id, style: { marginRight: '4px' } });
-          lab.appendChild(cb);
-          lab.appendChild(document.createTextNode(App.permExercise.TYPE_META[id].label));
-          typeWrap.appendChild(lab);
+          ids.push(id);
         });
-        var spHints = {
-          all: 'Off = classic conversions only. On = exercises may include setuid/setgid/sticky.',
-          easy: 'Easy exercises are basic conversions — special bits never appear at this level.',
-          medium: 'Off = classic conversions only. On = exercises may include setuid/setgid/sticky.',
-          hard: 'Hard exercises include special-bit and scenario questions. Special bits appear when enabled.'
-        };
-        spHint.textContent = spHints[difficulty];
+        return ids;
       }
 
-      var typeWrap = el('div', { className: 'flex gap-sm', style: { flexWrap: 'wrap' } });
-
-      // Difficulty level chips (radio-style)
-      var diffWrap = el('div', { className: 'flex gap-sm', style: { flexWrap: 'wrap' } });
-      (App.permExercise.DIFFICULTY_IDS || ['all', 'easy', 'medium', 'hard']).forEach(function (lv) {
-        var lab = el('label', { className: 'chip chip-muted', style: { cursor: 'pointer' } });
-        var rb = el('input', { type: 'radio', name: 'exercise-difficulty', value: lv, checked: lv === 'all' || undefined, style: { marginRight: '4px' } });
-        rb.addEventListener('change', function () {
-          if (!rb.checked) return;
-          difficulty = lv;
-          refreshTypeList();
+      // Difficulty segmented control
+      wrap.appendChild(el('div', { className: 'label-upper mb-1', text: 'Difficulty' }));
+      var diffRow = el('div', { className: 'flex gap-sm', role: 'group', 'aria-label': 'Difficulty', style: { flexWrap: 'wrap' } });
+      var diffBtns = {};
+      App.permExercise.DIFFICULTY_IDS.forEach(function (lv) {
+        var btn = el('button', {
+          className: 'btn ' + (difficulty === lv ? 'btn-primary' : 'btn-secondary') + ' btn-sm',
+          'aria-pressed': difficulty === lv ? 'true' : 'false',
+          text: EX_DIFF_LABELS[lv] || lv
         });
-        lab.appendChild(rb);
-        lab.appendChild(document.createTextNode(DIFF_LABELS[lv]));
-        diffWrap.appendChild(lab);
+        btn.addEventListener('click', function () {
+          if (lv === difficulty) return;
+          difficulty = lv;
+          Object.keys(diffBtns).forEach(function (k) {
+            var b = diffBtns[k];
+            var on = k === lv;
+            b.className = 'btn ' + (on ? 'btn-primary' : 'btn-secondary') + ' btn-sm';
+            b.setAttribute('aria-pressed', on ? 'true' : 'false');
+          });
+          refreshTypes();
+          diffHint.textContent = App.permExercise.DIFFICULTY_DESC[lv] || '';
+        });
+        diffBtns[lv] = btn;
+        diffRow.appendChild(btn);
       });
-      body.appendChild(el('div', { className: 'label-upper mb-1', text: 'Difficulty' }));
-      body.appendChild(diffWrap);
-      body.appendChild(el('p', { className: 'text-muted', style: { fontSize: '0.8rem' },
-        text: 'Easy = basic conversions of common modes. Medium = mixed conversions and permission building. Hard = special bits and directory/traversal scenarios.' }));
+      wrap.appendChild(diffRow);
+      var diffHint = el('p', { className: 'text-muted perm-ex-config-hint mt-1', text: App.permExercise.DIFFICULTY_DESC[difficulty] || '' });
+      wrap.appendChild(diffHint);
 
-      body.appendChild(el('div', { className: 'label-upper mb-1 mt-2', text: 'Exercise types' }));
-      body.appendChild(typeWrap);
+      // Exercise type toggles
+      wrap.appendChild(el('div', { className: 'label-upper mb-1 mt-3', text: 'Exercise types' }));
+      var typeWrap = el('div', { className: 'flex gap-sm', role: 'group', 'aria-label': 'Exercise types', style: { flexWrap: 'wrap' } });
+      wrap.appendChild(typeWrap);
+      function refreshTypes() {
+        typeWrap.innerHTML = '';
+        visibleTypes().forEach(function (id) {
+          if (typesOn[id] === undefined) typesOn[id] = true;
+          typeWrap.appendChild(toggleChip(App.permExercise.TYPE_META[id].label, typesOn[id], function (on) { typesOn[id] = on; }, {
+            title: App.permExercise.TYPE_META[id].hint
+          }));
+        });
+      }
+      refreshTypes();
 
-      var spWrap = el('div', { className: 'flex gap-sm', style: { flexWrap: 'wrap' } });
+      // Special bits
+      wrap.appendChild(el('div', { className: 'label-upper mb-1 mt-3', text: 'Special bits' }));
+      var spRow = el('div', { className: 'flex gap-sm', role: 'group', 'aria-label': 'Special bits', style: { flexWrap: 'wrap' } });
       [['includeSetuid', 'setuid'], ['includeSetgid', 'setgid'], ['includeSticky', 'sticky']].forEach(function (t) {
-        var lab = el('label', { className: 'chip chip-muted', style: { cursor: 'pointer' } });
-        var cb = el('input', { type: 'checkbox', value: t[0], style: { marginRight: '4px' } });
-        lab.appendChild(cb);
-        lab.appendChild(document.createTextNode(t[1]));
-        spWrap.appendChild(lab);
+        spRow.appendChild(toggleChip(t[1], specials[t[0]], function (on) { specials[t[0]] = on; }, {
+          special: true,
+          title: t[1] === 'setuid' ? 'Runs with the file owner\u2019s privileges (e.g. 4755, /usr/bin/passwd).' : t[1] === 'setgid' ? 'New files inherit the directory\u2019s group (e.g. 2755).' : 'Only the owner can delete files in the directory (e.g. 1777, /tmp).'
+        }));
       });
-      body.appendChild(el('div', { className: 'label-upper mb-1 mt-2', text: 'Special bits' }));
-      body.appendChild(spWrap);
-      var spHint = el('p', { className: 'text-muted', style: { fontSize: '0.8rem' } });
-      body.appendChild(spHint);
+      wrap.appendChild(spRow);
+      wrap.appendChild(el('p', { className: 'text-muted perm-ex-config-hint mt-1',
+        text: 'Special-bit questions only appear when at least one bit is enabled — setuid (4), setgid (2), sticky (1) — and at Medium or Hard difficulty.' }));
 
-      var row = el('div', { className: 'flex gap-sm mt-2', style: { flexWrap: 'wrap' } });
+      // Session length
+      wrap.appendChild(el('div', { className: 'label-upper mb-1 mt-3', text: 'Session length' }));
+      var lenRow = el('div', { className: 'flex gap-sm', role: 'group', 'aria-label': 'Session length', style: { flexWrap: 'wrap' } });
+      var lenBtns = {};
+      EX_LENGTHS.forEach(function (opt) {
+        var btn = el('button', {
+          className: 'btn ' + (length === opt.value ? 'btn-primary' : 'btn-secondary') + ' btn-sm',
+          'aria-pressed': length === opt.value ? 'true' : 'false',
+          text: opt.label,
+          title: opt.value ? opt.value + ' questions per session' : 'Keep going until you stop'
+        });
+        btn.addEventListener('click', function () {
+          length = opt.value;
+          Object.keys(lenBtns).forEach(function (k) {
+            var b = lenBtns[k];
+            var on = Number(k) === length;
+            b.className = 'btn ' + (on ? 'btn-primary' : 'btn-secondary') + ' btn-sm';
+            b.setAttribute('aria-pressed', on ? 'true' : 'false');
+          });
+        });
+        lenBtns[opt.value] = btn;
+        lenRow.appendChild(btn);
+      });
+      wrap.appendChild(lenRow);
+
+      var row = el('div', { className: 'flex gap-sm mt-3', style: { flexWrap: 'wrap' } });
       row.appendChild(el('button', {
         className: 'btn btn-primary', text: 'Start session',
         onClick: function () {
           var types = [];
-          typeWrap.querySelectorAll('input:checked').forEach(function (cb) { types.push(cb.value); });
+          visibleTypes().forEach(function (id) { if (typesOn[id]) types.push(id); });
           if (!types.length) { App.toast('Pick at least one exercise type', 'error'); return; }
-          var cfg = { includeSetuid: false, includeSetgid: false, includeSticky: false, types: types, difficulty: difficulty };
-          spWrap.querySelectorAll('input:checked').forEach(function (cb) { cfg[cb.value] = true; });
-          session = { config: cfg, stats: { n: 0, correct: 0, incorrect: 0 }, exercise: null };
-          nextExercise();
+          var newCfg = {
+            difficulty: difficulty,
+            types: types,
+            includeSetuid: specials.includeSetuid,
+            includeSetgid: specials.includeSetgid,
+            includeSticky: specials.includeSticky,
+            length: length
+          };
+          lastConfig = newCfg;
+          startSession(newCfg);
         }
       }));
       row.appendChild(el('button', { className: 'btn btn-ghost', text: 'Back', onClick: renderIdle }));
-      body.appendChild(row);
-      refreshTypeList();
+      wrap.appendChild(row);
+      return wrap;
+    }
+
+    function startSession(cfg) {
+      session = {
+        config: cfg,
+        stats: { n: 0, correct: 0, incorrect: 0 },
+        focus: {},
+        weak: [],
+        exercise: null,
+        submitted: false
+      };
+      nextExercise();
     }
 
     function nextExercise() {
-      var ex = App.permExercise.generateExercise(session.config, App.permExercise.makeRng());
+      var genCfg = {
+        difficulty: session.config.difficulty,
+        types: session.config.types,
+        includeSetuid: session.config.includeSetuid,
+        includeSetgid: session.config.includeSetgid,
+        includeSticky: session.config.includeSticky,
+        biasBits: session.weak.length ? session.weak.slice(0, 2).map(function (w) { return w.split('-'); }) : null,
+        typeWeights: Object.keys(session.focus).length ? session.focus : null
+      };
+      var ex = App.permExercise.generateExercise(genCfg, App.permExercise.makeRng());
       if (ex.error) {
         session = null;
-        setStats();
         renderIdle();
         App.toast(ex.error, 'error');
         return;
       }
       session.exercise = ex;
+      session.submitted = false;
       session.stats.n++;
       setStats();
-      renderQuestion();
+      swapStage(function () { return renderQuestion(); });
     }
 
     function emptyPermState() {
@@ -4025,32 +4185,36 @@
       return !!(state.special && (state.special.suid || state.special.sgid || state.special.sticky));
     }
 
-    function matrixCol(label, key, state) {
+    function matrixCol(label, key, state, cells) {
       var col = el('div', { className: 'perm-col' });
       col.appendChild(el('div', { className: 'perm-col-label', text: label }));
       var wrap = el('div', { className: 'perm-bits' });
       ['r', 'w', 'x'].forEach(function (b) {
         var lab = el('label', { className: 'perm-bit' });
-        var cb = el('input', { type: 'checkbox', 'aria-label': label + ' ' + b });
+        var cb = el('input', { type: 'checkbox', 'aria-label': label + ' ' + EX_BIT_NAMES[b] + ' permission' });
         cb.addEventListener('change', function () { state[key][b] = cb.checked; });
         lab.appendChild(cb);
-        lab.appendChild(el('span', { text: b }));
+        var span = el('span', { text: b });
+        lab.appendChild(span);
+        if (cells) cells[key + '-' + b] = span;
         wrap.appendChild(lab);
       });
       col.appendChild(wrap);
       return col;
     }
 
-    function matrixSpecialCol(state) {
+    function matrixSpecialCol(state, cells) {
       var col = el('div', { className: 'perm-col perm-col-special' });
       col.appendChild(el('div', { className: 'perm-col-label', text: 'Special bits' }));
       var wrap = el('div', { className: 'perm-bits perm-bits-stack' });
       [['setuid', 'suid'], ['setgid', 'sgid'], ['sticky', 'sticky']].forEach(function (t) {
         var lab = el('label', { className: 'perm-bit perm-bit-wide' });
-        var cb = el('input', { type: 'checkbox', 'aria-label': t[0] });
+        var cb = el('input', { type: 'checkbox', 'aria-label': t[0] + ' bit' });
         cb.addEventListener('change', function () { state.special[t[1]] = cb.checked; });
         lab.appendChild(cb);
-        lab.appendChild(el('span', { text: t[0] }));
+        var span = el('span', { text: t[0] });
+        lab.appendChild(span);
+        if (cells) cells['special-' + t[1]] = span;
         wrap.appendChild(lab);
       });
       col.appendChild(wrap);
@@ -4059,56 +4223,153 @@
 
     function renderQuestion() {
       var ex = session.exercise;
-      body.innerHTML = '';
       var meta = App.permExercise.TYPE_META[ex.type] || {};
-      var card = el('div', { className: 'panel' });
-      card.appendChild(el('div', { className: 'flex gap-sm mb-1', style: { flexWrap: 'wrap', alignItems: 'center' } }, [
+      var wrap = el('div', { className: 'perm-ex-question-wrap' });
+      var card = el('div', { className: 'question-card perm-ex-card' });
+      card.appendChild(el('div', { className: 'flex gap-sm mb-2', style: { flexWrap: 'wrap', alignItems: 'center' } }, [
         el('span', { className: 'chip chip-cyan', text: meta.label || ex.type }),
-        el('span', { className: 'chip chip-muted', text: 'Difficulty: ' + (meta.difficulty || '?') })
+        el('span', { className: 'chip chip-muted', text: EX_DIFF_LABELS[meta.difficulty] || 'Difficulty: ' + (meta.difficulty || '?') })
       ]));
       card.appendChild(el('div', { className: 'question-text', text: ex.prompt }));
       if (ex.detail && ex.detail.requirements && ex.detail.requirements.length) {
-        var ul = el('ul', { className: 'mt-1', style: { margin: '0.35rem 0 0 1.2rem', padding: 0, fontSize: '0.9rem' } });
+        var ul = el('ul', { className: 'perm-ex-reqs' });
         ex.detail.requirements.forEach(function (r) { ul.appendChild(el('li', { text: r })); });
         card.appendChild(ul);
       }
-      body.appendChild(card);
+      wrap.appendChild(card);
 
-      var answerBox = el('div', { className: 'mt-2' });
-      var answer = { get: function () { return null; }, ready: function () { return false; } };
+      var answerBox = el('div', { className: 'perm-ex-answer mt-2' });
+      var answer = { get: function () { return null; }, ready: function () { return false; }, focus: function () {} };
       var submitted = false;
+      var cells = {};
+      var optsWrap = null;
+
+      function submit() {
+        if (submitted || session.submitted) return;
+        if (!answer.ready()) { App.toast('Enter an answer first', 'error'); return; }
+        doSubmit(answer.get(), false);
+      }
+      currentSubmit = submit;
+
+      function doSubmit(value, skipped) {
+        if (submitted) return;
+        submitted = true;
+        session.submitted = true;
+        var result = App.permExercise.validateExerciseAnswer(ex, value);
+        if (skipped) {
+          result.correct = false;
+          result.actualText = 'Skipped';
+          if (result.detail && result.detail.comparison) result.detail.comparison.actual = 'Skipped';
+          if (!result.detail) result.detail = { title: 'Not quite', comparison: { expected: result.expectedText, actual: 'Skipped' }, points: [], perClass: null, remember: [] };
+        }
+        updateStats(ex, result);
+        markResult(result);
+        lockControls();
+        actionRow.style.display = 'none';
+        renderFeedback(result);
+      }
+
+      function updateStats(ex, result) {
+        if (result.correct) session.stats.correct++; else session.stats.incorrect++;
+        setStats();
+        if (result.correct) {
+          if (session.focus[ex.type]) session.focus[ex.type] = Math.max(0, session.focus[ex.type] - 1);
+          return;
+        }
+        session.focus[ex.type] = Math.min(3, (session.focus[ex.type] || 0) + 1);
+        var diff = result.diff || [];
+        diff.forEach(function (d) {
+          if (d.cls === 'special') return;
+          var key = d.cls + '-' + d.bit;
+          if (session.weak.indexOf(key) === -1) session.weak.push(key);
+        });
+        session.weak = session.weak.slice(-3);
+      }
+
+      function markResult(result) {
+        if (ex.accepts === 'mcq' && optsWrap) {
+          var picked = typeof answer.get() === 'number' ? answer.get() : null;
+          var btns = optsWrap.querySelectorAll('.option-btn');
+          for (var i = 0; i < btns.length; i++) {
+            btns[i].classList.remove('selected');
+            if (i === ex.detail.answerIndex) btns[i].classList.add('correct');
+            else if (i === picked) btns[i].classList.add('wrong');
+          }
+        } else if (ex.accepts === 'matrix') {
+          (result.diff || []).forEach(function (d) {
+            var span = cells[d.cls + '-' + d.bit];
+            if (span) span.classList.add(d.expected ? 'ex-miss' : 'ex-extra');
+          });
+        }
+        if (!result.correct && ex.accepts !== 'mcq') {
+          answerBox.classList.remove('shake');
+          void answerBox.offsetWidth;
+          answerBox.classList.add('shake');
+        }
+      }
+
+      function lockControls() {
+        wrap.querySelectorAll('.option-btn').forEach(function (b) { b.disabled = true; });
+        wrap.querySelectorAll('.perms-grid input[type=checkbox]').forEach(function (cb) { cb.disabled = true; });
+        wrap.querySelectorAll('.perm-ex-answer input[type=text]').forEach(function (inp) { inp.disabled = true; });
+      }
 
       if (ex.accepts === 'mcq') {
-        var optsWrap = el('div', { className: 'options-list' });
-        var selectedIdx = null;
+        optsWrap = el('div', { className: 'options-list' });
         ex.detail.options.forEach(function (opt, i) {
           optsWrap.appendChild(el('button', {
-            className: 'option-btn', html: inlineHtml(opt),
+            className: 'option-btn',
             onClick: function () {
-              selectedIdx = i;
-              var btns = optsWrap.querySelectorAll('.option-btn');
-              for (var j = 0; j < btns.length; j++) btns[j].classList.toggle('selected', j === i);
+              if (submitted || session.submitted) return;
+              optsWrap.querySelectorAll('.option-btn').forEach(function (b, j) { b.classList.toggle('selected', j === i); });
+              doSubmit(i, false);
             }
-          }));
+          }, [
+            el('span', { className: 'option-key', text: String(i + 1) }),
+            el('span', { html: inlineHtml(opt) })
+          ]));
         });
         answerBox.appendChild(optsWrap);
-        answer.get = function () { return selectedIdx; };
-        answer.ready = function () { return selectedIdx != null; };
+        answer.get = function () {
+          var sel = optsWrap.querySelector('.option-btn.selected');
+          return sel ? Array.prototype.indexOf.call(optsWrap.children, sel) : null;
+        };
+        answer.ready = function () { return answer.get() != null; };
       } else if (ex.accepts === 'matrix') {
         var mstate = emptyPermState();
-        var grid = el('div', { className: 'perms-grid' });
-        if (hasSpecialBit(ex.answer)) grid.appendChild(matrixSpecialCol(mstate));
-        grid.appendChild(matrixCol('User (u)', 'user', mstate));
-        grid.appendChild(matrixCol('Group (g)', 'group', mstate));
-        grid.appendChild(matrixCol('Other (o)', 'other', mstate));
+        var grid = el('div', { className: 'perms-grid perm-ex-grid' });
+        if (hasSpecialBit(ex.answer)) grid.appendChild(matrixSpecialCol(mstate, cells));
+        grid.appendChild(matrixCol('User (u)', 'user', mstate, cells));
+        grid.appendChild(matrixCol('Group (g)', 'group', mstate, cells));
+        grid.appendChild(matrixCol('Other (o)', 'other', mstate, cells));
         answerBox.appendChild(grid);
+        // Live readout: toggling bits updates the symbolic and octal forms so
+        // the relationship between the matrix, rwx, and digits stays visible.
+        var readout = el('div', { className: 'perm-ex-readout', 'aria-hidden': 'true' });
+        function renderReadout() {
+          var r = App.tools.permsFromMode(mstate.special, mstate.user, mstate.group, mstate.other);
+          readout.innerHTML = '';
+          readout.appendChild(el('span', { className: 'mono perm-ex-readout-sym', text: r.symbolic }));
+          readout.appendChild(el('span', { className: 'perm-ex-readout-sep', 'aria-hidden': 'true', text: '=' }));
+          readout.appendChild(el('span', { className: 'mono perm-ex-readout-oct', text: r.octal }));
+          if (hasSpecialBit(mstate)) readout.appendChild(el('span', { className: 'perm-ex-readout-cmd', text: r.command }));
+          readout.classList.remove('flash');
+          void readout.offsetWidth;
+          readout.classList.add('flash');
+        }
+        grid.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
+          cb.addEventListener('change', renderReadout);
+        });
+        renderReadout();
+        answerBox.appendChild(readout);
         answer.get = function () { return mstate; };
         answer.ready = function () { return true; };
       } else {
-        var ph = ex.accepts === 'octal' ? 'e.g. 755 or 4755' : ex.accepts === 'symbolic' ? 'e.g. rwxr-xr--' : 'e.g. chmod 755 script.sh';
+        var ph = ex.accepts === 'octal' ? 'e.g. 755 or 4755' : ex.accepts === 'symbolic' ? 'e.g. rwxr-xr--' : ex.accepts === 'chmod' ? 'e.g. chmod 755 script.sh' : 'e.g. chmod g+x script.sh';
         var input = el('input', {
           className: 'form-control mono', type: 'text', placeholder: ph,
-          'aria-label': 'Your answer', style: { maxWidth: '360px' }
+          'aria-label': 'Your answer', autocomplete: 'off', spellcheck: 'false',
+          style: { maxWidth: '360px' }
         });
         input.addEventListener('keydown', function (e) {
           if (e.key === 'Enter') { e.preventDefault(); submit(); }
@@ -4116,67 +4377,127 @@
         answerBox.appendChild(input);
         answer.get = function () { return input.value; };
         answer.ready = function () { return input.value.trim() !== ''; };
+        answer.focus = function () { input.focus(); };
         setTimeout(function () { input.focus(); }, 0);
       }
-      body.appendChild(answerBox);
+      wrap.appendChild(answerBox);
 
-      var actionRow = el('div', { className: 'flex gap-sm mt-2', style: { flexWrap: 'wrap' } });
+      var actionRow = el('div', { className: 'perm-ex-actions mt-2' });
       actionRow.appendChild(el('button', { className: 'btn btn-primary', text: 'Submit', onClick: submit }));
-      actionRow.appendChild(el('button', { className: 'btn btn-ghost', text: 'Exit', onClick: function () { session = null; setStats(); renderIdle(); } }));
-      body.appendChild(actionRow);
+      actionRow.appendChild(el('button', {
+        className: 'btn btn-ghost', text: 'Skip',
+        onClick: function () { if (!submitted && !session.submitted) doSubmit(null, true); }
+      }));
+      actionRow.appendChild(el('button', {
+        className: 'btn btn-ghost', text: 'Exit',
+        onClick: function () { session = null; currentSubmit = null; setStats(); renderIdle(); }
+      }));
+      wrap.appendChild(actionRow);
 
-      function submit() {
-        if (submitted) return;
-        if (!answer.ready()) { App.toast('Enter an answer first', 'error'); return; }
-        submitted = true;
-        var result = App.permExercise.validateExerciseAnswer(ex, answer.get());
-        if (result.correct) session.stats.correct++; else session.stats.incorrect++;
-        setStats();
-        // Lock the answer controls so the submitted answer cannot be edited.
-        var optBtns = body.querySelectorAll('.option-btn');
-        for (var k = 0; k < optBtns.length; k++) optBtns[k].disabled = true;
-        var gridBoxes = body.querySelectorAll('.perms-grid input[type=checkbox]');
-        for (var m = 0; m < gridBoxes.length; m++) gridBoxes[m].disabled = true;
-        var sb = actionRow.querySelector('button.btn-primary');
-        if (sb) sb.disabled = true;
-        renderFeedback(result);
+      function renderFeedback(result) {
+        var detail = result.detail || {};
+        var fb = el('div', { className: 'perm-ex-feedback' + (result.correct ? ' ok' : ' bad'), role: 'status', 'aria-live': 'polite', 'aria-atomic': 'true' });
+        fb.appendChild(el('div', { className: 'feedback-status ' + (result.correct ? 'feedback-correct' : 'feedback-incorrect') }, [
+          el('span', { className: 'feedback-icon', text: result.correct ? '✓' : '✗' }),
+          el('span', { className: 'feedback-label', text: detail.title || (result.correct ? 'Correct' : 'Not quite') })
+        ]));
+        if (detail.comparison) {
+          fb.appendChild(el('div', { className: 'perm-ex-compare' }, [
+            el('div', { className: 'perm-ex-compare-item' }, [
+              el('span', { className: 'perm-ex-compare-label', text: 'Your answer' }),
+              el('span', { className: 'mono perm-ex-compare-bad', text: detail.comparison.actual })
+            ]),
+            el('div', { className: 'perm-ex-compare-item' }, [
+              el('span', { className: 'perm-ex-compare-label', text: 'Expected' }),
+              el('span', { className: 'mono perm-ex-compare-good', text: detail.comparison.expected })
+            ])
+          ]));
+        } else if (result.correct && result.expectedText) {
+          fb.appendChild(el('div', { className: 'flex gap-sm mb-1', style: { flexWrap: 'wrap' } }, [
+            el('span', { className: 'text-muted', text: 'Answer:' }),
+            el('span', { className: 'mono', style: { color: 'var(--accent-green)' }, text: result.expectedText })
+          ]));
+        }
+        if (detail.perClass && detail.perClass.length) {
+          var clsWrap = el('div', { className: 'perm-ex-classes', role: 'group', 'aria-label': 'Permission comparison' });
+          detail.perClass.forEach(function (row) {
+            clsWrap.appendChild(el('div', { className: 'perm-ex-class' + (row.ok ? ' ok' : ' bad') }, [
+              el('span', { className: 'perm-ex-class-label', text: row.label }),
+              el('span', { className: 'mono perm-ex-class-sym', text: row.expected, 'aria-label': row.label + ' expected ' + row.expected }),
+              el('span', { className: 'perm-ex-class-arrow', 'aria-hidden': 'true', text: '→' }),
+              el('span', { className: 'mono perm-ex-class-sym', text: row.actual, 'aria-label': row.label + ' yours ' + row.actual }),
+              el('span', { className: 'perm-ex-class-status', 'aria-hidden': 'true', text: row.ok ? '✓' : '✕' })
+            ]));
+          });
+          fb.appendChild(clsWrap);
+        }
+        if (detail.points && detail.points.length) {
+          var pl = el('ul', { className: 'perm-ex-points' });
+          detail.points.forEach(function (p) {
+            pl.appendChild(el('li', { className: 'perm-ex-point ' + (p.tone || 'info') }, [
+              el('span', { className: 'perm-ex-point-icon', 'aria-hidden': 'true', text: p.tone === 'ok' ? '✓' : p.tone === 'warn' ? '✕' : '•' }),
+              el('span', { text: p.text })
+            ]));
+          });
+          fb.appendChild(pl);
+        }
+        if (detail.remember && detail.remember.length) {
+          fb.appendChild(el('div', { className: 'perm-ex-remember' }, [
+            el('span', { className: 'perm-ex-remember-label', text: 'Remember' }),
+            el('span', { text: detail.remember.join(' ') })
+          ]));
+        }
+        var row = el('div', { className: 'perm-ex-actions mt-2' });
+        var done = !!(session.config.length && session.stats.n >= session.config.length);
+        row.appendChild(el('button', {
+          className: 'btn btn-primary', text: done ? 'See results' : 'Next exercise',
+          onClick: function () { if (done) swapStage(renderSummary); else nextExercise(); }
+        }));
+        row.appendChild(el('button', {
+          className: 'btn btn-ghost', text: 'Exit',
+          onClick: function () { session = null; currentSubmit = null; setStats(); renderIdle(); }
+        }));
+        fb.appendChild(row);
+        wrap.appendChild(fb);
+        var nextBtn = row.querySelector('.btn-primary');
+        if (nextBtn) nextBtn.focus();
       }
+
+      return wrap;
     }
 
-    function renderFeedback(result) {
-      var ex = session.exercise;
-      var fb = el('div', { className: 'panel mt-2', role: 'status', 'aria-live': 'polite' });
-      fb.appendChild(el('div', { className: 'flex-between mb-1', style: { alignItems: 'center' } }, [
-        el('span', { className: 'text-' + (result.correct ? 'green' : 'red'), style: { fontWeight: 700 }, text: result.correct ? 'Correct!' : 'Not quite.' }),
-        el('span', { className: 'chip ' + (result.correct ? 'chip-green' : 'chip-red'), text: result.correct ? 'Correct' : 'Incorrect' })
+    function renderSummary() {
+      var s = session.stats;
+      var total = s.correct + s.incorrect;
+      var pct = total ? Math.round(s.correct / total * 100) : 0;
+      var wrap = el('div', { className: 'perm-ex-summary' });
+      wrap.appendChild(el('div', { className: 'feedback-status ' + (pct >= 70 ? 'feedback-correct' : 'feedback-incorrect') }, [
+        el('span', { className: 'feedback-icon', text: pct >= 70 ? '✓' : '✗' }),
+        el('span', { className: 'feedback-label', text: 'Session complete' })
       ]));
-      fb.appendChild(el('div', { className: 'flex gap-sm mb-1', style: { flexWrap: 'wrap' } }, [
-        el('span', { className: 'text-muted', text: 'Expected:' }),
-        el('span', { className: 'mono', style: { color: 'var(--accent-green)' }, text: result.expectedText })
-      ]));
-      if (!result.correct && result.actualText && result.actualText !== result.expectedText) {
-        fb.appendChild(el('div', { className: 'flex gap-sm mb-1', style: { flexWrap: 'wrap' } }, [
-          el('span', { className: 'text-muted', text: 'You entered:' }),
-          el('span', { className: 'mono', style: { color: 'var(--accent-red)' }, text: result.actualText })
-        ]));
+      wrap.appendChild(el('p', { className: 'text-muted mt-1', style: { fontSize: '0.85rem' },
+        text: total ? 'You answered ' + total + ' questions. Practicing again generates a fresh set — the engine adapts to the concepts you missed.' : 'No questions were answered in this session.' }));
+      if (total) {
+        var grid = el('div', { className: 'perm-ex-summary-grid' });
+        [['Correct', String(s.correct), 'var(--accent-green)'], ['Incorrect', String(s.incorrect), 'var(--accent-red)'], ['Accuracy', pct + '%', 'var(--accent-cyan)']].forEach(function (cell) {
+          grid.appendChild(el('div', { className: 'perm-ex-summary-cell' }, [
+            el('div', { className: 'perm-ex-summary-num', style: { color: cell[2] }, text: cell[1] }),
+            el('div', { className: 'perm-ex-summary-label', text: cell[0] })
+          ]));
+        });
+        wrap.appendChild(grid);
       }
-      var lines = result.feedback.split('\n');
-      for (var i = 1; i < lines.length; i++) {
-        if (!lines[i]) continue;
-        if (lines[i].indexOf('Expected: ') === 0 || lines[i].indexOf('You entered: ') === 0) continue;
-        fb.appendChild(el('p', { className: 'text-muted', style: { fontSize: '0.85rem', margin: '0.15rem 0' }, text: lines[i] }));
-      }
-      var row = el('div', { className: 'flex gap-sm mt-2', style: { flexWrap: 'wrap' } });
-      row.appendChild(el('button', { className: 'btn btn-primary', text: 'Next exercise', onClick: nextExercise }));
-      row.appendChild(el('button', { className: 'btn btn-ghost', text: 'Exit', onClick: function () { session = null; setStats(); renderIdle(); } }));
-      fb.appendChild(row);
-      body.appendChild(fb);
+      var row = el('div', { className: 'perm-ex-actions mt-2' });
+      row.appendChild(el('button', { className: 'btn btn-primary', text: 'Practice again', onClick: function () { startSession(JSON.parse(JSON.stringify(session.config))); } }));
+      row.appendChild(el('button', { className: 'btn btn-secondary', text: 'Change settings', onClick: function () { swapStage(renderConfig); } }));
+      row.appendChild(el('button', { className: 'btn btn-ghost', text: 'Done', onClick: renderIdle }));
+      wrap.appendChild(row);
+      return wrap;
     }
 
     renderIdle();
     return section;
   }
-
   function viewTools(root) {
     root.appendChild(el('h1', { text: 'Tools' }));
     var tabs = [
