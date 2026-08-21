@@ -51,13 +51,14 @@ All progress lives in the browser's local IndexedDB database. Existing ReviewApp
 ## Main features
 
 - **Dashboard** — certification-scoped stats, recommendations, 14-day activity, and an ordered **Next action** for each chapter: **Flashcards → Quiz → Labs**. It advances to the next chapter when the current chapter is complete and resumes active sessions when available.
-- **Quiz** — Chapter Focus, Random Mix, Theme Attack, Weak Spots, and Speed Run modes, with keyboard shortcuts (`1-5` to select options, Enter/Space to submit and advance). Questions answered wrong are shown again at the end (practice-only, so they never double-count toward your score or stats), and feedback color-codes multi-select choices — green for correct picks, amber for missed answers, red for wrong ones.
+- **Quiz** — Chapter Focus, Random Mix, Theme Attack, Weak Spots, and Speed Run modes, with keyboard shortcuts (`1-5` to select options, Enter/Space to submit and advance). Each question shows its type (MCQ, multi-select, true/false, fill-in, matching) in a chip beside the prompt. Questions answered wrong are shown again at the end (practice-only, so they never double-count toward your score or stats), and feedback color-codes multi-select choices — green for correct picks, amber for missed answers, red for wrong ones.
 - **Exam Simulation** — timed exam with question palette, flag-for-review, pass threshold, and keyboard answer selection.
 - **Flashcards** — flip cards with Again / Next, Shuffle, a retry queue, and saved-session resume or cancel.
 - **Labs** — hands-on scenarios grouped by chapter with objectives, revealable hints, **Reveal solution**, one-line **Verify** guidance, and **View output** examples in a modal. Steps support **Done / Redo**, objective-based completion, and saved progress that can be resumed or cancelled.
 - **Notes** — one complete note per chapter with all source sections inside it.
 - **Stats** — accuracy, coverage, streaks, activity, weak areas, and exportable reports.
-- **Tools** — subnet calculator, number converter, common ports, a Linux command reference, and a permissions calculator.
+- **Tools** — subnet calculator, number converter, common ports, a Linux command reference, and a permissions calculator with a live symbolic/octal/chmod readout, common-mode presets, and special-bit toggles.
+- **Permissions Practice** — a procedurally generated exercise engine (no question bank) built into the Permissions tool: mode conversions, symbolic `chmod` deltas, permission-matrix configuration, special bits, and file/directory scenarios. Includes difficulty levels, configurable exercise types, session stats, structured per-class feedback, and keyboard shortcuts (`1-4` to pick options, Enter to submit).
 - **Search** — global search across questions, flashcards, notes, ports, and commands.
 - **Settings** — themes, text size, animations, exam threshold, and Backup & Data.
 
