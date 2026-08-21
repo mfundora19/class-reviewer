@@ -3725,3 +3725,35 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   .stats-line, .stats-ring-svg .progress-ring-fg, .stats-donut-fg, .stats-bar-fill { transition: none !important; }
   .stats-point, .stats-heat-cell, .stats-metric { transition: none !important; }
 }
+/* Accessibility: skip link — visually hidden until focused */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 0.75rem;
+  z-index: 200;
+  background: var(--bg-panel);
+  color: var(--accent-cyan);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.9rem;
+  font-weight: 600;
+  transition: top var(--motion-fast) var(--ease);
+}
+.skip-link:focus-visible {
+  top: 0.75rem;
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+
+/* Mobile drawer: keep the closed sidebar out of the tab order so hidden
+   nav links cannot receive focus (transform alone leaves them tabbable). */
+@media (max-width: 768px) {
+  .sidebar {
+    visibility: hidden;
+    transition: transform var(--dur) var(--ease-smooth), visibility 0s linear var(--dur);
+  }
+  .sidebar.open {
+    visibility: visible;
+    transition: transform var(--dur) var(--ease-smooth), visibility 0s linear 0s;
+  }
+}
