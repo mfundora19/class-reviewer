@@ -269,6 +269,86 @@
     };
   }
 
+  // Parse a symbolic permission string into the same shape as parseMode.
+  // Accepts the 9-char form (rwxr-xr--) with an optional leading type char
+  // (-, d, l, ...), special bits rendered as s/S/t/T in the execute slots,
+  // and the chmod-style comma form u=rwx,g=rx,o=rx.
+  function permsFromSymbolic(sym) {
+    var s = String(sym == null ? '' : sym).trim().replace(/\s+/g, '');
+    if (!s) return null;
+
+    // chmod-style comma form: u=rwx,g=rx,o=rx (multiple clauses per class are
+    // allowed, e.g. u=rwx,u=s — rwx bits accumulate and special bits set flags)
+    if (s.indexOf('=') !== -1) {
+      var classes = { u: 'user', g: 'group', o: 'other' };
+      var out = { special: { suid: false, sgid: false, sticky: false }, user: null, group: null, other: null };
+      var parts = s.split(',');
+      if (parts.length < 1 || parts.length > 6) return null;
+      for (var i = 0; i < parts.length; i++) {
+        var m = /^([ugo])=(.*)$/.exec(parts[i].trim());
+        if (!m) return null;
+        var cls = m[1];
+        var cur = out[classes[cls]];
+        if (!cur) { cur = { r: false, w: false, x: false }; out[classes[cls]] = cur; }
+        var chars = m[2].split('');
+        for (var j = 0; j < chars.length; j++) {
+          var ch = chars[j];
+          if (ch === 'r') cur.r = true;
+          else if (ch === 'w') cur.w = true;
+          else if (ch === 'x') cur.x = true;
+          else if (ch === 's' || ch === 'S') {
+            if (cls === 'u') out.special.suid = true;
+            else if (cls === 'g') out.special.sgid = true;
+            else return null;
+          } else if (ch === 't' || ch === 'T') {
+            if (cls !== 'o') return null;
+            out.special.sticky = true;
+          } else return null;
+        }
+      }
+      if (!out.user || !out.group || !out.other) return null;
+      return out;
+    }
+
+    // 9-char body, optionally prefixed by a single file-type character
+    var body = null;
+    if (/^[rwxsStT-]{9}$/.test(s)) body = s;
+    else if (s.length === 10 && /^[dlbcps-]/.test(s.charAt(0)) && /^[rwxsStT-]{9}$/.test(s.slice(1))) body = s.slice(1);
+    if (!body) return null;
+
+    var special = { suid: false, sgid: false, sticky: false };
+    function slot(seg, isUser, isGroup) {
+      var ch = seg.charAt(2);
+      var x = ch === 'x';
+      if (ch === 's' || ch === 'S') {
+        x = ch === 's';
+        if (isUser) special.suid = true;
+        else if (isGroup) special.sgid = true;
+        else return null;
+      } else if (ch === 't' || ch === 'T') {
+        x = ch === 't';
+        if (isUser || isGroup) return null;
+        special.sticky = true;
+      }
+      return { r: seg.charAt(0) === 'r', w: seg.charAt(1) === 'w', x: x };
+    }
+    var u = slot(body.slice(0, 3), true, false);
+    var g = slot(body.slice(3, 6), false, true);
+    var o = slot(body.slice(6, 9), false, false);
+    if (!u || !g || !o) return null;
+    return { special: special, user: u, group: g, other: o };
+  }
+
+  // Trim and normalize an octal mode: strips redundant leading zeros while
+  // keeping at least three digits (0644 -> 644, 000 -> 000). Returns null
+  // for anything that is not 3-4 octal digits.
+  function normalizeMode(mode) {
+    var m = String(mode == null ? '' : mode).trim().replace(/\s+/g, '');
+    if (!/^[0-7]+$/.test(m) || m.length < 3 || m.length > 4) return null;
+    var stripped = m.replace(/^0+/, '');
+    return stripped.length >= 3 ? stripped : m.slice(-3);
+  }
+
   function getCommonModes() { return COMMON_MODES; }
 
   var highlightPort = null;
@@ -290,6 +370,8 @@
     getCommands: getCommands,
     permsFromMode: permsFromMode,
     parseMode: parseMode,
+    permsFromSymbolic: permsFromSymbolic,
+    normalizeMode: normalizeMode,
     getCommonModes: getCommonModes,
     highlightPort: setHighlightPort,
     highlightCommand: setHighlightCommand,
