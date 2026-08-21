@@ -1236,7 +1236,9 @@
       } else if (isMatchQuestion(q) && matchUI) {
         matchUI.lock();
       }
-      card.appendChild(el('div', { className: 'explain-panel' }, [
+      // role=status announces the verdict and explanation to screen readers
+      // as soon as the answer is submitted.
+      card.appendChild(el('div', { className: 'explain-panel', role: 'status', 'aria-live': 'polite', 'aria-atomic': 'true' }, [
         el('span', { className: 'feedback-status ' + (result.correct ? 'feedback-correct' : 'feedback-incorrect') }, [
           el('span', { className: 'feedback-icon', text: result.correct ? '✓' : '✗' }),
           el('span', { className: 'feedback-label', text: result.correct ? 'Correct' : 'Incorrect' })
@@ -1321,7 +1323,7 @@
       });
     } else if (q.type === 'fill') {
       fillInput = el('input', {
-        className: 'form-control', type: 'text', id: 'qz-fill', placeholder: 'Type answer…', autocomplete: 'off',
+        className: 'form-control', type: 'text', id: 'qz-fill', placeholder: 'Type answer…', 'aria-label': 'Your answer', autocomplete: 'off',
         onKeydown: function (e) {
           if (e.key !== 'Enter') return;
           // Consume the event: the input handler shares `answered` with the
@@ -1489,7 +1491,7 @@
     var countField = stepperField({ id: 'ex-count', min: '1' });
     var countInput = countField.input;
     panel.appendChild(el('div', { className: 'form-group mb-2' }, [
-      el('label', { text: 'Question count' }),
+      el('label', { for: 'ex-count', text: 'Question count' }),
       countField.el
     ]));
     function applyExamMax() {
@@ -1499,7 +1501,7 @@
     }
     applyExamMax();
     panel.appendChild(el('div', { className: 'form-group mb-2' }, [
-      el('label', { text: 'Time limit (minutes, blank = auto)' }),
+      el('label', { for: 'ex-time', text: 'Time limit (minutes, blank = auto)' }),
       el('input', { className: 'form-control', type: 'number', id: 'ex-time', value: '', min: '5', placeholder: 'Auto (75s × count)' })
     ]));
     root.appendChild(panel);
@@ -1596,7 +1598,7 @@
     } else if (q.type === 'fill') {
       optsWrap.appendChild(el('input', {
         className: 'form-control', type: 'text', value: sess.answers[sess.index] || '',
-        placeholder: 'Type answer…',
+        placeholder: 'Type answer…', 'aria-label': 'Your answer',
         onInput: function (e) { App.quiz.examAnswer(sess.index, e.target.value); },
         onKeydown: function (e) {
           if (e.key === 'Enter') {
@@ -2007,9 +2009,9 @@
 
   function labRow(lab, num) {
     var done = App.store.isLabDone(lab._id);
-    var row = el('div', {
+    var row = el('a', {
       className: 'lab-row',
-      onClick: function () { App.core.navigate('#/labs/' + encodeURIComponent(lab._id)); }
+      href: '#/labs/' + encodeURIComponent(lab._id)
     });
     row.appendChild(el('div', { className: 'lab-row-index', text: String(num) }));
     var body = el('div', { className: 'lab-row-body' });
@@ -3623,7 +3625,7 @@
     else {
       var controls = el('div', { className: 'panel mb-3' });
       var chapterSel = el('select', { className: 'form-control', id: 'note-chapter' });
-      controls.appendChild(el('div', { className: 'form-group' }, [el('label', { text: 'Chapter' }), chapterSel]));
+      controls.appendChild(el('div', { className: 'form-group' }, [el('label', { for: 'note-chapter', text: 'Chapter' }), chapterSel]));
       root.appendChild(controls);
       var bundledList = el('div');
       root.appendChild(bundledList);
@@ -3645,7 +3647,7 @@
           return;
         }
         visible.forEach(function (n) {
-          var p = el('div', { className: 'card mb-2', style: { cursor: 'pointer' }, onClick: function () { App.core.navigate('#/notes/' + encodeURIComponent(n._id)); } });
+          var p = el('a', { className: 'card mb-2 notes-card', href: '#/notes/' + encodeURIComponent(n._id) });
           p.appendChild(el('h3', { html: inlineHtml(n.title) }));
           var certName = cert ? cert.name : (n._cert || 'General');
           var meta = certName + (n.sections.length > 1 ? ' · ' + n.sections.length + ' sections' : '');
@@ -3684,9 +3686,11 @@
     root.appendChild(el('button', { className: 'btn btn-primary mt-2', text: '+ New note', onClick: function () { openEditor(null); } }));
     function openEditor(note) {
       var body = el('div');
-      var titleInp = el('input', { className: 'form-control mb-2', type: 'text', placeholder: 'Title', value: note ? note.title : '' });
+      body.appendChild(el('label', { className: 'sr-only', for: 'note-title', text: 'Note title' }));
+      var titleInp = el('input', { className: 'form-control mb-2', type: 'text', placeholder: 'Title', id: 'note-title', value: note ? note.title : '' });
       var layout = el('div', { className: 'notes-layout' });
-      var ta = el('textarea', { className: 'form-control', placeholder: 'Markdown body…', style: { minHeight: '280px' } });
+      body.appendChild(el('label', { className: 'sr-only', for: 'note-body', text: 'Note body (Markdown)' }));
+      var ta = el('textarea', { className: 'form-control', placeholder: 'Markdown body…', id: 'note-body', style: { minHeight: '280px' } });
       ta.value = note ? (note.body || '') : '';
       var preview = el('div', { className: 'notes-preview' });
       function upd() { preview.innerHTML = App.markdown.render(ta.value); }
@@ -3789,7 +3793,8 @@
       var wrap = el('div', { className: 'perm-bits' });
       ['r', 'w', 'x'].forEach(function (b) {
         var lab = el('label', { className: 'perm-bit' });
-        var cb = el('input', { type: 'checkbox' });
+        // The visible letter is shorthand, so give the checkbox a full name.
+        var cb = el('input', { type: 'checkbox', 'aria-label': label + ' · ' + b + ' permission' });
         bindings.push({ cb: cb, key: key, bit: b });
         cb.addEventListener('change', function () { state[key][b] = cb.checked; render(); });
         lab.appendChild(cb);
@@ -4508,26 +4513,49 @@
       { id: 'perms', name: 'Permissions' }
     ];
     var active = 'subnet';
-    var tabRow = el('div', { className: 'tools-tabs' });
+    var tabRow = el('div', { className: 'tools-tabs', role: 'tablist', 'aria-label': 'Tools' });
     var panels = {};
+    function activateTab(id) {
+      active = id;
+      tabRow.querySelectorAll('.tool-tab').forEach(function (b, i) {
+        var isActive = tabs[i].id === id;
+        b.classList.toggle('active', isActive);
+        b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+      Object.keys(panels).forEach(function (k) { panels[k].classList.toggle('active', k === id); });
+    }
     tabs.forEach(function (t) {
       var btn = el('button', {
-        className: 'tool-tab' + (t.id === active ? ' active' : ''), text: t.name,
-        onClick: function () {
-          active = t.id;
-          tabRow.querySelectorAll('.tool-tab').forEach(function (b) { b.classList.remove('active'); });
-          btn.classList.add('active');
-          Object.keys(panels).forEach(function (k) { panels[k].classList.toggle('active', k === active); });
+        className: 'tool-tab' + (t.id === active ? ' active' : ''),
+        role: 'tab',
+        id: 'tool-tab-' + t.id,
+        'aria-selected': t.id === active ? 'true' : 'false',
+        'aria-controls': 'tool-panel-' + t.id,
+        text: t.name,
+        onClick: function () { activateTab(t.id); },
+        onKeydown: function (e) {
+          var idx = tabs.findIndex(function (x) { return x.id === t.id; });
+          var next = null;
+          if (e.key === 'ArrowRight') next = tabs[(idx + 1) % tabs.length];
+          else if (e.key === 'ArrowLeft') next = tabs[(idx - 1 + tabs.length) % tabs.length];
+          else if (e.key === 'Home') next = tabs[0];
+          else if (e.key === 'End') next = tabs[tabs.length - 1];
+          if (next) {
+            e.preventDefault();
+            activateTab(next.id);
+            var nb = document.getElementById('tool-tab-' + next.id);
+            if (nb) nb.focus();
+          }
         }
       });
       tabRow.appendChild(btn);
     });
     root.appendChild(tabRow);
 
-    var subnetPanel = el('div', { className: 'tool-panel active' });
+    var subnetPanel = el('div', { className: 'tool-panel active', role: 'tabpanel', id: 'tool-panel-subnet', 'aria-labelledby': 'tool-tab-subnet' });
     panels.subnet = subnetPanel;
-    var ipInp = el('input', { className: 'form-control', type: 'text', value: '192.168.1.0', placeholder: 'IP address' });
-    var cidrInp = el('input', { className: 'form-control', type: 'number', value: '24', min: '0', max: '32' });
+    var ipInp = el('input', { className: 'form-control', type: 'text', value: '192.168.1.0', placeholder: 'IP address', id: 'subnet-ip' });
+    var cidrInp = el('input', { className: 'form-control', type: 'number', value: '24', min: '0', max: '32', id: 'subnet-cidr' });
     var resultBox = el('div', { className: 'panel mt-2' });
     var splitBox = el('div', { className: 'mt-2' });
     function runSubnet() {
@@ -4543,7 +4571,7 @@
       });
       splitBox.innerHTML = '';
       splitBox.appendChild(el('div', { className: 'label-upper mb-1', text: 'Split subnets' }));
-      var newCidr = el('input', { className: 'form-control', type: 'number', value: String(Number(cidrInp.value) + 1), min: String(Number(cidrInp.value) + 1), max: '32', style: { maxWidth: '100px' } });
+      var newCidr = el('input', { className: 'form-control', type: 'number', value: String(Number(cidrInp.value) + 1), min: String(Number(cidrInp.value) + 1), max: '32', 'aria-label': 'New prefix', style: { maxWidth: '100px' } });
       splitBox.appendChild(el('div', { className: 'flex gap-sm mb-1', style: { alignItems: 'center' } }, [
         el('span', { text: 'New prefix:' }), newCidr,
         el('button', {
@@ -4569,8 +4597,8 @@
       ]));
     }
     subnetPanel.appendChild(el('div', { className: 'form-row' }, [
-      el('div', { className: 'form-group' }, [el('label', { text: 'IP Address' }), ipInp]),
-      el('div', { className: 'form-group' }, [el('label', { text: 'CIDR' }), cidrInp])
+      el('div', { className: 'form-group' }, [el('label', { for: 'subnet-ip', text: 'IP Address' }), ipInp]),
+      el('div', { className: 'form-group' }, [el('label', { for: 'subnet-cidr', text: 'CIDR' }), cidrInp])
     ]));
     subnetPanel.appendChild(el('button', { className: 'btn btn-primary', text: 'Calculate', onClick: runSubnet }));
     subnetPanel.appendChild(resultBox);
@@ -4578,14 +4606,14 @@
     runSubnet();
     root.appendChild(subnetPanel);
 
-    var convPanel = el('div', { className: 'tool-panel' });
+    var convPanel = el('div', { className: 'tool-panel', role: 'tabpanel', id: 'tool-panel-convert', 'aria-labelledby': 'tool-tab-convert' });
     panels.convert = convPanel;
     var bases = [{ id: 'decimal', base: 10, label: 'Decimal' }, { id: 'hex', base: 16, label: 'Hex' }, { id: 'octal', base: 8, label: 'Octal' }, { id: 'binary', base: 2, label: 'Binary' }];
     var inputs = {};
     bases.forEach(function (b) {
       var inp = el('input', { className: 'form-control mono', type: 'text', id: 'num-' + b.id });
       inputs[b.id] = inp;
-      convPanel.appendChild(el('div', { className: 'form-group mb-2' }, [el('label', { text: b.label }), inp]));
+      convPanel.appendChild(el('div', { className: 'form-group mb-2' }, [el('label', { for: 'num-' + b.id, text: b.label }), inp]));
       inp.addEventListener('input', function () {
         var r = App.tools.convertNumber(inp.value, b.base);
         if (!r) return;
@@ -4596,9 +4624,9 @@
     inputs.decimal.dispatchEvent(new Event('input'));
     root.appendChild(convPanel);
 
-    var portPanel = el('div', { className: 'tool-panel' });
+    var portPanel = el('div', { className: 'tool-panel', role: 'tabpanel', id: 'tool-panel-ports', 'aria-labelledby': 'tool-tab-ports' });
     panels.ports = portPanel;
-    var portSearch = el('input', { className: 'form-control mb-2', type: 'search', placeholder: 'Search ports…', style: { maxWidth: '280px' } });
+    var portSearch = el('input', { className: 'form-control mb-2', type: 'search', placeholder: 'Search ports…', 'aria-label': 'Search ports', style: { maxWidth: '280px' } });
     portPanel.appendChild(portSearch);
     var portTable = el('table', { className: 'ref-table' });
     portTable.appendChild(el('thead', {}, [el('tr', {}, [el('th', { text: 'Port' }), el('th', { text: 'Service' }), el('th', { text: 'Description' })])]));
@@ -4622,16 +4650,12 @@
     }
     renderPorts();
     portSearch.addEventListener('input', function () { renderPorts(portSearch.value); });
-    if (App.tools.getHighlightPort()) {
-      active = 'ports';
-      tabRow.querySelectorAll('.tool-tab').forEach(function (b, i) { b.classList.toggle('active', tabs[i].id === 'ports'); });
-      Object.keys(panels).forEach(function (k) { panels[k].classList.toggle('active', k === 'ports'); });
-    }
+    if (App.tools.getHighlightPort()) activateTab('ports');
     root.appendChild(portPanel);
 
-    var cmdPanel = el('div', { className: 'tool-panel' });
+    var cmdPanel = el('div', { className: 'tool-panel', role: 'tabpanel', id: 'tool-panel-cmds', 'aria-labelledby': 'tool-tab-cmds' });
     panels.cmds = cmdPanel;
-    var cmdSearch = el('input', { className: 'form-control mb-2', type: 'search', placeholder: 'Search commands…', style: { maxWidth: '280px' } });
+    var cmdSearch = el('input', { className: 'form-control mb-2', type: 'search', placeholder: 'Search commands…', 'aria-label': 'Search commands', style: { maxWidth: '280px' } });
     cmdPanel.appendChild(cmdSearch);
     var cmdTable = el('table', { className: 'ref-table' });
     cmdTable.appendChild(el('thead', {}, [el('tr', {}, [el('th', { text: 'Command' }), el('th', { text: 'Description' }), el('th', { text: 'Example' })])]));
@@ -4666,21 +4690,16 @@
     }
     renderCmds();
     cmdSearch.addEventListener('input', function () { renderCmds(cmdSearch.value); });
-    if (App.tools.getHighlightCommand()) {
-      active = 'cmds';
-      tabRow.querySelectorAll('.tool-tab').forEach(function (b, i) { b.classList.toggle('active', tabs[i].id === 'cmds'); });
-      Object.keys(panels).forEach(function (k) { panels[k].classList.toggle('active', k === 'cmds'); });
-    }
+    if (App.tools.getHighlightCommand()) activateTab('cmds');
     root.appendChild(cmdPanel);
 
     var permsPanel = buildPermsPanel();
     panels.perms = permsPanel;
+    permsPanel.setAttribute('role', 'tabpanel');
+    permsPanel.setAttribute('id', 'tool-panel-perms');
+    permsPanel.setAttribute('aria-labelledby', 'tool-tab-perms');
     root.appendChild(permsPanel);
-    if (App.tools.getHighlightTool && App.tools.getHighlightTool() === 'perms') {
-      active = 'perms';
-      tabRow.querySelectorAll('.tool-tab').forEach(function (b, i) { b.classList.toggle('active', tabs[i].id === 'perms'); });
-      Object.keys(panels).forEach(function (k) { panels[k].classList.toggle('active', k === 'perms'); });
-    }
+    if (App.tools.getHighlightTool && App.tools.getHighlightTool() === 'perms') activateTab('perms');
   }
 
   var THEME_META = [
@@ -5118,14 +5137,14 @@
     if (!settings.passThreshold) settings.passThreshold = {};
     App.content.getCerts().forEach(function (c) {
       var row = el('div', { className: 'form-group mb-1' });
-      var thresh = stepperField({ min: '1', max: '100', value: String(settings.passThreshold[c.id] || 70) });
+      var thresh = stepperField({ id: 'thresh-' + c.id, min: '1', max: '100', value: String(settings.passThreshold[c.id] || 70) });
       thresh.el.style.maxWidth = '180px';
       thresh.input.addEventListener('change', function () {
         settings.passThreshold[c.id] = parseInt(thresh.input.value, 10) || 70;
         App.store.saveSettings(settings);
         App.toast('Threshold saved', 'success', 1500);
       });
-      row.appendChild(el('label', { text: c.name }));
+      row.appendChild(el('label', { for: 'thresh-' + c.id, text: c.name }));
       row.appendChild(thresh.el);
       threshPanel.appendChild(row);
     });
