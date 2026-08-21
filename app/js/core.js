@@ -166,6 +166,7 @@
 
   /* ── Modal ──────────────────────────────────────────────── */
   var _modalCloseTimer = null;
+  var _lastModalFocus = null;
   function openModal(content, opts) {
     opts = opts || {};
     var root = utils.$('#modal-root');
@@ -173,10 +174,14 @@
     root.classList.remove('closing');
     root.innerHTML = '';
     root.hidden = false;
+    _lastModalFocus = document.activeElement;
     var modal = utils.el('div', { className: 'modal', role: 'dialog', 'aria-modal': 'true' });
     if (opts.title) {
+      // Name the dialog from its title so screen readers announce what opened.
+      var titleId = 'modal-title-' + Date.now().toString(36);
+      modal.setAttribute('aria-labelledby', titleId);
       var header = utils.el('div', { className: 'modal-header' }, [
-        utils.el('h2', { text: opts.title }),
+        utils.el('h2', { id: titleId, text: opts.title }),
         utils.el('button', {
           className: 'modal-close',
           'aria-label': 'Close',
@@ -184,6 +189,8 @@
         }, [utils.el('span', { html: '&times;', style: { fontSize: '1.4rem' } })])
       ]);
       modal.appendChild(header);
+    } else {
+      modal.setAttribute('aria-label', opts.label || 'Dialog');
     }
     if (typeof content === 'string') {
       modal.appendChild(utils.el('div', { html: content }));
@@ -192,6 +199,7 @@
     }
     root.appendChild(modal);
     document.addEventListener('keydown', _modalEsc);
+    document.addEventListener('keydown', _modalTrap);
     root.addEventListener('click', _modalBackdrop);
     var focusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
     if (focusable) focusable.focus();
@@ -208,12 +216,37 @@
       root.classList.remove('closing');
       root.innerHTML = '';
       document.removeEventListener('keydown', _modalEsc);
+      document.removeEventListener('keydown', _modalTrap);
       root.removeEventListener('click', _modalBackdrop);
+      // Return focus to whatever opened the dialog.
+      if (_lastModalFocus && _lastModalFocus.focus && document.contains(_lastModalFocus)) _lastModalFocus.focus();
+      _lastModalFocus = null;
     }, 130);
   }
 
   function _modalEsc(e) { if (e.key === 'Escape') closeModal(); }
   function _modalBackdrop(e) { if (e.target === utils.$('#modal-root')) closeModal(); }
+  // Keep Tab/Shift+Tab cycling inside the open dialog so background content
+  // cannot be reached (or visually missed) while a modal is showing.
+  function _modalTrap(e) {
+    if (e.key !== 'Tab') return;
+    var root = utils.$('#modal-root');
+    if (!root || root.hidden) return;
+    var modal = utils.$('.modal', root);
+    if (!modal) return;
+    var items = utils.$$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', modal)
+      .filter(function (n) { return !n.disabled && n.offsetParent !== null; });
+    if (!items.length) { e.preventDefault(); return; }
+    var first = items[0];
+    var last = items[items.length - 1];
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === root)) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
 
   /* ── Hash Router ────────────────────────────────────────── */
   var routes = {};
@@ -236,10 +269,18 @@
     return { path: parts[0] || 'dashboard', parts: parts, params: parts.slice(1) };
   }
 
+  var ROUTE_TITLES = {
+    dashboard: 'Dashboard', quiz: 'Quiz', exam: 'Exam Sim', flashcards: 'Flashcards',
+    labs: 'Labs', stats: 'Stats', notes: 'Notes', tools: 'Tools', settings: 'Settings'
+  };
+
   function handleRoute() {
     var parsed = parseHash();
     currentRoute = parsed.path;
     currentParams = parsed;
+    // Keep the document title in sync with the active route so screen-reader
+    // users and tab switchers always know where they are.
+    document.title = (ROUTE_TITLES[currentRoute] || 'ReviewApp') + ' · ReviewApp';
     // Leaving any view pauses in-memory session timers (speed-run quizzes and
     // exams). Sessions themselves survive so they can be resumed later.
     pauseActiveSessionTimers();
@@ -298,8 +339,10 @@
     if (collapsed) sidebar.classList.add('collapsed');
 
     if (toggle) {
+      toggle.setAttribute('aria-controls', 'sidebar');
       function setToggleLabel(isCollapsed) {
         toggle.setAttribute('aria-label', isCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+        toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
         toggle.setAttribute('title', isCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
       }
       setToggleLabel(collapsed);
@@ -312,8 +355,27 @@
       });
     }
     if (mobile) {
+      mobile.setAttribute('aria-controls', 'sidebar');
+      function setMobileExpanded(open) {
+        mobile.setAttribute('aria-expanded', open ? 'true' : 'false');
+        mobile.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        mobile.setAttribute('title', open ? 'Close menu' : 'Open menu');
+      }
       mobile.addEventListener('click', function () {
-        sidebar.classList.toggle('open');
+        var isOpen = sidebar.classList.toggle('open');
+        setMobileExpanded(isOpen);
+        if (isOpen) {
+          var first = utils.$('.sidebar-nav .nav-item', sidebar);
+          if (first) first.focus();
+        }
+      });
+      // Escape closes the drawer and returns focus to the trigger.
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+          sidebar.classList.remove('open');
+          setMobileExpanded(false);
+          mobile.focus();
+        }
       });
     }
     // Close mobile sidebar on nav click
@@ -329,6 +391,12 @@
     var input = utils.$('#global-search');
     var results = utils.$('#search-results');
     if (!input || !results) return;
+    // Wire the search field to its result list as a combobox so assistive
+    // technology announces the expanded/active state of the suggestions.
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-controls', 'search-results');
+    input.setAttribute('aria-expanded', 'false');
     var activeIndex = -1;
 
     function resultButtons() {
@@ -350,6 +418,7 @@
       results.hidden = true;
       results.innerHTML = '';
       activeIndex = -1;
+      input.setAttribute('aria-expanded', 'false');
       if (clearInput) input.value = '';
     }
 
@@ -367,6 +436,7 @@
           utils.el('div', { className: 'search-item text-muted', text: 'No results' })
         ]));
         results.hidden = false;
+        input.setAttribute('aria-expanded', 'true');
         return;
       }
       var groups = {};
@@ -399,6 +469,7 @@
         results.appendChild(wrap);
       });
       results.hidden = false;
+      input.setAttribute('aria-expanded', 'true');
     }, 180);
 
     input.addEventListener('input', run);

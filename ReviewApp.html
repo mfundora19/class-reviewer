@@ -10,9 +10,10 @@
   <link rel="stylesheet" href="app/css/styles.css?v=33" />
 </head>
 <body>
-  <div id="app" class="app-shell" role="application" aria-label="ReviewApp study interface">
+  <a class="skip-link" href="#view-root">Skip to content</a>
+  <div id="app" class="app-shell">
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar" aria-label="Main navigation">
+    <aside id="sidebar" class="sidebar">
       <div class="sidebar-header">
         <button id="sidebar-toggle" class="logo logo-btn" aria-label="Collapse sidebar" title="Toggle sidebar">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false">
@@ -24,7 +25,7 @@
         </button>
         <span class="logo-text">ReviewApp</span>
       </div>
-      <nav class="sidebar-nav" role="navigation">
+      <nav class="sidebar-nav" aria-label="Primary">
         <div class="nav-group">
           <span class="nav-group-label" aria-hidden="true">STUDY</span>
           <a href="#/dashboard" class="nav-item" data-route="dashboard">
@@ -96,7 +97,7 @@
           <div class="cert-picker" id="cert-picker" title="Current certification"></div>
         </div>
       </header>
-      <main id="view-root" class="view-root" role="main" aria-live="polite"></main>
+      <main id="view-root" class="view-root" tabindex="-1"></main>
     </div>
   </div>
 
