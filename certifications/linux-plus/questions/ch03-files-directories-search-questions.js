@@ -1060,11 +1060,11 @@ explain: "Filenames can be up to 255 characters, may contain periods, do not req
 tags: ["filenames", "hidden"]
 },
 {
-q: "A hard-linked file and its original are deleted using one filename. What remains?",
+q: "Deleting one hard-link name of a file removes the data from the filesystem.",
 type: "tf",
 options: ["True", "False"],
-answer: true,
-explain: "Deleting one hard-link name does not remove the underlying data if another hard-link name still exists.",
+answer: false,
+explain: "Deleting one hard-link name does not remove the underlying data as long as at least one other hard-link name still references the same inode.",
 tags: ["links", "hardlink"]
 },
 {
