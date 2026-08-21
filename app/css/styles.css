@@ -1980,6 +1980,14 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 }
 .lab-chapter-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; }
 .lab-chapter-count { flex-shrink: 0; }
+.lab-chapter-done {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  color: var(--accent-green);
+  opacity: 0.92;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent-green) 38%, transparent));
+}
 .lab-chapter-body {
   display: grid;
   grid-template-rows: 0fr;
