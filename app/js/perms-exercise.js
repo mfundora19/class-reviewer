@@ -43,6 +43,13 @@
 
   var SPECIAL_NAMES = { suid: 'setuid', sgid: 'setgid', sticky: 'sticky' };
 
+  // Difficulty bands map straight onto the per-type difficulty tags. 'all'
+  // (or omitting difficulty) keeps every selected type in play.
+  var DIFFICULTY_IDS = ['all', 'easy', 'medium', 'hard'];
+
+  // Common, recognizable modes used for easy exercises (no special bits).
+  var EASY_MODES = ['644', '755', '700', '600', '666', '777', '640', '750', '754', '664', '711', '775'];
+
   /* ── Seeded PRNG (mulberry32) ──────────────────────────── */
   function makeRng(seed) {
     var s = (seed == null ? ((Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0) : seed) >>> 0;
@@ -126,6 +133,11 @@
 
   function generatePermState(rng, opts) {
     opts = opts || {};
+    if (opts.easy) {
+      // Easy exercises use common, recognizable modes and never include
+      // special bits (the easy types are pure octal <-> symbolic conversion).
+      return tools.parseMode(pick(rng, EASY_MODES));
+    }
     for (var t = 0; t < 50; t++) {
       var state = {
         special: {
@@ -391,15 +403,23 @@
     var allTypes = [];
     Object.keys(TYPE).forEach(function (k) { allTypes.push(TYPE[k]); });
     var types = (cfg.types && Array.isArray(cfg.types)) ? cfg.types.slice() : allTypes;
-    if (!hasSpecial) {
+    // Difficulty narrows the pool to types tagged with that level. Easy also
+    // forces special bits off — basic conversions never involve setuid etc.
+    // Unknown values are treated as 'all' (no filtering).
+    var easy = cfg.difficulty === 'easy';
+    if (cfg.difficulty === 'easy' || cfg.difficulty === 'medium' || cfg.difficulty === 'hard') {
+      types = types.filter(function (t) { return TYPE_META[t] && TYPE_META[t].difficulty === cfg.difficulty; });
+    }
+    if (!hasSpecial || easy) {
       types = types.filter(function (t) { return t !== TYPE.SPECIAL_BITS; });
     }
     if (!types.length) return { error: 'No exercise types selected.' };
     var type = pick(rng, types);
     var opts = {
-      includeSetuid: !!cfg.includeSetuid,
-      includeSetgid: !!cfg.includeSetgid,
-      includeSticky: !!cfg.includeSticky
+      includeSetuid: !!cfg.includeSetuid && !easy,
+      includeSetgid: !!cfg.includeSetgid && !easy,
+      includeSticky: !!cfg.includeSticky && !easy,
+      easy: easy
     };
     var gen = GENERATORS[type];
     if (!gen) return { error: 'Unknown exercise type: ' + type };
@@ -580,6 +600,7 @@
   App.permExercise = {
     TYPE: TYPE,
     TYPE_META: TYPE_META,
+    DIFFICULTY_IDS: DIFFICULTY_IDS.slice(),
     makeRng: makeRng,
     randomInt: randomInt,
     pick: pick,

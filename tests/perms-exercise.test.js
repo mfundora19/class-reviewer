@@ -213,6 +213,56 @@ for (var s5 = 0; s5 < 200; s5++) {
 }
 check('path traversal 200 self-validations', ptBad === 0, 'bad=' + ptBad);
 
+
+/* ── 9. Difficulty levels ────────────────────────────────── */
+// Easy: only easy types, no special bits even when enabled
+var easyBad = 0;
+var easyTypes = {};
+for (var d1 = 0; d1 < 300; d1++) {
+  var exEasy = E.generateExercise({ types: Object.keys(E.TYPE).map(function (k) { return E.TYPE[k]; }), includeSetuid: true, includeSetgid: true, includeSticky: true, difficulty: 'easy' }, d1 + 30000);
+  if (exEasy.error) { easyBad++; continue; }
+  easyTypes[exEasy.type] = true;
+  var octEasy = E.stateToOctal(exEasy.answer);
+  if (octEasy.length !== 3) easyBad++;
+}
+check('easy never yields 4-digit special modes', easyBad === 0, 'bad=' + easyBad);
+Object.keys(E.TYPE).map(function (k) { return E.TYPE[k]; }).forEach(function (t) {
+  if (E.TYPE_META[t].difficulty === 'easy') {
+    check('easy type reachable: ' + t, !!easyTypes[t]);
+  } else {
+    check('non-easy type excluded at easy: ' + t, !easyTypes[t]);
+  }
+});
+
+// Medium: only medium types
+var medBad = 0;
+for (var d2 = 0; d2 < 300; d2++) {
+  var exMed = E.generateExercise({ types: Object.keys(E.TYPE).map(function (k) { return E.TYPE[k]; }), includeSetuid: true, includeSetgid: true, includeSticky: true, difficulty: 'medium' }, d2 + 40000);
+  if (exMed.error || E.TYPE_META[exMed.type].difficulty !== 'medium') medBad++;
+}
+check('medium only yields medium types', medBad === 0, 'bad=' + medBad);
+
+// Hard: only hard types
+var hardBad = 0;
+for (var d3 = 0; d3 < 300; d3++) {
+  var exHard = E.generateExercise({ types: Object.keys(E.TYPE).map(function (k) { return E.TYPE[k]; }), includeSetuid: true, includeSetgid: true, includeSticky: true, difficulty: 'hard' }, d3 + 50000);
+  if (exHard.error || E.TYPE_META[exHard.type].difficulty !== 'hard') hardBad++;
+}
+check('hard only yields hard types', hardBad === 0, 'bad=' + hardBad);
+
+// Easy with special bits disabled in config also works
+var exEasy2 = E.generateExercise({ types: [E.TYPE.OCTAL_TO_SYMBOLIC, E.TYPE.SYMBOLIC_TO_OCTAL], difficulty: 'easy' }, 60001);
+check('easy no-special config generates', !exEasy2.error && E.stateToOctal(exEasy2.answer).length === 3);
+
+// Determinism holds with difficulty set
+var a1 = E.generateExercise({ types: Object.keys(E.TYPE).map(function (k) { return E.TYPE[k]; }), difficulty: 'medium', includeSetuid: true }, 70001);
+var a2 = E.generateExercise({ types: Object.keys(E.TYPE).map(function (k) { return E.TYPE[k]; }), difficulty: 'medium', includeSetuid: true }, 70001);
+check('difficulty generation is seeded-deterministic', JSON.stringify(a1) === JSON.stringify(a2));
+
+// Invalid difficulty falls back to no filtering (treated as unknown -> all types allowed)
+var exAll = E.generateExercise({ types: [E.TYPE.OCTAL_TO_SYMBOLIC, E.TYPE.SPECIAL_BITS], includeSetuid: true, difficulty: 'bogus' }, 80001);
+check('unknown difficulty treated as all', !exAll.error && [E.TYPE.OCTAL_TO_SYMBOLIC, E.TYPE.SPECIAL_BITS].indexOf(exAll.type) >= 0);
+
 /* ── Summary ─────────────────────────────────────────────── */
 console.log(passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
