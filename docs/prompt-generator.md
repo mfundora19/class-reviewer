@@ -167,7 +167,7 @@ notes and send it — the AI replies with a complete `.js` file.
 > - Produce a minimum of 70 questions covering the entire unit notes below.
 > - Create more questions if the content contains enough important information.
 > - Prioritize complete coverage of the material over reaching a specific number.
-> - Mix types: roughly 45% mcq, 20% multi, 10% tf, 10% fill, and 15% match; include `match` questions when the notes contain strong coherent groups, but never force them or inflate the question count to add one.
+> - Mix types: roughly 40% mcq, 20% multi, 10% tf, 15% fill, and 15% match; include `match` questions when the notes contain strong coherent groups, but never force them or inflate the question count to add one.
 > - Present EXACTLY 5 options for every mcq and multi question (no more, no fewer).
 > - VARY THE NUMBER OF CORRECT ANSWERS in multi questions. For each question, randomly/aleatorily select the correct-choice count from 1, 2, 3, or 4 before drafting the options, then create exactly that many factually correct choices and the remaining incorrect choices. Never use 0 or 5 correct choices. Never default to 3, never give every multi question the same count, and never hardcode a repeating sequence; across a set, the count should be naturally unpredictable (e.g. 1 / 4 / 2 / 3 / 2 / 1 / 4).
 > - Choose the correct-answer count that fits the question: one correct choice when only one answer is right, more when several distinct choices legitimately qualify (e.g. selecting multiple commands, options, or true statements). Do not add fake correct answers to reach a target count, do not pad with choices that are duplicates or near-duplicates, and do not write questions where it is unclear which choices should be correct.
