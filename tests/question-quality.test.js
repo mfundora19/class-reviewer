@@ -84,7 +84,7 @@ assert.strictEqual(payloads.length, 3, 'all checked-in question banks should reg
 });
 assert.ok(manifest.indexOf('contentVersion: "1.0.11"') >= 0,
   'manifest should version the content snapshot contract');
-assert.deepStrictEqual(payloads.map(function (payload) { return payload.items.length; }), [19, 87, 165],
+assert.deepStrictEqual(payloads.map(function (payload) { return payload.items.length; }), [19, 87, 166],
   'question banks should contain all expected chapter questions');
 
 var questionCount = 0;
@@ -164,8 +164,8 @@ payloads.forEach(function (payload) {
   });
 });
 
-assert.strictEqual(questionCount, 271,
-  'all active Linux+ question banks should provide 271 questions to the registry');
+assert.strictEqual(questionCount, 272,
+  'all active Linux+ question banks should provide 272 questions to the registry');
 var wildcardQuestion = null;
 payloads.forEach(function (payload) {
   payload.items.forEach(function (question) {

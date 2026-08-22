@@ -1341,6 +1341,24 @@ pairs: [
 ],
 explain: "These symbols form a coherent metacharacter group in the notes: variable and home-directory expansion, comments, background execution, and filename wildcards.",
 tags: ["shell", "metacharacters", "wildcards"]
+},
+{
+q: "Match the `cat` options with their descriptions.",
+type: "command_match",
+command: "cat",
+pairs: [
+{ option: "-n, --number", description: "Display line numbers for all lines" },
+{ option: "-b, --number-nonblank", description: "Number only non-empty lines" },
+{ option: "-s, --squeeze-blank", description: "Replace multiple consecutive empty lines with a single empty line" },
+{ option: "-E, --show-ends", description: "Display `$` at the end of each line" },
+{ option: "-T, --show-tabs", description: "Display tab characters as `^I`" },
+{ option: "-v, --show-nonprinting", description: "Display non-printing characters in a visible form" },
+{ option: "-A, --show-all", description: "Equivalent to `-vET`: show non-printing characters, tabs, and line endings" },
+{ option: "-e", description: "Equivalent to `-vE`: show non-printing characters and line endings" },
+{ option: "-t", description: "Equivalent to `-vT`: show non-printing characters and tabs" }
+],
+explain: "`cat` concatenates and displays text files. These options add line numbering, squeeze blank lines, or make line endings, tabs, and other non-printing characters visible.",
+tags: ["cat", "options", "reading"]
 }
 ]
 });
