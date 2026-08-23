@@ -13,6 +13,21 @@ top bar, and every certification-scoped view stays inside that certification.
 Tools, Settings, and Global Search stay available independently, and all study
 data is kept privately in the browser's IndexedDB database.
 
+## Table of contents
+
+- [Screenshots](#screenshots)
+- [Quick start](#quick-start)
+- [Main features](#main-features)
+- [Content formatting](#content-formatting)
+- [How it works](#how-it-works)
+- [Adding certifications & study content](#adding-certifications--study-content)
+- [Lab workflow](#lab-workflow)
+- [Documentation](#documentation)
+- [Privacy / data](#privacy--data)
+- [Troubleshooting](#troubleshooting)
+- [Development & tests](#development--tests)
+- [License / intent](#license--intent)
+
 ---
 
 ## Screenshots
@@ -99,11 +114,6 @@ there, then reload. See **[Adding Certifications & Content](./docs/CONTENT.md)**
 and use the full schemas in
 **[CONTENT_FORMAT.md](./docs/CONTENT_FORMAT.md)** when writing content.
 
-Prefer an AI to do the writing? The
-**[AI Prompt Generator](./docs/prompt-generator.md)** has ready-made prompts you
-can copy, paste your notes into, and send — the AI replies with a complete
-content file.
-
 ---
 
 ## Lab workflow
@@ -114,13 +124,20 @@ Each step's bottom **Verify** row gives a concise expectation. When an example o
 
 ## Documentation
 
+**Guides**
+
 - **[Documentation index](./docs/README.md)** — all guides at a glance
 - **[Backups & Data](./docs/BACKUPS.md)** — exporting and importing ZIP backups
 - **[Persistence Architecture](./docs/PERSISTENCE.md)** — IndexedDB storage, migration, and recovery
 - **[Adding Certifications & Content](./docs/CONTENT.md)** — how to add study material
 - **[Study Flows](./docs/STUDY-FLOWS.md)** — how the app is meant to be used
 - **[Content Format](./docs/CONTENT_FORMAT.md)** — full question/flashcard/lab/note schemas
-- **[AI Prompt Generator](./docs/prompt-generator.md)** — ready-made prompts you can copy, paste your notes into, and send to an AI
+
+**AI prompts**
+
+- **[AI Prompt Generator](./docs/prompt-generator.md)** — ready-made prompts that turn your notes into complete content files (flashcards, questions, labs, notes)
+- **[Book/PDF → Obsidian Notes](./docs/Book-to-Obsidian-Notes.md)** — a copy-and-paste master prompt that converts a book or PDF into polished, structured Obsidian study notes
+- **[Stats UI Polish & Markdown Report](./docs/stats-polish-prompt.md)** — a detailed developer-oriented prompt for polishing the Stats view and its Markdown export
 
 ---
 
@@ -136,6 +153,23 @@ leave your device, and backups stay local ZIP files.
 - **Blank content:** use the reload button or **Settings → Deep-scan folder…**.
 - **New certification not appearing:** check `_manifest.js` and reload.
 - **Clicks not working:** hard-refresh (`Ctrl+F5`) or try a different browser.
+
+---
+
+## Development & tests
+
+ReviewApp has no build step — the app is plain HTML/CSS/JS and content files
+self-register. The test suite is plain Node scripts with no dependencies; run
+each file directly:
+
+```text
+node tests/answer-validation.test.js
+node tests/backup-import.test.js
+node tests/markdown.test.js
+node tests/perms-exercise.test.js
+node tests/question-quality.test.js
+node tests/quiz-retry.test.js
+```
 
 ---
 
