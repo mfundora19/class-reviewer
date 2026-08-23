@@ -350,11 +350,12 @@ window.ReviewApp.content.register({
           check: "The record distinguishes a command's executable path from the broader locations reported for it."
         },
         {
-          do: "Add a note explaining why a recently created artifact may be absent from a database-based filename search and name the chapter's refresh utility.",
-          hint: "Contrast a live filesystem walk with a prebuilt database; the database search is fast but can be stale until its update operation runs.",
-          solution: "locate searches a prebuilt database that may be stale; updatedb refreshes that database. find searches the live filesystem directly.",
+          do: "Create a search handoff file that records why a recently created artifact may be absent from a database-based filename search, then display the note for review.",
+          command: "printf 'Live search: find checks the filesystem now.\nDatabase search: locate may miss a recent file until updatedb refreshes its database.\n' > /tmp/linuxplus-ch03-search/search-handoff.txt\ncat /tmp/linuxplus-ch03-search/search-handoff.txt",
+          hint: "Turn the live-versus-database distinction into a local handoff artifact; include the database's possible staleness and the operation that refreshes it.",
+          solution: "printf 'Live search: find checks the filesystem now.\nDatabase search: locate may miss a recent file until updatedb refreshes its database.\n' > /tmp/linuxplus-ch03-search/search-handoff.txt\ncat /tmp/linuxplus-ch03-search/search-handoff.txt",
           expectedOutput: "Live search: find checks the filesystem now.\nDatabase search: locate may miss a recent file until updatedb refreshes its database.",
-          check: "The note accurately contrasts live `find` results with database-backed `locate` results."
+          check: "The handoff file records that `find` searches current filesystem state while `locate` can require an `updatedb` refresh."
         }
       ],
       tags: ["find", "grep", "regex", "wildcards", "which", "whereis", "locate", "search"]
@@ -391,12 +392,12 @@ window.ReviewApp.content.register({
         },
         {
           do: "Format the baseline and observed reports side by side for a quick analyst comparison.",
-          command: "pr -m -t /tmp/linuxplus-ch03-cleanup/review/baseline.txt /tmp/linuxplus-ch03-cleanup/review/observed.txt",
-          hint: "Choose the text formatter's multi-column mode and suppress its page header so the two short reports can be compared directly.",
-          solution: "pr -m -t /tmp/linuxplus-ch03-cleanup/review/baseline.txt /tmp/linuxplus-ch03-cleanup/review/observed.txt",
-          expectedOutput: "Case: LNX-03                 Case: LNX-03\nFinding: expected login pattern Finding: repeated login pattern\nStatus: baseline             Status: compare",
+          command: "pr -m /tmp/linuxplus-ch03-cleanup/review/baseline.txt /tmp/linuxplus-ch03-cleanup/review/observed.txt",
+          hint: "Use the text formatter's multi-column mode so the two short reports can be compared directly; account for the formatter's page heading in the displayed result.",
+          solution: "pr -m /tmp/linuxplus-ch03-cleanup/review/baseline.txt /tmp/linuxplus-ch03-cleanup/review/observed.txt",
+          expectedOutput: "Aug 19 2026 baseline.txt                 Aug 19 2026 observed.txt                 Page 1\n\nCase: LNX-03                 Case: LNX-03\nFinding: expected login pattern Finding: repeated login pattern\nStatus: baseline             Status: compare",
           expectedOutputDynamic: true,
-          check: "The formatter presents corresponding baseline and observed lines in parallel columns."
+          check: "The formatter presents corresponding baseline and observed lines in parallel columns; its heading and spacing may vary by system."
         },
         {
           do: "Open the observed report in a pager, confirm the three-line content, and exit the pager after the review.",
@@ -476,11 +477,12 @@ window.ReviewApp.content.register({
           check: "Both comparisons report no differences and the archive contains auth.log and service.conf."
         },
         {
-          do: "Write the synchronization handoff with the source, destination, archive mode, and the fact that the second run transferred only the changed log.",
-          hint: "Summarize observed state rather than claiming a network transfer or a full recopy; distinguish the initial synchronization from the incremental update.",
-          solution: "Record: Source `/tmp/linuxplus-ch03-sync/incoming/`; destination `/tmp/linuxplus-ch03-sync/archive/`; archive mode used; initial run copied both files; second run updated auth.log only; diff confirmed matching copies.",
-          expectedOutput: "Synchronization complete\nSource: incoming\nDestination: archive\nInitial run: auth.log and service.conf copied\nSecond run: auth.log updated incrementally\nVerification: no differences",
-          check: "The handoff records the two synchronization phases and the successful content verification."
+          do: "Write a synchronization handoff file containing the source, destination, two transfer phases, and verification result, then display it.",
+          command: "printf 'Source: /tmp/linuxplus-ch03-sync/incoming/\nDestination: /tmp/linuxplus-ch03-sync/archive/\nInitial run: auth.log and service.conf copied\nSecond run: auth.log updated incrementally\nVerification: no differences\n' > /tmp/linuxplus-ch03-sync/sync-handoff.txt\ncat /tmp/linuxplus-ch03-sync/sync-handoff.txt",
+          hint: "Capture the observed transfer history in a local artifact; distinguish the initial copy from the later update and state how equality was checked.",
+          solution: "printf 'Source: /tmp/linuxplus-ch03-sync/incoming/\nDestination: /tmp/linuxplus-ch03-sync/archive/\nInitial run: auth.log and service.conf copied\nSecond run: auth.log updated incrementally\nVerification: no differences\n' > /tmp/linuxplus-ch03-sync/sync-handoff.txt\ncat /tmp/linuxplus-ch03-sync/sync-handoff.txt",
+          expectedOutput: "Source: /tmp/linuxplus-ch03-sync/incoming/\nDestination: /tmp/linuxplus-ch03-sync/archive/\nInitial run: auth.log and service.conf copied\nSecond run: auth.log updated incrementally\nVerification: no differences",
+          check: "The handoff file records both synchronization phases and the successful no-difference verification."
         }
       ],
       tags: ["rsync", "evidence", "archive", "incremental-copy", "diff", "logs"]
