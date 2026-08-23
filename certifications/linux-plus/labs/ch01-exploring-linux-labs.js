@@ -91,6 +91,7 @@ window.ReviewApp.content.register({
         "Apply the chapter's GPL, LGPL, Apache, and MIT guidance",
         "Explain why a distribution can contain multiple license models"
       ],
+      objectiveSteps: [[0], [1], [2], [3, 4]],
       steps: [
         {
           do: "Classify four inventory entries: the Linux kernel, a paid commercial utility, a no-cost closed-source desktop utility, and a thirty-day trial utility.",
@@ -141,6 +142,7 @@ window.ReviewApp.content.register({
         "Distinguish refresh actions from upgrade actions",
         "Document a safe maintenance outcome"
       ],
+      objectiveSteps: [[0], [1, 2], [3], [4]],
       steps: [
         {
           do: "Match the three workstation labels to their package managers: Ubuntu, Rocky Linux, and openSUSE.",
@@ -194,6 +196,7 @@ window.ReviewApp.content.register({
         "Recognize when a cloud provider is the appropriate alternative",
         "Document a justified deployment recommendation"
       ],
+      objectiveSteps: [[0, 1], [2], [3], [4]],
       steps: [
         {
           do: "Record the chapter's local virtualization baseline: x86_64, a 2 GHz dual-core CPU, 8 GB of RAM, and 70 GB of disk space.",
@@ -244,6 +247,7 @@ window.ReviewApp.content.register({
         "Return to the graphical desktop using the appropriate function-key path",
         "Record a concise recovery outcome"
       ],
+      objectiveSteps: [[0, 2], [1], [3], [4]],
       steps: [
         {
           do: "Identify the two terminal-access methods available on the workstation: a terminal application in the graphical desktop and a text-only virtual console.",
