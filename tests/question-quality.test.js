@@ -82,7 +82,7 @@ assert.strictEqual(payloads.length, 3, 'all checked-in question banks should reg
   assert.ok(manifest.indexOf('"' + file + '"') >= 0,
     'manifest should load the question bank: ' + file);
 });
-assert.ok(manifest.indexOf('contentVersion: "1.0.11"') >= 0,
+assert.ok(manifest.indexOf('contentVersion: "1.1.0"') >= 0,
   'manifest should version the content snapshot contract');
 assert.deepStrictEqual(payloads.map(function (payload) { return payload.items.length; }), [19, 87, 166],
   'question banks should contain all expected chapter questions');
@@ -352,7 +352,7 @@ assert.deepStrictEqual(cleanedExamSession.state.flagged, { 0: true });
 
 var originalContent = global.window.ReviewApp.content;
 global.window.ReviewApp.content = {
-  getManifest: function () { return { contentVersion: '1.0.11' }; }
+  getManifest: function () { return { contentVersion: '1.1.0' }; }
 };
 assert.strictEqual(quiz.sanitizeQuizSession({
   contentVersion: '1.0.9',
