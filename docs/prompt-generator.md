@@ -225,11 +225,17 @@ notes and send it — the AI replies with a complete `.js` file.
 > ```
 >
 > CONTENT REQUIREMENTS:
-> - Create 1+ solid lab (optionally another shorter one if the notes support it).
+> - Produce **at least 5 solid labs for every chapter**. Five is a floor, not a target: create more when the chapter is long or contains substantially different, lab-friendly concepts.
+> - Before writing labs, inspect the chapter notes, existing labs, and the commands/concepts already taught. Review existing labs for gaps, weak validation, premature concepts, and duplicate learning goals; improve good labs rather than replacing them without reason.
+> - Build broad chapter coverage. Every important lab-friendly concept should appear in at least one lab, and the collection should progress from foundational practice through integrated, chapter-faithful investigation. Do not add labs merely to satisfy the count.
+> - Never require a command, option, syntax construct, tool, workflow, or concept that the learner has not already been taught in this chapter or is guaranteed to know at this point. Cybersecurity context may change the scenario and evidence, but it must not expand the technical scope.
+> - Reusing a command or tool is allowed when the learning objective is different. Do not create multiple labs whose primary goal is essentially the same search, inspection, or configuration exercise.
+> - Favor integrated labs that combine related chapter skills without becoming confusing. Use realistic light-to-moderate cybersecurity scenarios such as triage, artifact review, service exposure, evidence organization, or configuration review.
+> - Every lab must be executable in sequence from its own setup. Keep paths, filenames, solutions, expected output, dynamic-output markers, and checks internally consistent and safe to run in a temporary, reversible workspace whenever possible.
+> - `difficulty`: 1 = guided intro, 2 = intermediate, 3 = multi-skill/capstone. Assign it from the actual reasoning and integration required.
+> - `minutes`: use an honest estimate; 15–40 is typical, with longer times only when the chapter content and workflow justify them.
 > - 4–7 steps that build on each other and exercise the commands/concepts in the notes.
 > - Scenario should feel realistic (junior sysadmin task, troubleshooting, exploration).
-> - difficulty: 1 = guided intro, 2 = intermediate, 3 = multi-skill.
-> - minutes: honest estimate (15–40 typical).
 > - Solutions must be real Linux commands that work on a standard distro.
 > - For every command-based step, include the exact command in the internal `command` field and a concrete representative result in `expectedOutput`; do not make the frontend infer output from `solution`. The `command` field is metadata for validation/content tooling, not learner-facing text.
 > - Treat `expectedOutput` as the example the learner should see after selecting **View output**. Use realistic mock values even when the real result varies: write `Local Address:Port 192.0.2.10:119`, not `<port>` or another placeholder. Set `expectedOutputDynamic: true` when values or formatting can vary, but still provide concrete example values and use the one-line `check` to state what may vary.
