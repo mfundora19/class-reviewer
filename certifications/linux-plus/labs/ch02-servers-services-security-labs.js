@@ -57,7 +57,7 @@ window.ReviewApp.content.register({
           hint: "Match each protocol name to its assigned port and transport from the service table; preserve the distinction between HTTP and HTTPS.",
           solution: "HTTP → 80/tcp. HTTPS → 443/tcp. SSH → 22/tcp.",
           expectedOutput: "HTTP — 80/tcp\nHTTPS — 443/tcp\nSSH — 22/tcp",
-          check: "The handoff maps HTTP to 80/tcp, HTTPS to 443/tcp, and SSH to 22/tcp.",
+          check: "The handoff maps HTTP to 80/tcp, HTTPS to 443/tcp, and SSH to 22/tcp."
         },
         {
           do: "Complete the port-reference section for the remaining services from the chapter: FTP, Telnet, SMTP, DNS, DHCP, POP, SMB, IMAP, and NFS.",
