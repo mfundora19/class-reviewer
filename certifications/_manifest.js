@@ -1,6 +1,6 @@
 /* ReviewApp content manifest — the ONLY file to update when adding content */
 window.ReviewApp.content.setManifest({
-  contentVersion: "1.1.0",
+  contentVersion: "1.2.0",
   certs: [
     { id: "linux-plus", name: "CompTIA Linux+", color: "#f8a63b" },
     //{ id: "network-plus", name: "CompTIA Network+", color: "#5ad1e6" }
