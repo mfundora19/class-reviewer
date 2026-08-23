@@ -4,338 +4,380 @@ window.ReviewApp.content.register({
   chapter: "Ch 02 · Linux Servers, Services & Security",
   items: [
     {
-      title: "Inspecting Daemons, Ports, and Systemd Services",
+      title: "Server Service Exposure Baseline",
       difficulty: 2,
       minutes: 25,
-      scenario: "You have joined a basic server review for a Linux host that may support internal security services. Before anyone changes configuration, build a read-only baseline of running daemons, active systemd services, listening ports, and the SSH service definition.",
+      scenario: "You are assisting with a read-only security review of a Linux server. Build a service baseline from live process, systemd, socket, and local port-database output before anyone changes the host.",
       objectives: [
-        "Identify running daemon processes with ps",
-        "Distinguish a daemon from a super-server such as inetd or xinetd",
-        "Recognize systemd unit files as the modern super-server replacement",
-        "Discover listening TCP and UDP ports with owning processes",
-        "Map well-known ports to service names",
-        "Inspect an SSH systemd unit definition"
+        "Identify daemon processes in a live process listing",
+        "Inspect active systemd service units",
+        "Identify listening TCP and UDP sockets with owning processes",
+        "Map observed ports to service names",
+        "Inspect the SSH service unit without modifying it"
       ],
-      objectiveSteps: [[0], [1], [1, 2], [3], [4, 5], [6]],
+      objectiveSteps: [[0], [1], [2], [3], [4, 5]],
       steps: [
         {
-          do: "List running processes and identify entries whose names follow the chapter's common daemon naming pattern.",
-          command: "ps ax",
-          hint: "Inspect the process names in the complete listing; a daemon is a background service and its name often ends in the letter d.",
-          solution: "ps ax",
-          expectedOutput: "  PID TTY      STAT   TIME COMMAND\n  742 ?        Ss     0:00 /usr/lib/systemd/systemd\n  901 ?        Ss     0:00 sshd\n 1044 ?        Ssl    0:00 /usr/sbin/rsyslogd",
+          do: "List running processes and identify background service names that follow the chapter's daemon naming pattern.",
+          command: "ps ax | grep '[d]$'",
+          hint: "Filter the process listing for names ending in the traditional daemon suffix while avoiding a match on the filtering command itself.",
+          solution: "ps ax | grep '[d]$'",
+          expectedOutput: "  742 ?        Ss     0:00 /usr/lib/systemd/systemd\n  901 ?        Ss     0:00 sshd\n 1044 ?        Ssl    0:00 /usr/sbin/rsyslogd",
           expectedOutputDynamic: true,
-          check: "The process listing contains background services with daemon-style names such as systemd, sshd, or rsyslogd."
+          check: "The baseline contains one or more background services with daemon-style names."
         },
         {
-          do: "Classify the service-management clues for the handoff: a daemon runs in the background for a service, inetd/xinetd listens for multiple services, and modern systemd systems use unit files.",
-          hint: "Compare a process that continuously provides one service with a listener that starts different services on demand, then identify the current model.",
-          solution: "Daemon: a background service such as sshd. Super-server: inetd or xinetd listens on behalf of multiple services. Modern systemd systems use systemd unit files instead of inetd/xinetd.",
-          expectedOutput: "Daemon — background service such as sshd\nSuper-server — inetd or xinetd listens for multiple services\nModern replacement — systemd unit files",
-          check: "The handoff distinguishes a daemon, the legacy super-server model, and systemd's unit-file model."
-        },
-        {
-          do: "Display active service units managed by systemd.",
+          do: "Display active systemd service units and note which service states are currently running.",
           command: "systemctl list-units --type=service --state=active",
-          hint: "Ask the service manager for the service unit type and restrict the result to the active state.",
+          hint: "Ask systemd for service units and restrict the listing to active units so the review focuses on current exposure.",
           solution: "systemctl list-units --type=service --state=active",
-          expectedOutput: "  UNIT                     LOAD   ACTIVE SUB     DESCRIPTION\n  cron.service             loaded active running Regular background program processing daemon\n  ssh.service              loaded active running OpenBSD Secure Shell server\n  systemd-journald.service loaded active running Journal Service",
+          expectedOutput: "  UNIT                     LOAD   ACTIVE SUB     DESCRIPTION\n  ssh.service              loaded active running OpenBSD Secure Shell server\n  systemd-journald.service loaded active running Journal Service",
           expectedOutputDynamic: true,
-          check: "The listing shows loaded active service units and their running state."
+          check: "The listing shows loaded active service units and their active/running state."
         },
         {
-          do: "Inspect listening TCP and UDP sockets and include the process that owns each listener.",
+          do: "Inspect listening TCP and UDP sockets with numeric addresses and owning process information.",
           command: "ss -tlnp\nss -ulnp",
-          hint: "Use socket inspection with listening, numeric, and process information for both transport families.",
+          hint: "Use one socket view for TCP listeners and one for UDP listeners; retain the process column so a port can be tied to a daemon.",
           solution: "ss -tlnp\nss -ulnp",
-          expectedOutput: "Netid State  Recv-Q Send-Q Local Address:Port Peer Address:Port Process\ntcp   LISTEN 0      128    0.0.0.0:22    0.0.0.0:*    users:((\"sshd\",pid=901,fd=3))\ntcp   LISTEN 0      511    0.0.0.0:80    0.0.0.0:*    users:((\"httpd\",pid=1842,fd=4))\n\nNetid State  Recv-Q Send-Q Local Address:Port Peer Address:Port Process\nudp   UNCONN 0      0      127.0.0.53:53 0.0.0.0:*    users:((\"systemd-resolved\",pid=612,fd=13))",
+          expectedOutput: "Netid State  Recv-Q Send-Q Local Address:Port Peer Address:Port Process\ntcp   LISTEN 0      128    0.0.0.0:22    0.0.0.0:*    users:((\"sshd\",pid=901,fd=3))\nudp   UNCONN 0      0      127.0.0.53:53 0.0.0.0:*    users:((\"systemd-resolved\",pid=612,fd=13))",
           expectedOutputDynamic: true,
-          check: "Listening TCP and UDP entries show ports and owning process names."
+          check: "The socket review records listening TCP or UDP ports together with owning process names when available."
         },
         {
-          do: "Use the chapter's well-known-port table to map HTTP, HTTPS, and SSH in the exposure handoff.",
-          hint: "Match each protocol name to its assigned port and transport from the service table; preserve the distinction between HTTP and HTTPS.",
-          solution: "HTTP → 80/tcp. HTTPS → 443/tcp. SSH → 22/tcp.",
-          expectedOutput: "HTTP — 80/tcp\nHTTPS — 443/tcp\nSSH — 22/tcp",
-          check: "The handoff maps HTTP to 80/tcp, HTTPS to 443/tcp, and SSH to 22/tcp."
+          do: "Look up the standard HTTP, HTTPS, SSH, and DNS assignments in the local services database.",
+          command: "grep -E '^(http|https|ssh|domain)[[:space:]]' /etc/services",
+          hint: "Search only service-database lines beginning with the protocol names so the port mapping can be compared with the live socket review.",
+          solution: "grep -E '^(http|https|ssh|domain)[[:space:]]' /etc/services",
+          expectedOutput: "ssh             22/tcp\nhttp            80/tcp\nhttps           443/tcp\ndomain          53/tcp",
+          expectedOutputDynamic: true,
+          check: "The local database supplies standard names and port/protocol assignments for the selected services."
         },
         {
-          do: "Complete the port-reference section for the remaining services from the chapter: FTP, Telnet, SMTP, DNS, DHCP, POP, SMB, IMAP, and NFS.",
-          hint: "Use the chapter's well-known-port table to connect each protocol with its number or number range, keeping service names separate from daemon names.",
-          solution: "FTP → 20/21. Telnet → 23. SMTP → 25. DNS → 53. DHCP → 67. POP → 109/110. SMB → 137–139. IMAP → 143 and 220. NFS → 2049.",
-          expectedOutput: "FTP — 20/21\nTelnet — 23\nSMTP — 25\nDNS — 53\nDHCP — 67\nPOP — 109/110\nSMB — 137–139\nIMAP — 143, 220\nNFS — 2049",
-          check: "The port reference covers each remaining protocol with the chapter's assigned port or range."
-        },
-        {
-          do: "Inspect the SSH service unit definition without changing it.",
-          command: "# Debian/Ubuntu:\nsystemctl cat ssh.service\n\n# RHEL/Fedora/Rocky:\nsystemctl cat sshd.service",
-          hint: "Use the service name used by the distribution, then inspect the lifecycle sections and start directive rendered by systemd.",
-          solution: "# Debian/Ubuntu:\nsystemctl cat ssh.service\n\n# RHEL/Fedora/Rocky:\nsystemctl cat sshd.service",
+          do: "Inspect the SSH unit definition for its lifecycle sections and start directive without editing it.",
+          command: "systemctl cat ssh.service\n# If the distribution uses sshd.service instead:\nsystemctl cat sshd.service",
+          hint: "Use the service-unit name provided by the distribution and inspect the rendered unit for Unit, Service, Install, and ExecStart information.",
+          solution: "systemctl cat ssh.service\n# If the distribution uses sshd.service instead:\nsystemctl cat sshd.service",
           expectedOutput: "# /usr/lib/systemd/system/sshd.service\n[Unit]\nDescription=OpenSSH server daemon\n[Service]\nExecStart=/usr/sbin/sshd -D\n[Install]\nWantedBy=multi-user.target",
           expectedOutputDynamic: true,
-          check: "The SSH unit contains Unit, Service, and Install sections with an ExecStart entry."
+          check: "The SSH unit output contains lifecycle sections and an ExecStart entry, with no configuration change made."
+        },
+        {
+          do: "Compare the process, service-unit, socket, and port-database results and mark which observed network services deserve follow-up.",
+          command: "ss -tlnp\nss -ulnp",
+          hint: "Use the live socket result as the final evidence and connect each listening port to its process and local service name where possible.",
+          solution: "ss -tlnp\nss -ulnp",
+          expectedOutput: "Exposure handoff\nObserved listener: port and protocol recorded\nOwning process: recorded when available\nService name: compared with /etc/services\nFollow-up: unexpected listener flagged for review",
+          expectedOutputDynamic: true,
+          check: "The handoff is based on live listeners and identifies any unexpected service for follow-up."
         }
       ],
-      tags: ["daemons", "systemd", "ports", "services", "ss", "ps", "ssh"]
+      tags: ["daemons", "systemd", "ports", "services", "ss", "ps", "ssh", "incident-triage"]
     },
     {
-      title: "Web and Database Service Exposure Review",
+      title: "Web and Database Exposure Triage",
       difficulty: 2,
       minutes: 25,
-      scenario: "A host may be serving a temporary status page and storing application data. Perform a read-only review so the security team can tell which web or database components are present, where their configuration is expected, and whether a web listener is exposed.",
+      scenario: "A host may expose a web service or database after a troubleshooting change. Use live process, systemd, and socket output to identify what is running, then compare the evidence with the chapter's web-server and database roles.",
       objectives: [
-        "Distinguish Apache, Nginx, and lighttpd by architecture and intended use",
-        "Identify web configuration and document-root locations from the chapter",
-        "Distinguish relational databases from MongoDB",
-        "Use service and socket observations to describe exposure"
+        "Find web-server and database processes in the live process table",
+        "Inspect active service units for application services",
+        "Identify HTTP and database listeners",
+        "Compare live evidence with documented configuration locations",
+        "Record a read-only exposure conclusion"
       ],
-      objectiveSteps: [[0], [1], [4], [2, 3]],
       steps: [
         {
-          do: "Classify Apache, Nginx, and lighttpd by their chapter descriptions.",
-          hint: "Compare modularity, event-driven behavior, and resource usage; do not classify them by brand familiarity.",
-          solution: "Apache: modular web server. Nginx: event-driven server with proxy, caching, and load-balancing features. lighttpd: lightweight server suited to embedded or IoT systems.",
-          expectedOutput: "Apache — modular architecture\nNginx — event-driven architecture with proxy/caching/load balancing\nlighttpd — low-resource embedded or IoT use",
-          check: "Each web server is paired with its distinguishing architecture or use case."
-        },
-        {
-          do: "Record the Apache and Nginx configuration locations and default document roots from the chapter reference.",
-          hint: "Keep the main configuration file, extra configuration directory, and served-content directory separate for each server.",
-          solution: "Apache: /etc/httpd/httpd.conf; /etc/httpd/conf.d/; /var/www/html. Nginx: /etc/nginx/nginx.conf; /etc/nginx/conf.d/; /usr/share/nginx/html.",
-          expectedOutput: "Apache config: /etc/httpd/httpd.conf\nApache extra config: /etc/httpd/conf.d/\nApache document root: /var/www/html\nNginx config: /etc/nginx/nginx.conf\nNginx extra config: /etc/nginx/conf.d/\nNginx document root: /usr/share/nginx/html",
-          check: "The handoff records the documented configuration and document-root paths for both servers."
-        },
-        {
-          do: "Display active service units and record whether Apache, Nginx, or lighttpd is running on this host.",
-          command: "systemctl list-units --type=service --state=active",
-          hint: "Review the active-service listing and look for a supported web-service name before drawing an exposure conclusion.",
-          solution: "systemctl list-units --type=service --state=active",
-          expectedOutput: "  UNIT            LOAD   ACTIVE SUB     DESCRIPTION\n  nginx.service   loaded active running A high performance web server and a reverse proxy server",
+          do: "Search the running process table for Apache/httpd, Nginx, lighttpd, PostgreSQL, MySQL, or MongoDB process names.",
+          command: "ps ax | grep -E '[a]pache2|[h]ttpd|[n]ginx|[l]ighttpd|[p]ostgres|[m]ysqld|[m]ongod'",
+          hint: "Search the live process list for the server families named in the chapter; the bracketed first letter prevents the filter from matching itself.",
+          solution: "ps ax | grep -E '[a]pache2|[h]ttpd|[n]ginx|[l]ighttpd|[p]ostgres|[m]ysqld|[m]ongod'",
+          expectedOutput: " 1842 ?        Ssl    0:00 nginx: master process /usr/sbin/nginx\n 2110 ?        Ssl    0:00 postgres: checkpointer process",
           expectedOutputDynamic: true,
-          check: "The review records a supported web service and its observed state, or records that none was found."
+          check: "The process evidence shows which supported web or database components are present, if any."
         },
         {
-          do: "Inspect all listening TCP entries and record whether the standard HTTP listener is present and which process owns it.",
-          command: "ss -tlnp",
-          hint: "Review the numeric listening-socket table and locate the standard HTTP port, then compare its owning process with the active web service.",
-          solution: "ss -tlnp",
-          expectedOutput: "State  Recv-Q Send-Q Local Address:Port Peer Address:Port Process\nLISTEN 0      511    0.0.0.0:80    0.0.0.0:*    users:((\"nginx\",pid=1842,fd=6))",
+          do: "Display active service units and search the output for supported web or database service names.",
+          command: "systemctl list-units --type=service --state=active | grep -E 'apache|httpd|nginx|lighttpd|postgres|mysql|mongo'",
+          hint: "Use the active service listing as a second source of evidence and compare its unit names with the process results.",
+          solution: "systemctl list-units --type=service --state=active | grep -E 'apache|httpd|nginx|lighttpd|postgres|mysql|mongo'",
+          expectedOutput: "nginx.service   loaded active running A high performance web server and a reverse proxy server\npostgresql.service loaded active running PostgreSQL RDBMS",
           expectedOutputDynamic: true,
-          check: "The socket table identifies whether port 80 is listening and names its owning process when present."
+          check: "The service-unit evidence either confirms a supported application service or shows that none matched."
         },
         {
-          do: "Classify PostgreSQL, MySQL, and MongoDB for the service handoff.",
-          hint: "Separate relational systems from the document-oriented NoSQL system and preserve the database traits named in the chapter.",
-          solution: "PostgreSQL: relational ORDBMS with ACID transactions and stored procedures. MySQL: relational RDBMS associated with the LAMP stack. MongoDB: document-oriented NoSQL database using JSON-like BSON documents.",
-          expectedOutput: "PostgreSQL — relational ORDBMS; ACID and stored procedures\nMySQL — relational RDBMS; LAMP stack\nMongoDB — document-oriented NoSQL; JSON-like BSON documents",
-          check: "The handoff distinguishes both relational databases from MongoDB's document model."
+          do: "Inspect listening TCP sockets and search for the standard web and database ports.",
+          command: "ss -tlnp | grep -E ':(80|443|3306|5432|27017)[[:space:]]'",
+          hint: "Filter numeric listening sockets for the documented HTTP/HTTPS and common database ports, then note the owning process.",
+          solution: "ss -tlnp | grep -E ':(80|443|3306|5432|27017)[[:space:]]'",
+          expectedOutput: "LISTEN 0      511    0.0.0.0:80    0.0.0.0:*    users:((\"nginx\",pid=1842,fd=6))\nLISTEN 0      244    127.0.0.1:5432 0.0.0.0:*    users:((\"postgres\",pid=2110,fd=7))",
+          expectedOutputDynamic: true,
+          check: "The socket evidence records whether a web or database port is listening and which process owns it."
+        },
+        {
+          do: "Inspect the documented web-server configuration paths that are relevant to the process family found on this host.",
+          command: "cat /etc/nginx/nginx.conf\n# If the host uses Apache instead, inspect /etc/httpd/httpd.conf",
+          hint: "Use the configuration path associated with the observed server family; keep the inspection read-only and stop if that service is not installed.",
+          solution: "cat /etc/nginx/nginx.conf\n# If the host uses Apache instead, inspect /etc/httpd/httpd.conf",
+          expectedOutput: "user nginx;\nworker_processes auto;\nhttp {\n    include       /etc/nginx/mime.types;\n    include       /etc/nginx/conf.d/*.conf;\n}",
+          expectedOutputDynamic: true,
+          check: "The review connects a locally inspected configuration file with the observed web-service family."
+        },
+        {
+          do: "Write the exposure result from the live process, service, socket, and configuration evidence without starting, stopping, or installing a service.",
+          command: "ss -tlnp | grep -E ':(80|443|3306|5432|27017)[[:space:]]'",
+          hint: "Use the final listener evidence to state whether exposure is absent, local-only, or bound to a broader address; do not infer exposure from a package name alone.",
+          solution: "ss -tlnp | grep -E ':(80|443|3306|5432|27017)[[:space:]]'",
+          expectedOutput: "Exposure result\nWeb listener: recorded if present\nDatabase listener: recorded if present\nProcess owner: compared with service listing\nConfiguration: inspected read-only",
+          expectedOutputDynamic: true,
+          check: "The conclusion cites observed listeners and processes rather than a theory-only classification."
         }
       ],
-      tags: ["web-server", "apache", "nginx", "lighttpd", "database", "mongodb", "exposure"]
+      tags: ["web-server", "apache", "nginx", "lighttpd", "database", "postgresql", "mysql", "mongodb", "exposure"]
     },
     {
-      title: "Mail Delivery Path and Configuration Map",
+      title: "Mail Service Path Inspection",
       difficulty: 2,
       minutes: 25,
-      scenario: "An internal mail host is being reviewed after a suspicious delivery report. Map the message path from user client to transfer service to local delivery, then identify which configuration files and packages belong to each stage.",
+      scenario: "A mail host is being reviewed after a delivery complaint. Use local service, process, port, and configuration evidence to trace which mail components may be active without sending or deleting any messages.",
       objectives: [
-        "Distinguish MUA, MTA, and MDA responsibilities",
-        "Identify sendmail, Postfix, Exim, Binmail, Procmail, and Dovecot roles",
-        "Map important mail configuration files",
-        "Produce a clear mail-flow evidence map"
+        "Inspect active mail-related service units",
+        "Find mail transfer and mailbox processes",
+        "Map SMTP, POP, and IMAP ports locally",
+        "Inspect an available mail service unit read-only",
+        "Produce a concrete mail-service review record"
       ],
-      objectiveSteps: [[0], [1], [2, 3], [4]],
       steps: [
         {
-          do: "Arrange the three mail components in delivery order for a message written by a user and delivered to a local mailbox.",
-          hint: "Start with the component the user interacts with, then follow the component that routes mail, and finish with the component that places it in a mailbox.",
-          solution: "MUA → MTA → MDA.",
-          expectedOutput: "1. MUA — user writes or reads mail\n2. MTA — routes mail using SMTP\n3. MDA — delivers mail to the local mailbox",
-          check: "The message path is ordered MUA, then MTA, then MDA."
+          do: "Search active systemd service units for mail transfer, delivery, and mailbox services named in the chapter.",
+          command: "systemctl list-units --type=service --state=active | grep -E 'sendmail|postfix|exim|dovecot|procmail'",
+          hint: "Use the active-unit listing and filter for the MTA, MDA, and IMAP service names; an empty result is still an observable host state.",
+          solution: "systemctl list-units --type=service --state=active | grep -E 'sendmail|postfix|exim|dovecot|procmail'",
+          expectedOutput: "postfix.service loaded active running Postfix Mail Transport Agent\ndovecot.service loaded active running Dovecot IMAP/POP3 email server",
+          expectedOutputDynamic: true,
+          check: "The review records which supported mail service units are active, if any."
         },
         {
-          do: "Classify Evolution, Thunderbird, KMail, sendmail, Postfix, Exim, Binmail, Procmail, and Dovecot by role.",
-          hint: "Client applications, transfer agents, delivery agents, and IMAP service do different work; use the component definitions before naming a package.",
-          solution: "Evolution, Thunderbird, KMail: MUAs. sendmail, Postfix, Exim: MTAs. Binmail and Procmail: MDAs. Dovecot: IMAP4 server used by remote MUAs.",
-          expectedOutput: "MUA — Evolution, Thunderbird, KMail\nMTA — sendmail, Postfix, Exim\nMDA — Binmail, Procmail\nRemote mailbox service — Dovecot / IMAP4",
-          check: "Every listed mail program is assigned to its documented role."
+          do: "Search running processes for the mail transfer, delivery, and mailbox programs.",
+          command: "ps ax | grep -E '[s]endmail|[p]ostfix|[e]xim|[d]ovecot|[p]rocmail|[b]inmail'",
+          hint: "Compare process evidence with the active-unit result so a service name and a running process are not treated as the same observation.",
+          solution: "ps ax | grep -E '[s]endmail|[p]ostfix|[e]xim|[d]ovecot|[p]rocmail|[b]inmail'",
+          expectedOutput: " 2490 ?        Ss     0:00 /usr/lib/postfix/sbin/master -w\n 2512 ?        S      0:00 dovecot/anvil",
+          expectedOutputDynamic: true,
+          check: "The process listing records any active mail programs and separates process evidence from unit evidence."
         },
         {
-          do: "Map each MTA to its configuration files and configuration behavior.",
-          hint: "The chapter distinguishes sendmail's generated configuration from Postfix's two plain-text files and Exim's single configuration path.",
-          solution: "sendmail: edit /etc/mail/sendmail.mc; sendmail.cf is generated. Postfix: /etc/postfix/main.cf and /etc/postfix/master.cf. Exim: /etc/exim.conf.",
-          expectedOutput: "sendmail — source config /etc/mail/sendmail.mc; generated sendmail.cf\nPostfix — /etc/postfix/main.cf and /etc/postfix/master.cf\nExim — /etc/exim.conf",
-          check: "The map records the correct configuration path and behavior for each MTA."
+          do: "Look up SMTP, POP, and IMAP assignments in the local services database.",
+          command: "grep -E '^(smtp|pop|pop3|imap)[[:space:]]' /etc/services",
+          hint: "Search the local database for the mail protocol names so the port mapping can be compared with live listeners.",
+          solution: "grep -E '^(smtp|pop|pop3|imap)[[:space:]]' /etc/services",
+          expectedOutput: "smtp            25/tcp\npop-3           110/tcp\nimap2           143/tcp",
+          expectedOutputDynamic: true,
+          check: "The local database supplies the documented mail-protocol port assignments."
         },
         {
-          do: "Record the MDA storage and filtering paths relevant to a local-delivery review.",
-          hint: "One path is the default local mailbox spool; the other is a per-user filtering file in the home directory.",
-          solution: "Binmail uses /var/spool/mail by default. Procmail uses a user's ~/.procmailrc recipes for filtering and routing.",
-          expectedOutput: "Binmail mailbox spool: /var/spool/mail\nProcmail user rules: ~/.procmailrc",
-          check: "The evidence map separates mailbox storage from per-user filtering rules."
+          do: "Inspect the unit file for the mail service identified by the previous checks without changing it.",
+          command: "systemctl cat postfix.service\n# If Dovecot is the available service instead:\nsystemctl cat dovecot.service",
+          hint: "Select the unit name that exists on the host and inspect its start command and service description read-only.",
+          solution: "systemctl cat postfix.service\n# If Dovecot is the available service instead:\nsystemctl cat dovecot.service",
+          expectedOutput: "[Unit]\nDescription=Postfix Mail Transport Agent\n[Service]\nExecStart=/usr/lib/postfix/sbin/master -w",
+          expectedOutputDynamic: true,
+          check: "A locally available mail unit exposes its service description and start directive."
         },
         {
-          do: "Prepare a short incident handoff describing where to inspect first when a user reports that a message was routed incorrectly.",
-          hint: "Follow the path in order and name the role or configuration location that could have made the decision at each stage.",
-          solution: "Inspect the MUA for the user's action, the MTA configuration for routing, and the MDA or ~/.procmailrc for local delivery and filtering; use Dovecot when the concern is remote mailbox access.",
-          expectedOutput: "First review: MUA action\nRouting review: MTA configuration\nLocal delivery review: MDA and ~/.procmailrc\nRemote mailbox review: Dovecot / IMAP4",
-          check: "The handoff follows the mail path and names a chapter-supported review point for each stage."
+          do: "Inspect live mail listeners and record whether SMTP, POP, or IMAP is exposed on this host.",
+          command: "ss -tlnp | grep -E ':(25|110|143)[[:space:]]'",
+          hint: "Use the local port assignments from the earlier step and compare them with the live listening table and owning process.",
+          solution: "ss -tlnp | grep -E ':(25|110|143)[[:space:]]'",
+          expectedOutput: "LISTEN 0      100    0.0.0.0:25    0.0.0.0:*    users:((\"master\",pid=2490,fd=13))",
+          expectedOutputDynamic: true,
+          check: "The mail review records which standard mail listeners are active and their owning process when visible."
         }
       ],
-      tags: ["mail", "mua", "mta", "mda", "postfix", "sendmail", "dovecot"]
+      tags: ["mail", "mua", "mta", "mda", "postfix", "sendmail", "dovecot", "ports"]
     },
     {
       title: "Core Network Service Exposure Review",
       difficulty: 2,
-      minutes: 30,
-      scenario: "You are preparing a basic service-exposure report for a small Linux network. The host may provide file sharing, printing, address assignment, name resolution, time synchronization, logging, or monitoring. Use the chapter's service map to identify what each service would expose and which port or daemon is relevant.",
+      minutes: 25,
+      scenario: "You are preparing a basic exposure record for a Linux network host. Inspect live service and socket evidence for file sharing, address assignment, name resolution, time, monitoring, printing, and logging services covered by the chapter.",
       objectives: [
-        "Distinguish NFS, Samba, and CUPS roles",
-        "Map DHCP, DNS, NTP, SNMP, and logging services to their purposes",
-        "Identify service ports and daemon names from the chapter",
-        "Build a concise exposure report"
+        "Map core service names to their local port assignments",
+        "Inspect active units for infrastructure services",
+        "Find infrastructure daemons in the process table",
+        "Inspect live TCP and UDP exposure",
+        "Produce a read-only infrastructure handoff"
       ],
-      objectiveSteps: [[0], [1], [2], [3, 4]],
       steps: [
         {
-          do: "Classify NFS, Samba, and CUPS by the resource they provide.",
-          hint: "Separate Linux/Unix file sharing, Windows interoperability, and printing rather than treating all three as generic network storage services.",
-          solution: "NFS: Linux/Unix folder sharing on port 2049. Samba: SMB file and print sharing with Windows. CUPS: Linux printing using IPP.",
-          expectedOutput: "NFS — Linux/Unix file sharing — port 2049\nSamba — Windows SMB file and print sharing\nCUPS — Linux printing — IPP",
-          check: "The report assigns each local-network service its correct resource and interoperability role."
+          do: "Look up the chapter's core service assignments for DNS, DHCP, NTP, SNMP, NFS, and IPP in the local services database.",
+          command: "grep -E '^(domain|bootps|ntp|snmp|nfs|ipp)[[:space:]]' /etc/services",
+          hint: "Use the local database to build a port reference before comparing it with live listeners; retain the protocol column as well as the number.",
+          solution: "grep -E '^(domain|bootps|ntp|snmp|nfs|ipp)[[:space:]]' /etc/services",
+          expectedOutput: "domain          53/tcp\nbootps          67/udp\nntp             123/udp\nsnmp            161/udp\nnfs             2049/tcp\nipp             631/tcp",
+          expectedOutputDynamic: true,
+          check: "The local service database provides the expected protocol and port references."
         },
         {
-          do: "Map DHCP, DNS, NTP, SNMP, and logging to their service purposes.",
-          hint: "Use the service purpose table: address assignment, name resolution, time, monitoring, and event recording are different responsibilities.",
-          solution: "DHCP: automatic IP assignment. DNS: hostname-to-IP resolution. NTP: time synchronization. SNMP: remote monitoring. Logging: rsyslogd or journald records and can forward events.",
-          expectedOutput: "DHCP — automatic IP assignment\nDNS — hostname-to-IP resolution\nNTP — time synchronization\nSNMP — remote monitoring\nLogging — local or remote event recording",
-          check: "All five services are paired with distinct chapter-supported purposes."
+          do: "Inspect active service units for DNS, DHCP, NTP, NFS, printing, logging, or monitoring services.",
+          command: "systemctl list-units --type=service --state=active | grep -E 'resolved|named|dhcp|ntp|chrony|nfs|cups|rsyslog|journal|snmp'",
+          hint: "Filter the active-unit listing for the infrastructure service names and record only services actually shown by the host.",
+          solution: "systemctl list-units --type=service --state=active | grep -E 'resolved|named|dhcp|ntp|chrony|nfs|cups|rsyslog|journal|snmp'",
+          expectedOutput: "systemd-resolved.service loaded active running Network Name Resolution\nchronyd.service loaded active running NTP client/server\n cups.service loaded active running CUPS Scheduler",
+          expectedOutputDynamic: true,
+          check: "The handoff records which infrastructure service units are active on this host."
         },
         {
-          do: "Record the relevant daemon, configuration file, or port for each service where the chapter supplies one.",
-          hint: "Some services are identified by a daemon name, some by a configuration path, and some by a well-known port; preserve the kind of evidence provided.",
-          solution: "DHCP: dhcpd and /etc/dhcp/dhcpd.conf. DNS: named and named.conf, or systemd-resolved. NTP: ntpd or chronyd with /etc/ntpd.conf or /etc/chrony.conf. SNMP: UDP 161–162 and net-snmp. NFS: port 2049.",
-          expectedOutput: "DHCP — dhcpd — /etc/dhcp/dhcpd.conf\nDNS — named or systemd-resolved — named.conf when BIND is used\nNTP — ntpd or chronyd — /etc/ntpd.conf or /etc/chrony.conf\nSNMP — net-snmp — UDP 161–162\nNFS — port 2049",
-          check: "The report records the chapter's supplied identifying evidence without inventing a command or path."
+          do: "Search the process table for the corresponding infrastructure daemons.",
+          command: "ps ax | grep -E '[n]amed|[s]ystemd-resolved|[d]hcpd|[n]tpd|[c]hronyd|[r]pcbind|[c]upsd|[r]syslogd|[s]nmpd'",
+          hint: "Use process names to corroborate or question the service-unit observations; an infrastructure service may use a different implementation than another host.",
+          solution: "ps ax | grep -E '[n]amed|[s]ystemd-resolved|[d]hcpd|[n]tpd|[c]hronyd|[r]pcbind|[c]upsd|[r]syslogd|[s]nmpd'",
+          expectedOutput: " 612 ?        Ssl    0:00 /usr/lib/systemd/systemd-resolved\n 819 ?        Ssl    0:00 /usr/sbin/chronyd -F 1\n1024 ?        Ssl    0:00 /usr/sbin/cupsd -l",
+          expectedOutputDynamic: true,
+          check: "The process review records implementation names for any matching infrastructure daemons."
         },
         {
-          do: "Choose the two entries that deserve the strongest initial security review: an exposed monitoring service and a remote file-sharing service.",
-          hint: "Prioritize services that accept remote requests or expose shared system data, then name the relevant service from the report.",
-          solution: "Review SNMP first because it supports remote monitoring and NFS or Samba because it provides remote file sharing; record the protocol and port or package involved.",
-          expectedOutput: "Priority 1 — SNMP / net-snmp — UDP 161–162\nPriority 2 — NFS or Samba — remote file-sharing service",
-          check: "The priority list names remote monitoring and file sharing as the first exposure-review targets."
+          do: "Inspect TCP and UDP listeners for the service ports identified in the local database.",
+          command: "ss -tlnp\nss -ulnp",
+          hint: "Compare both transport tables with the service reference and note whether a listener is local-only or bound to a broader address.",
+          solution: "ss -tlnp\nss -ulnp",
+          expectedOutput: "tcp   LISTEN 0      4096   127.0.0.53:53  0.0.0.0:*    users:((\"systemd-resolved\",pid=612,fd=13))\nudp   UNCONN 0      0      0.0.0.0:123   0.0.0.0:*    users:((\"chronyd\",pid=819,fd=5))",
+          expectedOutputDynamic: true,
+          check: "The exposure record distinguishes observed TCP/UDP listeners and their bind addresses."
         },
         {
-          do: "Write the final exposure report with one line per service, including purpose and the identifying port, daemon, package, or path when available.",
-          hint: "Keep the report descriptive rather than prescriptive; this chapter identifies services and security layers, not firewall rule syntax.",
-          solution: "Create a table with the service, purpose, and supplied identifier from the previous steps.",
-          expectedOutput: "Service exposure report\nNFS — Unix file sharing — 2049\nSamba — Windows SMB file and print sharing\nCUPS — printing — IPP\nDHCP — address assignment — dhcpd\nDNS — name resolution — named or systemd-resolved\nNTP — time sync — ntpd or chronyd\nSNMP — remote monitoring — UDP 161–162\nLogging — event recording — rsyslogd or journald",
-          check: "The final report covers every service group and includes its documented identifier where one exists."
+          do: "Record the final infrastructure handoff from the live service, process, and socket evidence.",
+          command: "ss -tlnp\nss -ulnp",
+          hint: "Use the live socket results as the final state and avoid claiming that a service is exposed merely because its name appears in the chapter table.",
+          solution: "Record each observed infrastructure listener with its protocol, port, bind address, and owning process when available; mark unobserved services as not seen in this snapshot.",
+          expectedOutput: "Infrastructure handoff\nObserved service: recorded with port and process\nBind scope: local-only or broader address recorded\nUnobserved service: not claimed active",
+          expectedOutputDynamic: true,
+          check: "The handoff is limited to services and listeners actually observed on the host."
         }
       ],
-      tags: ["nfs", "samba", "cups", "dhcp", "dns", "ntp", "snmp", "logging"]
+      tags: ["nfs", "cups", "dhcp", "dns", "ntp", "snmp", "logging", "ports", "exposure"]
     },
     {
-      title: "Authentication and Secure Remote Access Decision Lab",
+      title: "Authentication and Secure Access Host Review",
       difficulty: 2,
       minutes: 25,
-      scenario: "A small organization is reviewing how Linux hosts authenticate users and provide remote access. Choose the chapter-supported technology for each requirement and record the evidence a junior administrator should look for before escalating the review.",
+      scenario: "A Linux host is being reviewed after an account-access alert. Use read-only local credential, service, process, socket, and port evidence to identify the host's authentication and remote-access surface.",
       objectives: [
-        "Distinguish local credential files from shared directory services",
-        "Differentiate NIS, Kerberos, LDAP, and certificate-based authentication",
-        "Identify OpenSSL, OpenSSH, and OpenVPN purposes",
-        "Select a chapter-supported technology for each security requirement"
+        "Inspect local account and password-hash file permissions",
+        "Identify authentication and remote-access processes",
+        "Inspect active SSH-related service units",
+        "Compare secure-access ports with live listeners",
+        "Record a bounded authentication review"
       ],
-      objectiveSteps: [[0], [1], [2, 3], [4]],
       steps: [
         {
-          do: "Record the local credential files and distinguish their security roles.",
-          hint: "The chapter contrasts the older account-information location with the more secure location for password hashes.",
-          solution: "/etc/passwd contains basic account information; /etc/shadow stores password hashes in the more secure modern approach.",
-          expectedOutput: "/etc/passwd — basic account information\n/etc/shadow — password hashes / secure credential storage",
-          check: "The report distinguishes account information from the secure password-hash location."
+          do: "Read the local account file and inspect the password-hash file's access response without modifying either file.",
+          command: "cat /etc/passwd\ncat /etc/shadow",
+          hint: "The first file contains account records; the second is intentionally more restricted, so record either its contents or the permission-denied result without attempting to bypass it.",
+          solution: "cat /etc/passwd\ncat /etc/shadow",
+          expectedOutput: "root:x:0:0:root:/root:/bin/bash\ndaemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin\ncat: /etc/shadow: Permission denied",
+          expectedOutputDynamic: true,
+          check: "The review distinguishes readable account information from restricted password-hash storage."
         },
         {
-          do: "Choose the appropriate technology for each requirement: shared user-account and hostname naming, symmetric-key authentication, and hierarchical directory authentication.",
-          hint: "Shared naming, symmetric-key authentication, and hierarchical directory authentication are separate needs in the chapter.",
-          solution: "Shared naming: NIS. Symmetric-key encrypted authentication: Kerberos. Hierarchical directory authentication: LDAP/OpenLDAP.",
-          expectedOutput: "Shared naming directory — NIS\nSymmetric-key encrypted authentication — Kerberos\nHierarchical directory authentication — LDAP / OpenLDAP",
-          check: "Each shared-authentication requirement is matched with the correct technology."
+          do: "Search running processes for OpenSSH, OpenVPN, Kerberos, LDAP, and NIS-related programs.",
+          command: "ps ax | grep -E '[s]shd|[o]penvpn|[k]rb5|[l]dap|[n]is'",
+          hint: "Use the live process table to identify implementations actually running; do not infer that every technology is configured just because it is in the chapter.",
+          solution: "ps ax | grep -E '[s]shd|[o]penvpn|[k]rb5|[l]dap|[n]is'",
+          expectedOutput: " 901 ?        Ss     0:00 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups",
+          expectedOutputDynamic: true,
+          check: "The process evidence records any observed secure-access or directory-authentication programs."
         },
         {
-          do: "Choose the certificate-based authentication components for a server that validates a certificate protected by a PIN.",
-          hint: "Identify what the user possesses, what the user knows, who the server trusts, and which Linux software provides certificate functions.",
-          solution: "The user possesses a certificate and knows a PIN. The server trusts a Certificate Authority (CA). OpenSSL provides standard certificate functions.",
-          expectedOutput: "Possesses — certificate file\nKnows — PIN\nTrust anchor — Certificate Authority (CA)\nCertificate software — OpenSSL",
-          check: "The decision record contains both authentication factors, the trust authority, and OpenSSL."
+          do: "Display active service units and filter for SSH, VPN, Kerberos, LDAP, or NIS services.",
+          command: "systemctl list-units --type=service --state=active | grep -E 'ssh|openvpn|krb|ldap|nis'",
+          hint: "Use active unit evidence as a separate check from process names and record an empty match as a valid result.",
+          solution: "systemctl list-units --type=service --state=active | grep -E 'ssh|openvpn|krb|ldap|nis'",
+          expectedOutput: "ssh.service loaded active running OpenBSD Secure Shell server",
+          expectedOutputDynamic: true,
+          check: "The active-unit review records which supported authentication or remote-access services are running."
         },
         {
-          do: "Select the correct secure-access technology for encrypted remote shell access, tunneling another transaction, and a point-to-point remote-network tunnel.",
-          hint: "Use the distinct roles of OpenSSH and OpenVPN; tunneling is a feature of the remote-shell solution in this chapter.",
-          solution: "Encrypted remote shell: OpenSSH. Tunnel another transaction: OpenSSH tunneling. Point-to-point remote-network tunnel: OpenVPN.",
-          expectedOutput: "Encrypted remote shell — OpenSSH\nEncrypted tunnel for another transaction — OpenSSH tunneling\nPoint-to-point remote access — OpenVPN",
-          check: "Each secure-access requirement is mapped to OpenSSH, its tunneling feature, or OpenVPN."
+          do: "Look up LDAP and SSH assignments in the local services database.",
+          command: "grep -E '^(ldap|ssh)[[:space:]]' /etc/services",
+          hint: "Use the local port database to connect the secure-access technologies with their documented service ports before checking live sockets.",
+          solution: "grep -E '^(ldap|ssh)[[:space:]]' /etc/services",
+          expectedOutput: "ssh             22/tcp\nldap            389/tcp",
+          expectedOutputDynamic: true,
+          check: "The local database provides the port references used for the secure-access comparison."
         },
         {
-          do: "Prepare a final escalation note naming the selected technology and chapter-supported evidence for each requirement.",
-          hint: "Keep the note at the identification level: technology, purpose, and named file or trust component. Do not add firewall or policy commands from outside this chapter.",
-          solution: "Record the selected technology, its purpose, and supplied evidence such as /etc/passwd, /etc/shadow, a CA, OpenSSL, OpenSSH, or OpenVPN.",
-          expectedOutput: "Authentication review\nLocal credentials — /etc/passwd and /etc/shadow\nShared naming — NIS\nDirectory authentication — LDAP/OpenLDAP\nEncrypted authentication — Kerberos\nCertificate trust — CA and OpenSSL\nRemote access — OpenSSH or OpenVPN",
-          check: "The escalation note stays within the chapter's authentication and secure-access material."
+          do: "Inspect live listeners for SSH, LDAP, and OpenVPN-related ports and record their bind addresses.",
+          command: "ss -tlnp | grep -E ':(22|389)[[:space:]]'\nss -ulnp | grep -E ':(1194)[[:space:]]'",
+          hint: "Compare the live socket state with the local port reference and distinguish a loopback listener from a listener bound to all interfaces.",
+          solution: "ss -tlnp | grep -E ':(22|389)[[:space:]]'\nss -ulnp | grep -E ':(1194)[[:space:]]'",
+          expectedOutput: "LISTEN 0      128    0.0.0.0:22    0.0.0.0:*    users:((\"sshd\",pid=901,fd=3))",
+          expectedOutputDynamic: true,
+          check: "The review records which secure-access ports are listening and whether their bind scope warrants attention."
         }
       ],
-      tags: ["security", "authentication", "nis", "kerberos", "ldap", "openssl", "ssh", "vpn"]
+      tags: ["security", "authentication", "passwd", "shadow", "ssh", "vpn", "ldap", "kerberos", "ports"]
     },
     {
-      title: "Scaling and Container Placement Review",
+      title: "Scalability and Container Service Evidence Review",
       difficulty: 3,
-      minutes: 30,
-      scenario: "A security operations team is deciding how to handle growing demand for a web service, a batch workload, and a portable application bundle. Compare clustering, load balancing, and containers, then select the approach that matches each workload without treating them as interchangeable.",
+      minutes: 25,
+      scenario: "A security operations team is reviewing a host that may support a web workload, a cluster component, or a container runtime. Use live process, systemd, and socket evidence to identify what is actually present before making an architecture recommendation.",
       objectives: [
-        "Explain the purpose of clustering",
-        "Distinguish load balancing from general clustering",
-        "Recognize when database coordination can reduce performance",
-        "Select Docker or Kubernetes for container management",
-        "Create a reasoned architecture handoff"
+        "Find cluster, load-balancer, and container-related processes",
+        "Inspect matching systemd service units",
+        "Identify listeners associated with the observed workload",
+        "Compare web and database evidence for a scaling review",
+        "Produce a recommendation based on observed host state"
       ],
       steps: [
         {
-          do: "Describe what a Linux cluster provides for a workload that can be divided among multiple identically configured servers, and list one chapter example.",
-          hint: "Focus on shared workload and multiple nodes, then choose an example from the chapter rather than treating a cluster as one larger standalone server.",
-          solution: "A cluster uses multiple identically configured servers that divide application functions among themselves under cluster software. Chapter examples include Beowulf with PVM, Apache Hadoop, and Linux Virtual Server (LVS).",
-          expectedOutput: "Cluster result: multiple Linux nodes divide application functions under cluster software.\nExamples: Beowulf/PVM, Apache Hadoop, Linux Virtual Server (LVS)",
-          check: "The description explains coordinated multi-node work and names a chapter-supported cluster example."
+          do: "Search the process table for Nginx, HAProxy, LVS-related, Docker, Kubernetes, Hadoop, and container-runtime names.",
+          command: "ps ax | grep -E '[n]ginx|[h]aproxy|[i]vs|[d]ocker|[c]ontainerd|[k]ube|[h]adoop'",
+          hint: "Use the live process table to see which scaling or container technologies are present instead of assuming the planned architecture is deployed.",
+          solution: "ps ax | grep -E '[n]ginx|[h]aproxy|[i]vs|[d]ocker|[c]ontainerd|[k]ube|[h]adoop'",
+          expectedOutput: " 1842 ?        Ssl    0:00 nginx: master process /usr/sbin/nginx\n 1940 ?        Ssl    0:00 /usr/bin/containerd",
+          expectedOutputDynamic: true,
+          check: "The process evidence records any observed web, load-balancer, cluster, or container components."
         },
         {
-          do: "Choose the best architecture for a busy web service that should distribute each client request across several servers.",
-          hint: "The chapter defines one performance technique as a special application of clustering that redirects complete client requests.",
-          solution: "Choose load balancing and name HAProxy, LVS, or Nginx as a chapter-supported package or technology.",
-          expectedOutput: "Workload: busy web service\nArchitecture: load balancing\nCandidate technology: HAProxy, LVS, or Nginx",
-          check: "The web workload is assigned to load balancing rather than generic clustering alone."
+          do: "Display active service units and filter for the same scaling and container technologies.",
+          command: "systemctl list-units --type=service --state=active | grep -E 'nginx|haproxy|docker|containerd|kube|hadoop'",
+          hint: "Compare service-manager evidence with process evidence and note when a process appears without a matching active unit.",
+          solution: "systemctl list-units --type=service --state=active | grep -E 'nginx|haproxy|docker|containerd|kube|hadoop'",
+          expectedOutput: "nginx.service      loaded active running A high performance web server and a reverse proxy server\ncontainerd.service loaded active running containerd container runtime",
+          expectedOutputDynamic: true,
+          check: "The service-unit evidence identifies active scaling or container services, if any."
         },
         {
-          do: "Explain why clustering may reduce performance for a database application.",
-          hint: "Consider what concurrent database instances must coordinate when they work on shared data.",
-          solution: "Concurrent database instances require coordination and locking calls, which can add overhead and reduce throughput or increase response time.",
-          expectedOutput: "Database risk: coordination and locking overhead can reduce throughput and increase response time.",
-          check: "The explanation identifies coordination or locking overhead as the performance tradeoff."
+          do: "Inspect listening sockets and record listeners owned by a web server, load balancer, or container-related process.",
+          command: "ss -tlnp | grep -E ':(80|443|6443|2375|2376)[[:space:]]'",
+          hint: "Use documented service ports as search targets, then verify the owning process and bind scope from the live table.",
+          solution: "ss -tlnp | grep -E ':(80|443|6443|2375|2376)[[:space:]]'",
+          expectedOutput: "LISTEN 0      511    0.0.0.0:80    0.0.0.0:*    users:((\"nginx\",pid=1842,fd=6))",
+          expectedOutputDynamic: true,
+          check: "The socket evidence shows whether a scaling-related network endpoint is actually listening."
         },
         {
-          do: "Choose the chapter-supported container technologies for an application that must behave consistently across development, testing, and production.",
-          hint: "Containers package application files, libraries, and dependencies; select the two platforms named in the chapter.",
-          solution: "Choose Docker and Kubernetes as the two popular Linux container platforms named in the chapter.",
-          expectedOutput: "Portability need: bundle application files, libraries, and dependencies\nPlatforms: Docker and Kubernetes",
-          check: "The container recommendation names Docker and Kubernetes and connects them to portability."
+          do: "Compare the observed web and database process names to decide whether the host evidence suggests a stateless front end or a coordination-sensitive database workload.",
+          command: "ps ax | grep -E '[n]ginx|[h]aproxy|[p]ostgres|[m]ysqld|[m]ongod'",
+          hint: "Use the process table as evidence for the workload type, then apply the chapter's distinction between request distribution and database coordination overhead.",
+          solution: "ps ax | grep -E '[n]ginx|[h]aproxy|[p]ostgres|[m]ysqld|[m]ongod'",
+          expectedOutput: " 1842 ?        Ssl    0:00 nginx: master process /usr/sbin/nginx\n 2110 ?        Ssl    0:00 postgres: checkpointer process",
+          expectedOutputDynamic: true,
+          check: "The review identifies the observed front-end and database roles before making a scaling recommendation."
         },
         {
-          do: "Write an architecture handoff for a busy web service, a coordination-heavy database, and a portable application bundle.",
-          hint: "Give each workload its own recommendation and include the tradeoff that makes the choice meaningful.",
-          solution: "Busy web service: load balancing with HAProxy, LVS, or Nginx. Coordination-heavy database: evaluate clustering carefully because locking may reduce performance. Portable application bundle: Docker or Kubernetes containers.",
-          expectedOutput: "Busy web service — load balancing\nCoordination-heavy database — evaluate clustering and locking overhead\nPortable application bundle — Docker or Kubernetes containers",
-          check: "The final handoff gives distinct, chapter-supported recommendations for all three workloads."
+          do: "Record a deployment recommendation based on the observed process, service, and socket evidence, using only chapter technologies such as load balancing, clustering, Docker, or Kubernetes.",
+          command: "ss -tlnp\nps ax | grep -E '[n]ginx|[h]aproxy|[p]ostgres|[m]ysqld|[m]ongod|[d]ocker|[c]ontainerd|[k]ube'",
+          hint: "Tie the recommendation to what the host actually exposes; do not claim that a cluster or container platform exists without live evidence.",
+          solution: "Record the observed workload, listener, and process. Recommend load balancing for a request-distribution front end, evaluate clustering carefully for a database, and identify Docker/Kubernetes only when their processes or units are observed.",
+          expectedOutput: "Scaling review\nObserved workload: recorded from process and socket evidence\nRecommendation: matched to observed service role\nUnsupported deployment claims: none",
+          expectedOutputDynamic: true,
+          check: "The architecture handoff is based on live host evidence and uses chapter-supported distinctions."
         }
       ],
-      tags: ["clustering", "load-balancing", "haproxy", "lvs", "containers", "docker", "kubernetes"]
+      tags: ["clustering", "load-balancing", "haproxy", "nginx", "containers", "docker", "kubernetes", "evidence"]
     }
   ]
 });
