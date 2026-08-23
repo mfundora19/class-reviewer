@@ -26,8 +26,10 @@ The target style is a concise but explanatory textbook chapter—not a skeletal 
 - Begin with the source’s top-level title or objective. Retain objectives, summaries, exam essentials, review questions, and tables when present.
 - Use headings that match the source hierarchy: `#` for the document title, `##` for major sections, `###` for subsections, and deeper headings only when the source requires them.
 - Write a short introductory explanation beneath a heading when it helps orient the learner, then use bullets, numbered steps, tables, code blocks, or diagrams where they make the information easier to learn.
+- In the generated notes, give every relevant fenced code block, including command, configuration, output, and Mermaid blocks, a concise descriptive title immediately above it using the same `#####` format as table titles. Derive the title from the surrounding notes when possible; otherwise generate a specific title from the block's content or purpose. Avoid generic titles when a more descriptive title is possible, and apply this consistently throughout the notes.
 - Use paragraphs for explanations and reasoning. Use bullets for features, components, examples, conditions, or short related facts. Use numbered lists only when order matters.
 - Bold important terms on their first useful occurrence. Put commands, paths, flags, protocol names, package names, config directives, and values in inline code.
+- When a section is specifically about a command, name the heading ``### The `command` Command``, keeping the command itself in inline code. Apply this consistently to commands such as `grep`, `sort`, `cat`, and `cut`; do not use a bare heading such as ``### `sort` ``.
 - Do not use a “Key takeaways” section unless the original chapter contains a summary, recap, or equivalent closing section. When it does, preserve it as a concise recap of the source.
 - Do not add flashcards, questions, tags, YAML/frontmatter, an index, a glossary, or links unless the source includes them or I explicitly request them.
 
@@ -43,24 +45,36 @@ For each distinct command or directive, include only the parts that are relevant
 4. At least one realistic example in a fenced code block. Explain the expected effect in prose where useful.
 5. Important prerequisites, permission requirements, destructive effects, platform differences, or version-specific behavior.
 
-Do not pad every command with options that add no value. Do not guess flags or produce fake command output. When correct syntax or behavior is uncertain, state that it must be verified for the installed version rather than inventing an answer.
+When a command block would be clearer with supporting information, add concise `#` comments explaining a command and/or a short, clearly labeled example of the output it could produce. This supporting information may be added even when it is not explicit in the source, but only when the command behavior is known and the addition is a safe, concise illustration. Treat it as supporting presentation rather than new conceptual material; any added concept remains subject to the `Added context` rule above. Add both only when they materially improve understanding, and keep them proportional to the example. Label illustrative output as example output and never present invented output, results, or version-specific behavior as a verified fact; omit it when the source or context does not support a safe example.
+
+Do not pad every command with options that add no value. Do not guess flags or present fabricated output as actual command output. Clearly labeled illustrative output is allowed only under the concise, safely derived rule above. When correct syntax or behavior is uncertain, state that it must be verified for the installed version rather than inventing an answer.
 
 Use this layout when a full command reference is appropriate:
 
-### `<command>`
+### The `<command>` Command
 
 Brief purpose statement.
+
+##### General `<command>` Syntax
 
 ```bash
 command [options] <required-argument> [optional-argument]
 ```
 
+##### Common `<command>` Options
+
 | Option            | Purpose               | Example use                    |
 | ----------------- | --------------------- | ------------------------------ |
 | `-x`, `--example` | What the option does. | `command --example value`      |
 
+##### Example: Using `<command>`
+
 ```bash
+# Briefly explain the command when useful.
 command --example value
+
+# Example output:
+# concise illustrative output
 ```
 
 # Obsidian callouts and task symbols
@@ -103,7 +117,7 @@ Use supported task symbols only when they carry real study meaning, never as dec
 
 - Recreate source tables in clean Markdown. Give them a concise caption heading when the source identifies them (for example, `##### Table 2.1 | Common ports`).
 - Use a table only for genuine comparison or reference; do not force explanatory prose into a table.
-- Recreate diagrams as a fenced `mermaid` block only when the source diagram or relationship is easier to learn visually. Make valid, compact diagrams with clear labels. Do not use Mermaid for a simple list.
+- Use Mermaid diagrams when appropriate and when a concept, process, workflow, relationship, hierarchy, or other structure would benefit from a visual representation. Use an Obsidian-compatible fenced code block with the `mermaid` language tag, and keep diagrams valid, compact, and clearly labeled. Do not add Mermaid unnecessarily, create visual noise, or use it for a simple list.
 - Preserve source figures as a descriptive heading and convert their meaning into prose, a table, or Mermaid when possible. Do not pretend to reproduce an image you cannot access.
 - Preserve review questions and answer choices. Keep indicated answers when they appear in the source; do not solve unanswered questions unless explicitly asked.
 
@@ -117,7 +131,10 @@ Before you answer, silently verify all of the following:
 - No important technical detail, condition, warning, example, or exam objective was discarded.
 - Every external addition is essential, marked, and limited to two sentences per added concept.
 - Commands include useful syntax, common options, and **a concrete usage example for every option included in the options table**, where relevant and where correct.
+- Command-specific sections use the ``### The `command` Command`` heading convention.
+- Relevant fenced code blocks, including Mermaid blocks, have concise descriptive `#####` titles consistent with table-title formatting.
+- Command examples use concise comments and clearly labeled example output only when those additions improve understanding and can be derived safely from the context.
 - Callouts use the exact `>[!type] Title` then `>Description` layout, with blank lines around them.
-- Markdown tables, code fences, task symbols, and Mermaid diagrams are valid and purposeful.
+- Markdown tables, code fences, task symbols, and Mermaid diagrams are valid, purposeful, and mutually consistent.
 
 Now return the finished Obsidian Markdown document for the uploaded source.
