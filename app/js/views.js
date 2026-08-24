@@ -3661,12 +3661,18 @@
     var noteId = parsed.params[0] ? decodeURIComponent(parsed.params[0]) : null;
     if (noteId) {
       var sectionIdx = -1;
-      var qm = noteId.indexOf('?section=');
+      var searchQuery = '';
+      var qm = noteId.indexOf('?');
       if (qm >= 0) {
-        sectionIdx = parseInt(noteId.slice(qm + 9), 10);
+        var params = noteId.slice(qm + 1).split('&');
+        params.forEach(function (p) {
+          var kv = p.split('=');
+          if (kv[0] === 'section') sectionIdx = parseInt(kv[1], 10);
+          if (kv[0] === 'q') searchQuery = decodeURIComponent(kv[1] || '');
+        });
         noteId = noteId.slice(0, qm);
       }
-      return viewNoteDetail(root, noteId, sectionIdx);
+      return viewNoteDetail(root, noteId, sectionIdx, searchQuery);
     }
     var certId = App.core.getCurrentCertId();
     var cert = App.content.getCert(certId);
@@ -3766,7 +3772,7 @@
     }
   }
 
-  function viewNoteDetail(root, noteId, sectionIdx) {
+  function viewNoteDetail(root, noteId, sectionIdx, searchQuery) {
     // Consolidated chapter note for the active certification first; fall back
     // to the full registry so cross-certification deep links still resolve.
     var note = App.content.getChapterNotes(App.core.getCurrentCertId()).find(function (n) { return n._id === noteId; });
@@ -3803,6 +3809,27 @@
           h2s[sectionIdx].scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }, 150);
+    }
+    // If navigated from search with a query, scroll to first text occurrence
+    if (searchQuery && searchQuery.length >= 2) {
+      setTimeout(function () {
+        var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+        var node;
+        while ((node = walker.nextNode())) {
+          var idx = node.textContent.toLowerCase().indexOf(searchQuery.toLowerCase());
+          if (idx >= 0) {
+            var range = document.createRange();
+            range.setStart(node, idx);
+            range.setEnd(node, idx + searchQuery.length);
+            // Briefly highlight the match then scroll to it
+            var mark = document.createElement('mark');
+            mark.style.cssText = 'background:var(--accent-cyan-dim);color:var(--text-primary);border-radius:3px;padding:0 2px;';
+            range.surroundContents(mark);
+            mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+          }
+        }
+      }, 350);
     }
     // Back-to-top button
     var btt = el('button', {

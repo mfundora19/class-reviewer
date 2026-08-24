@@ -408,7 +408,7 @@
           action: function () {
             ensureCert(note._cert);
             var url = '#/notes/' + encodeURIComponent(note._id);
-            if (sectionMatch >= 0) url += '?section=' + sectionMatch;
+            if (sectionMatch >= 0) url += '?section=' + sectionMatch + '&q=' + encodeURIComponent(q); else url += '?q=' + encodeURIComponent(q);
             App.core.navigate(url);
           }
         });

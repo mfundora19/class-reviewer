@@ -392,6 +392,17 @@
     var input = utils.$('#global-search');
     var results = utils.$('#search-results');
     if (!input || !results) return;
+    // Press / anywhere to focus the search input (unless typing in a field)
+    document.addEventListener('keydown', function (e) {
+      if (e.key === '/' && document.activeElement !== input) {
+        var tag = document.activeElement ? document.activeElement.tagName : '';
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !document.activeElement.isContentEditable) {
+          e.preventDefault();
+          input.focus();
+          input.select();
+        }
+      }
+    });
     // Wire the search field to its result list as a combobox so assistive
     // technology announces the expanded/active state of the suggestions.
     input.setAttribute('role', 'combobox');
