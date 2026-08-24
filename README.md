@@ -69,12 +69,12 @@ All progress lives in the browser's local IndexedDB database. Existing ReviewApp
 - **Quiz** — Chapter Focus, Random Mix, Theme Attack, Weak Spots, and Speed Run modes, with keyboard shortcuts (`1-5` to select options, Enter/Space to submit and advance). Each question shows its type (MCQ, multi-select, true/false, fill-in, matching) in a chip beside the prompt. Questions answered wrong are shown again at the end (practice-only, so they never double-count toward your score or stats), and feedback color-codes multi-select choices — green for correct picks, amber for missed answers, red for wrong ones.
 - **Exam Simulation** — timed exam with question palette, flag-for-review, pass threshold, and keyboard answer selection.
 - **Flashcards** — flip cards with Again / Next, Shuffle, a retry queue, and saved-session resume or cancel.
-- **Labs** — hands-on scenarios grouped by chapter with objectives, revealable hints, **Reveal solution**, one-line **Verify** guidance, and **View output** examples in a modal. Steps support **Done / Redo**, objective-based completion, and saved progress that can be resumed or cancelled.
-- **Notes** — one complete note per chapter with all source sections inside it.
+- **Labs** — hands-on scenarios grouped by chapter with objectives, revealable hints, **Reveal solution**, one-line **Verify** guidance, and **View output** examples in a modal. Steps support **Done / Redo**, objective-based completion, and saved progress that can be resumed or cancelled. Some labs include pre-built **Mock Data** that students can copy directly to their clipboard — useful when the exercise needs realistic logs, configs, or sample files without the tedium of manual data entry.
+- **Notes** — one complete note per chapter with all source sections inside it. Notes render Markdown tables and fenced code blocks natively. A floating **Back to top** button appears as you scroll down for quick navigation.
 - **Stats** — accuracy, coverage, streaks, activity, weak areas, and exportable reports.
 - **Tools** — subnet calculator, number converter, common ports, a Linux command reference, and a permissions calculator with a live symbolic/octal/chmod readout, common-mode presets, and special-bit toggles.
 - **Permissions Practice** — a procedurally generated exercise engine (no question bank) built into the Permissions tool: mode conversions, symbolic `chmod` deltas, permission-matrix configuration, special bits, and file/directory scenarios. Includes difficulty levels, configurable exercise types, session stats, structured per-class feedback, and keyboard shortcuts (`1-4` to pick options, Enter to submit).
-- **Search** — global search across questions, flashcards, notes, ports, and commands.
+- **Search** — global search across notes, flashcards, questions, labs, ports, and commands. Press **`/`** anywhere to focus the search bar. Choosing a note result scrolls directly to the first matching text occurrence inside the chapter.
 - **Settings** — themes, text size, animations, exam threshold, and Backup & Data.
 
 ## Content formatting
@@ -88,7 +88,8 @@ Which `ls` option lists hidden files?
 
 Inline code is rendered consistently in question titles, answer options,
 explanations, matching items, flashcards, labs, notes, search results, and
-reference content. User-provided HTML is escaped before rendering, so content
+reference content. **Tables** (GFM pipe syntax) render with themed header and
+cell styling. User-provided HTML is escaped before rendering, so content
 formatting cannot inject markup into the app. Fenced code blocks and literal
 command output remain preserved as code blocks.
 
