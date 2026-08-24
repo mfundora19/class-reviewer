@@ -207,6 +207,14 @@ notes and send it — the AI replies with a complete `.js` file.
 >       minutes: <number>,
 >       scenario: "Markdown paragraph(s) setting context and goal",
 >       objectives: ["Observable skill 1", "Observable skill 2", "..."],
+>       mockData: [ // OPTIONAL — only when the learner consumes/analyzes pre-existing sample data
+>         {
+>           name: "Short human-readable label",
+>           filename: "auth.log", // optional; the intended filename when the data is a file
+>           description: "One line on what this data is and how to use it",
+>           content: "Exact multiline sample content the learner copies; preserve every line break and whitespace character"
+>         }
+>       ],
 >       steps: [
 >         {
 >           do: "What the student should do (clear instruction)",
@@ -250,6 +258,18 @@ notes and send it — the AI replies with a complete `.js` file.
 > - Tags: short lowercase keywords.
 > - Chapter title: invent a concise title that matches the notes.
 > - Do not use placeholders or “TODO” in titles, scenarios, instructions, hints, solutions, checks, or other prose. In `expectedOutput`, never use angle-bracket placeholders, unresolved variables, or truncation markers; use concrete representative mock data instead. Literal symbols that are part of real command output are allowed. Use `expectedOutputDynamic: true` to mark variability, not to justify placeholder text.
+>
+> MOCK DATA RULES (strict — `mockData` is OPTIONAL at the lab level):
+> - **Purpose:** `mockData` provides sample/test data the learner **consumes** (copies into a file, inspects, searches, or analyzes). It exists so the learner can focus on the lab's core skills without typing data that is only supporting material.
+> - **Only add mockData when the learner consumes/analyzes pre-existing data** such as logs, configuration files, or records. Do not add mockData when creating the file or its content is itself a learning objective (e.g., the lab is teaching redirection, `touch`, or file creation).
+> - **Before adding mockData, answer two questions internally:** ① "Is the learner supposed to create this data, or consume/analyze it?" ② "Would providing it remove a meaningful learning objective?" Only add mockData when the learner should consume it AND the core skill remains intact.
+> - **MockData is never required** for a lab. If every file the learner works with is created through taught commands as part of the objectives, omit `mockData` entirely.
+> - Each logical file or data unit is a separate item in the `mockData` array, with its own `filename`, `name`, `description`, and `content`.
+> - `content` must be the exact payload the learner expects to see in the file — realistic, complete, self-contained, and matching the scenario, commands, and expected outputs (line numbers, patterns, filenames). Use literal newlines; never use `<placeholder>`, `TODO`, or truncation markers.
+> - `filename` is **optional**. When the data represents a file, include it so the learner knows what to name it. Omit `filename` only when the data is generic terminal input not meant to be saved as a distinct file.
+> - `description` should state in one line what the data is and how it relates to the steps.
+> - Never introduce commands, concepts, flags, tools, or techniques outside the chapter through mockData content.
+> - If the learner is supposed to practice creating the file (redirection with `>`, `printf`, `touch`, etc.), the creation step stays in the lab and uses the mockData content as its payload — the skill is still practiced, but the learner copies exact content instead of retyping error-prone log lines or configuration values.
 >
 > HINT / REVEAL ANSWER RULES (strict):
 > - `hint` and `solution` have different responsibilities. The hint is guidance; the solution is the answer exposed by **Reveal Answer** (the app may label this **Reveal Solution**).
