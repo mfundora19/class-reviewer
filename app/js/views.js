@@ -3659,7 +3659,15 @@
 
   function viewNotes(root, parsed) {
     var noteId = parsed.params[0] ? decodeURIComponent(parsed.params[0]) : null;
-    if (noteId) return viewNoteDetail(root, noteId);
+    if (noteId) {
+      var sectionIdx = -1;
+      var qm = noteId.indexOf('?section=');
+      if (qm >= 0) {
+        sectionIdx = parseInt(noteId.slice(qm + 9), 10);
+        noteId = noteId.slice(0, qm);
+      }
+      return viewNoteDetail(root, noteId, sectionIdx);
+    }
     var certId = App.core.getCurrentCertId();
     var cert = App.content.getCert(certId);
     root.appendChild(el('h1', { text: 'Notes' }));
@@ -3758,7 +3766,7 @@
     }
   }
 
-  function viewNoteDetail(root, noteId) {
+  function viewNoteDetail(root, noteId, sectionIdx) {
     // Consolidated chapter note for the active certification first; fall back
     // to the full registry so cross-certification deep links still resolve.
     var note = App.content.getChapterNotes(App.core.getCurrentCertId()).find(function (n) { return n._id === noteId; });
@@ -3787,6 +3795,15 @@
       root.appendChild(el('h2', { className: 'note-section-title', html: inlineHtml(s.title) }));
       root.appendChild(el('div', { className: 'notes-preview mb-3', html: App.markdown.render(s.body || '') }));
     });
+    // Scroll to matching section if navigated from search
+    if (typeof sectionIdx === 'number' && sectionIdx >= 0 && sectionIdx < note.sections.length) {
+      setTimeout(function () {
+        var h2s = root.querySelectorAll('h2.note-section-title');
+        if (h2s[sectionIdx]) {
+          h2s[sectionIdx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 150);
+    }
     // Back-to-top button
     var btt = el('button', {
       className: 'back-to-top',

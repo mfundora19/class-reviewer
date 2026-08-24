@@ -391,6 +391,52 @@
     q = (q || '').toLowerCase();
     var results = [];
 
+    // ── Notes (first — reference material) ─────────────
+    getChapterNotes().forEach(function (note) {
+      var noteFullText = '';
+      var sectionMatch = -1;
+      note.sections.forEach(function (s, si) {
+        var st = (s.title || '') + ' ' + (s.body || '') + ' ' + (s.tags || []).join(' ');
+        noteFullText += st + ' ';
+        if (sectionMatch < 0 && st.toLowerCase().indexOf(q) >= 0) sectionMatch = si;
+      });
+      if (noteFullText.toLowerCase().indexOf(q) >= 0) {
+        results.push({
+          group: 'Notes',
+          title: note.title,
+          meta: certName(note._cert) + (sectionMatch >= 0 ? ' → section ' + (sectionMatch + 1) : note.sections.length > 1 ? ' · ' + note.sections.length + ' sections' : ''),
+          action: function () {
+            ensureCert(note._cert);
+            var url = '#/notes/' + encodeURIComponent(note._id);
+            if (sectionMatch >= 0) url += '?section=' + sectionMatch;
+            App.core.navigate(url);
+          }
+        });
+      }
+    });
+
+    // ── Flashcards ──────────────────────────────────────
+    registry.flashcards.forEach(function (item) {
+      var text = (item.front || '') + ' ' + (item.back || '') + ' ' + (item.tags || []).join(' ');
+      if (text.toLowerCase().indexOf(q) >= 0) {
+        results.push({
+          group: 'Flashcards',
+          title: item.front.slice(0, 70),
+          meta: certName(item._cert) + ' · ' + (item._chapter || ''),
+          action: function () {
+            ensureCert(item._cert);
+            App.core.navigate('#/flashcards');
+            setTimeout(function () {
+              if (App.flashcards && App.flashcards.startWithCard) {
+                App.flashcards.startWithCard(item);
+              }
+            }, 100);
+          }
+        });
+      }
+    });
+
+    // ── Questions ───────────────────────────────────────
     registry.questions.forEach(function (item) {
       var pairText = '';
       if ((item.type === 'match' || item.type === 'command_match') && Array.isArray(item.pairs)) {
@@ -422,26 +468,6 @@
       }
     });
 
-    registry.flashcards.forEach(function (item) {
-      var text = (item.front || '') + ' ' + (item.back || '') + ' ' + (item.tags || []).join(' ');
-      if (text.toLowerCase().indexOf(q) >= 0) {
-        results.push({
-          group: 'Flashcards',
-          title: item.front.slice(0, 70),
-          meta: certName(item._cert) + ' · ' + (item._chapter || ''),
-          action: function () {
-            ensureCert(item._cert);
-            App.core.navigate('#/flashcards');
-            setTimeout(function () {
-              if (App.flashcards && App.flashcards.startWithCard) {
-                App.flashcards.startWithCard(item);
-              }
-            }, 100);
-          }
-        });
-      }
-    });
-
     // Labs stay scoped to the current certification: they are never returned
     // as cross-certification search results.
     var curCert = currentCertId();
@@ -455,23 +481,6 @@
           meta: certName(item._cert) + ' · difficulty ' + (item.difficulty || '?'),
           action: function () {
             App.core.navigate('#/labs/' + encodeURIComponent(item._id));
-          }
-        });
-      }
-    });
-
-    getChapterNotes().forEach(function (note) {
-      var text = note.sections.map(function (s) {
-        return (s.title || '') + ' ' + (s.body || '') + ' ' + (s.tags || []).join(' ');
-      }).join(' ');
-      if (text.toLowerCase().indexOf(q) >= 0) {
-        results.push({
-          group: 'Notes',
-          title: note.title,
-          meta: certName(note._cert) + (note.sections.length > 1 ? ' · ' + note.sections.length + ' sections' : ''),
-          action: function () {
-            ensureCert(note._cert);
-            App.core.navigate('#/notes/' + encodeURIComponent(note._id));
           }
         });
       }
