@@ -15,5 +15,5 @@ practical details.
 **AI prompts**
 
 - **[AI Prompt Generator](./prompt-generator.md)** — copy-and-paste prompts for generating ReviewApp content files (flashcards, questions, labs, notes) from your notes.
-- **[Book/PDF → Obsidian Notes](./Book-to-Obsidian-Notes.md)** — a copy-and-paste master prompt that converts a book or PDF into polished, structured Obsidian study notes.
+- **[Book/PDF → Obsidian Notes](./linux-to-obsidian.md)** — a copy-and-paste master prompt that converts a book or PDF into polished, structured Obsidian study notes.
 - **[Stats UI Polish & Markdown Report](./stats-polish-prompt.md)** — a developer-oriented prompt for polishing the Stats view and its Markdown export.
