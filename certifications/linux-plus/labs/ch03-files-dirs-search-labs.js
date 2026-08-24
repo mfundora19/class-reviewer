@@ -72,6 +72,14 @@ window.ReviewApp.content.register({
         "Inspect the beginning and end of a log",
         "Use a live tail to observe an appended event"
       ],
+      mockData: [
+        {
+          name: "Recovered application log",
+          filename: "app.log",
+          description: "The recovered log content. Copy it, then redirect it into /tmp/linuxplus-ch03-log/app.log during Step 1 so the search and inspection steps use the same events.",
+          content: "INFO service starting\nINFO configuration loaded\nFAILED login user=analyst\nINFO retrying connection\nFAILED login user=admin\nINFO service ready\n"
+        }
+      ],
       steps: [
         {
           do: "Create `/tmp/linuxplus-ch03-log/app.log` with informational entries and two failed-login entries.",
@@ -499,6 +507,20 @@ window.ReviewApp.content.register({
         "Use find to locate artifacts by type and name",
         "Copy evidence into an organized review directory",
         "Verify copied content with diff"
+      ],
+      mockData: [
+        {
+          name: "Authentication log",
+          filename: "auth.log",
+          description: "The recovered authentication log. Copy it and redirect it into the file during the setup step, then search it for failed-login lines.",
+          content: "INFO service started\nFAILED login user=analyst\nINFO session closed\nFAILED login user=admin\n"
+        },
+        {
+          name: "Service configuration",
+          filename: "service.conf",
+          description: "The recovered configuration. Copy it and redirect it into the file, then locate the sensitive key assignment during review.",
+          content: "mode=staging\nAPI_KEY=training-demo\n"
+        }
       ],
       steps: [
         {
