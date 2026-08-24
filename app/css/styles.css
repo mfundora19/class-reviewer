@@ -1960,6 +1960,44 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   overflow: auto;
   margin: 0;
 }
+/* ── Labs: mock data resources ───────────────────────────── */
+.lab-mock-data .lab-mock-item {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.75rem;
+  margin-bottom: 0.7rem;
+  background: var(--bg-raised);
+}
+.lab-mock-data .lab-mock-item:last-child {
+  margin-bottom: 0;
+}
+.lab-mock-item-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.85rem;
+}
+.lab-mock-item-head strong {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+.lab-mock-item-head .text-muted {
+  font-size: 0.8rem;
+}
+.lab-mock-filename {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.1rem 0.4rem;
+  color: var(--accent-cyan);
+}
+.lab-mock-data .code-block {
+  margin: 0;
+}
 /* ── Labs: chapter accordion ─────────────────────────────── */
 .lab-chapter {
   border: 1px solid var(--border);

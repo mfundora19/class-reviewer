@@ -2386,6 +2386,44 @@
       });
       root.appendChild(obj);
     }
+    // Optional lab resources. mockData holds sample/test content the learner is
+    // meant to consume (copy into a file, inspect, search) rather than invent.
+    // Each item is rendered independently with its own copy action; labs
+    // without mockData get no resource section at all.
+    if (lab.mockData && lab.mockData.length) {
+      var mdPanel = el('div', { className: 'panel mb-3 lab-mock-data' });
+      mdPanel.appendChild(el('div', { className: 'label-upper mb-1', text: 'Mock Data' }));
+      mdPanel.appendChild(el('p', { className: 'text-muted mb-2', style: { fontSize: '0.88rem' },
+        text: 'Sample data for this lab. Copy each item, then use it in the steps below.' }));
+      lab.mockData.forEach(function (item, i) {
+        var label = item.filename || item.name || ('Item ' + (i + 1));
+        var itemEl = el('div', { className: 'lab-mock-item' });
+        var head = el('div', { className: 'lab-mock-item-head' });
+        if (item.filename) head.appendChild(el('code', { className: 'lab-mock-filename', text: item.filename }));
+        if (item.name && item.name !== item.filename) head.appendChild(el('strong', { text: item.name }));
+        if (item.description) head.appendChild(el('span', { className: 'text-muted', text: item.description }));
+        itemEl.appendChild(head);
+        var block = el('div', { className: 'code-block' });
+        block.textContent = String(item.content == null ? '' : item.content);
+        block.appendChild(el('button', {
+          className: 'btn btn-ghost btn-sm copy-btn',
+          type: 'button',
+          text: 'Copy',
+          'aria-label': 'Copy ' + label + ' content',
+          title: 'Copy ' + label + ' content',
+          onClick: function (e) {
+            e.stopPropagation();
+            utils.copyText(item.content == null ? '' : String(item.content)).then(function (ok) {
+              if (ok) App.toast('Copied', 'success', 1500);
+              else App.toast('Copy failed — select the text manually', 'error', 2200);
+            });
+          }
+        }));
+        itemEl.appendChild(block);
+        mdPanel.appendChild(itemEl);
+      });
+      root.appendChild(mdPanel);
+    }
     if (lab.steps && lab.steps.length) {
       root.appendChild(el('h3', { className: 'mb-1', text: 'Steps' }));
       lab.steps.forEach(function (step, i) {
