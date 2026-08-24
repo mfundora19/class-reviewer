@@ -3787,6 +3787,31 @@
       root.appendChild(el('h2', { className: 'note-section-title', html: inlineHtml(s.title) }));
       root.appendChild(el('div', { className: 'notes-preview mb-3', html: App.markdown.render(s.body || '') }));
     });
+    // Back-to-top button
+    var btt = el('button', {
+      className: 'back-to-top',
+      title: 'Back to top',
+      'aria-label': 'Scroll to top of note',
+      html: '<svg viewBox="0 0 16 16" fill="none"><path d="M4.5 10l3.5-3.5L11.5 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      onClick: function () { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    });
+    root.appendChild(btt);
+
+    var bttTicking = false;
+    function updateBtt() {
+      if (window.scrollY > 400) {
+        btt.classList.add('visible');
+      } else {
+        btt.classList.remove('visible');
+      }
+      bttTicking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!bttTicking) {
+        requestAnimationFrame(updateBtt);
+        bttTicking = true;
+      }
+    }, { passive: true });
   }
 
   function buildPermsPanel() {

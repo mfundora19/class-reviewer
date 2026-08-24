@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
    ReviewApp · markdown.js
    Tiny safe markdown renderer (no HTML injection)
-   Supports: headings, bold, italic, code, code blocks,
+   Supports: headings, bold, italic, code, code blocks, tables,
    lists, links (http only), paragraphs, horizontal rules
    ═══════════════════════════════════════════════════════════ */
 (function () {
@@ -71,6 +71,7 @@
     var html = [];
     var i = 0;
     var inCode = false;
+    var inSingleFence = false;
     var codeBuf = [];
     var inList = false;
     var listType = null;
@@ -86,8 +87,8 @@
     while (i < lines.length) {
       var line = lines[i];
 
-      // fenced code
-      if (line.trim().indexOf('```') === 0) {
+      // fenced code (triple backtick)
+      if (!inSingleFence && line.trim().indexOf('```') === 0) {
         if (inCode) {
           html.push('<pre><code>' + escape(codeBuf.join('\n')) + '</code></pre>');
           codeBuf = [];
@@ -100,6 +101,26 @@
         continue;
       }
       if (inCode) {
+        codeBuf.push(line);
+        i++;
+        continue;
+      }
+
+      // single-backtick fenced code (used in notes: ~`bash\n...\n`~)
+      var sfm = line.match(/^`(\w*)$/);
+      if (sfm) {
+        if (inSingleFence) {
+          html.push('<pre><code>' + escape(codeBuf.join('\n')) + '</code></pre>');
+          codeBuf = [];
+          inSingleFence = false;
+        } else {
+          closeList();
+          inSingleFence = true;
+        }
+        i++;
+        continue;
+      }
+      if (inSingleFence) {
         codeBuf.push(line);
         i++;
         continue;
@@ -121,6 +142,42 @@
         html.push('<h' + level + '>' + inline(hm[2]) + '</h' + level + '>');
         i++;
         continue;
+      }
+
+      // table — pipe-delimited rows with a separator line
+      var tblm = line.match(/^\s*\|.+\|\s*$/);
+      if (tblm) {
+        // peek: the next line must be a separator row (only | - : and whitespace)
+        if (i + 1 < lines.length && /^\s*\|[-:\s|]+\|\s*$/.test(lines[i + 1])) {
+          closeList();
+          var headerCells = line.split('|').slice(1, -1).map(function (c) { return c.trim(); });
+          i += 2; // skip separator row
+          var dataRows = [];
+          while (i < lines.length) {
+            var drm = lines[i].match(/^\s*\|.+\|\s*$/);
+            if (!drm) break;
+            dataRows.push(lines[i].split('|').slice(1, -1).map(function (c) { return c.trim(); }));
+            i++;
+          }
+          // build <table>
+          var tbl = ['<table><thead><tr>'];
+          for (var hi = 0; hi < headerCells.length; hi++) {
+            tbl.push('<th>' + inline(headerCells[hi]) + '</th>');
+          }
+          tbl.push('</tr></thead><tbody>');
+          for (var ri = 0; ri < dataRows.length; ri++) {
+            tbl.push('<tr>');
+            var row = dataRows[ri];
+            for (var ci = 0; ci < row.length; ci++) {
+              tbl.push('<td>' + inline(row[ci]) + '</td>');
+            }
+            tbl.push('</tr>');
+          }
+          tbl.push('</tbody></table>');
+          html.push(tbl.join(''));
+          continue;
+        }
+        // no separator — fall through to paragraph
       }
 
       // unordered list
@@ -165,6 +222,9 @@
     }
     closeList();
     if (inCode) {
+      html.push('<pre><code>' + escape(codeBuf.join('\n')) + '</code></pre>');
+    }
+    if (inSingleFence) {
       html.push('<pre><code>' + escape(codeBuf.join('\n')) + '</code></pre>');
     }
     return html.join('\n');

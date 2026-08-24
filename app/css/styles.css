@@ -1016,6 +1016,65 @@ h3 { font-size: 1.05rem; }
   border-color: transparent;
 }
 .btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); }
+.back-to-top {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity var(--motion-normal) var(--ease),
+    transform var(--motion-normal) var(--ease),
+    background var(--motion-fast) var(--ease),
+    border-color var(--motion-fast) var(--ease),
+    color var(--motion-fast) var(--ease),
+    box-shadow var(--motion-fast) var(--ease);
+}
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.back-to-top:hover {
+  background: var(--bg-hover);
+  color: var(--accent-cyan);
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-md), 0 0 0 1px color-mix(in srgb, var(--accent-cyan) 8%, transparent);
+  transform: translateY(-2px);
+}
+.back-to-top:active {
+  transform: translateY(0) scale(0.94);
+}
+.back-to-top svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  pointer-events: none;
+}
+@media (max-width: 768px) {
+  .back-to-top {
+    bottom: 1rem;
+    right: 1rem;
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+  .back-to-top svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
 .btn-danger {
   background: var(--accent-red-dim);
   color: var(--accent-red);
