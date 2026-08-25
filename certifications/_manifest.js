@@ -3,21 +3,32 @@ window.ReviewApp.content.setManifest({
   contentVersion: "1.2.5",
   certs: [
     { id: "linux-plus", name: "CompTIA Linux+", color: "#f8a63b" },
-    //{ id: "network-plus", name: "CompTIA Network+", color: "#5ad1e6" }
+    { id: "network-plus", name: "CompTIA Network+", color: "#5ad1e6" },
   ],
   files: [
-    // ====================  Linux+  ====================
-    // ----------------- Questions -----------------
-    "linux-plus/questions/ch01-exploring-linux-questions.js",
-    "linux-plus/questions/ch02-servers-services-security-questions.js",
-    "linux-plus/questions/ch03-files-directories-search-questions.js",
-    "linux-plus/questions/ch04-filtering-redirecting-editing-questions.js",
-
+    // ++++++++++++++++ TEMPLATE +++++++++++++++++++++++
+    // ====================  Class  ====================
     // ----------------- Flashcards -----------------
+    // ----------------- Questions -----------------
+    // ----------------- Labs -----------------
+    // ----------------- Notes -----------------
+
+
+
+    // ====================  Linux+  ====================
+        // ----------------- Flashcards -----------------
     "linux-plus/flashcards/ch01-exploring-linux-flashcards.js",
     "linux-plus/flashcards/ch02-servers-services-security-flashcards.js",
     "linux-plus/flashcards/ch03-directories-flashcards.js",
     "linux-plus/flashcards/ch04-filtering-redirecting-editing-flashcards.js",
+
+
+    // ----------------- Questions -----------------
+    "linux-plus/questions/ch01-exploring-linux-questions.js",
+    "linux-plus/questions/ch02-servers-services-security-questions.js",
+    "linux-plus/questions/ch03-files-directories-search-questions.js",
+    "linux-plus/questions/ch04-filtering-redirecting-editing-flashcards.js",
+
 
     // ----------------- Labs -----------------
     "linux-plus/labs/ch01-exploring-linux-labs.js",
@@ -32,14 +43,19 @@ window.ReviewApp.content.setManifest({
     "linux-plus/notes/ch04-notes.js", 
 
 
+
+    // ====================  Network+  ====================
+    // ----------------- Flashcards -----------------
+    "network-plus/flashcards/ch01-intro-to-networking-flashcards.js",
+    // ----------------- Questions -----------------
+    "network-plus/questions/ch01-intro-to-networking-questions.js",
+    // ----------------- Labs -----------------
+    "network-plus/labs/ch01-intro-to-networking-labs.js",
+    // ----------------- Notes -----------------
+    "network-plus/notes/ch01-notes.js",
     
 
-    // ++++++++++++++++ TEMPLATE +++++++++++++++++++++++
-    // ====================  Class  ====================
-    // ----------------- Questions -----------------
-    // ----------------- Flashcards -----------------
-    // ----------------- Labs -----------------
-    // ----------------- Notes -----------------
+
 
   ]
 });

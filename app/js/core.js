@@ -583,8 +583,37 @@
     return App.content.getCert(currentCertId);
   }
 
-  // Find an in-progress session that belongs to a certification, so switching
-  // certifications can warn the user instead of silently discarding progress.
+  // Certification changes are a hard boundary for practice sessions. Clear all
+  // in-progress work first so partial attempts never become statistics.
+  function cancelActiveStudySessions() {
+    if (App.quiz) {
+      if (App.quiz.discardQuiz) App.quiz.discardQuiz();
+      if (App.quiz.discardExam) App.quiz.discardExam();
+    }
+    if (App.flashcards && App.flashcards.cancelSession) App.flashcards.cancelSession();
+
+    // Lab step completion is the lab's saved in-progress state. Completed labs
+    // remain untouched; only partial work for the previous certification is    // removed, identified from the lab content rather than the step key.
+    if (App.store && App.store.get) {
+      var stepsDone = App.store.get('labStepsDone', {});
+      var labs = App.content && App.content.getAll ? App.content.getAll('labs') : [];
+      var previousLabIds = {};
+      labs.forEach(function (lab) {
+        if (lab._cert === currentCertId) previousLabIds[lab._id] = true;
+      });
+      var changed = false;
+      Object.keys(stepsDone).forEach(function (key) {
+        var separator = key.lastIndexOf(':');
+        var labId = separator >= 0 ? key.slice(0, separator) : key;
+        if (previousLabIds[labId]) {
+          delete stepsDone[key];
+          changed = true;
+        }
+      });
+      if (changed) App.store.set('labStepsDone', stepsDone);
+    }
+  }
+
   function activeSessionForCert() {
     var quiz = App.quiz && App.quiz.getQuizSession ? App.quiz.getQuizSession() : null;
     if (quiz && quiz.cert) return { cert: quiz.cert, label: 'quiz' };
@@ -595,8 +624,8 @@
     return null;
   }
 
-  // Pause running session timers without destroying the session, so the
-  // session can be resumed later under its own certification.
+  // Pause running session timers. This remains useful for non-switching
+  // navigation; certification switching cancels the sessions above first.
   function pauseActiveSessionTimers() {
     if (!App.quiz) return;
     var ex = App.quiz.getExamSession ? App.quiz.getExamSession() : null;
@@ -621,16 +650,10 @@
     if (!cert) return false;
     if (currentCertId === id) { updateCertSelector(); return true; }
 
-    var active = activeSessionForCert();
-    if (active) {
-      var activeCert = App.content.getCert(active.cert);
-      var msg = 'You have an active ' + active.label +
-        (activeCert ? ' for ' + activeCert.name : '') +
-        '. Switch to ' + cert.name +
-        '? Your session will be preserved and can be resumed when you switch back.';
-      if (!window.confirm(msg)) return false;
-    }
-
+    // Switching certification intentionally discards all partial practice
+    // state. Quiz/flashcard attempts are deferred until completion, and lab
+    // steps are progress state rather than statistics, so none of it counts.
+    cancelActiveStudySessions();
     pauseActiveSessionTimers();
     currentCertId = id;
     App.store.setCurrentCert(id);

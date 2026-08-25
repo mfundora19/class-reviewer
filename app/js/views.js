@@ -172,7 +172,7 @@
     } : App.content.counts();
     var stats = App.store.getDashboardStats(certId);
 
-    var termText = 'reviewapp v1.2.2 — ' + (cert ? cert.name + ' · ' : '') + compactNumber(counts.questions) + ' questions · ' +
+    var termText = 'reviewapp v1.3.0 — ' + (cert ? cert.name + ' · ' : '') + compactNumber(counts.questions) + ' questions · ' +
       compactNumber(counts.flashcards) + ' cards · ' + compactNumber(counts.labs) + ' labs — SYSTEM READY';
     var strip = el('div', { className: 'terminal-strip', 'aria-label': 'System status' });
     root.appendChild(strip);
@@ -1766,7 +1766,7 @@
         : null;
       var deck = App.flashcards.buildDeck({ cert: cur, chapter: ch });
       if (deck.length) {
-        App.flashcards.startSession(deck, {});
+        App.flashcards.startSession(deck, { chapter: ch });
         renderFlashPlayer(root);
         return;
       }
@@ -1788,7 +1788,7 @@
     if (savedSession && (!savedSession.cert || savedSession.cert === certId) && !savedSession.finished) {
       var resumePanel = el('div', { className: 'flash-resume-panel mb-3' });
       resumePanel.appendChild(el('div', { className: 'label-upper mb-1', text: 'Saved session' }));
-      resumePanel.appendChild(el('p', { className: 'text-muted', html: inlineHtml((savedSession.chapter || 'All chapters') + ' · ' + Math.max(0, savedSession.totalCards - savedSession.completed) + ' cards remaining') }));
+      resumePanel.appendChild(el('p', { className: 'text-muted', html: inlineHtml((savedSession.scope === 'all' || !savedSession.chapter ? 'All content' : savedSession.chapter) + ' · ' + Math.max(0, savedSession.totalCards - savedSession.completed) + ' cards remaining') }));
       var resumeRow = el('div', { className: 'flex gap-sm' });
       resumeRow.appendChild(el('button', { className: 'btn btn-secondary btn-sm', text: 'Resume saved session', onClick: function () { root.innerHTML = ''; renderFlashPlayer(root); } }));
       resumeRow.appendChild(el('button', {
@@ -1813,11 +1813,13 @@
     panel.appendChild(el('div', { className: 'label-upper mb-2', text: 'Select chapter' }));
 
     var picker = el('div', { className: 'fc-chapter-picker' });
+
     function startChapter(value) {
       var active = App.flashcards.getSession();
       if (active && !active.finished && !confirm('You have a saved session in progress. Starting a new session will discard it (it will not count toward your statistics). Continue?')) return;
-      var deck = App.flashcards.buildDeck({ cert: certId, chapter: value || null });
-      if (!App.flashcards.startSession(deck, { startCard: pending })) return;
+      var chapter = value || null;
+      var deck = App.flashcards.buildDeck({ cert: certId, chapter: chapter });
+      if (!App.flashcards.startSession(deck, { startCard: pending, chapter: chapter })) return;
       root.innerHTML = '';
       renderFlashPlayer(root);
     }
@@ -1833,7 +1835,7 @@
       btn.addEventListener('click', function () { startChapter(value); });
       picker.appendChild(btn);
     }
-    addOption('', 'All chapters', totalCards);
+    addOption('', 'All content', totalCards);
     chKeys.forEach(function (ch) { addOption(ch, ch, chs[ch].length); });
     panel.appendChild(picker);
     root.appendChild(panel);
@@ -1842,8 +1844,9 @@
     if (pending) {
       setTimeout(function () {
         var card = pending;
-        var deck = App.flashcards.buildDeck({ cert: card._cert || certId, chapter: card._chapter || null });
-        App.flashcards.startSession(deck, { startCard: card });
+        var chapter = card._chapter || null;
+        var deck = App.flashcards.buildDeck({ cert: card._cert || certId, chapter: chapter });
+        App.flashcards.startSession(deck, { startCard: card, chapter: chapter });
         root.innerHTML = '';
         renderFlashPlayer(root);
       }, 50);
@@ -1861,11 +1864,25 @@
     var retryCount = sess.retry.length;
 
     if (sess.cert || sess.chapter) {
-      root.appendChild(makeContextHeader(sess.cert, sess.chapter, 'Flashcards'));
+      var contextLabel = sess.scope === 'all' || !sess.chapter ? 'All content' : sess.chapter;
+      root.appendChild(makeContextHeader(sess.cert, contextLabel, 'Flashcards'));
     }
 
     // Progress + Shuffle toolbar
     var bar = el('div', { className: 'flash-toolbar' });
+    var faceToggle = el('button', {
+      className: 'btn btn-ghost btn-sm flash-face-toggle',
+      type: 'button',
+      text: sess.defaultFace === 'back' ? 'Back' : 'Front',
+      title: 'Choose which side new cards show first',
+      'aria-label': 'Choose which side new cards show first. Currently ' + (sess.defaultFace === 'back' ? 'back' : 'front'),
+      onClick: function (e) {
+        e.stopPropagation();
+        App.flashcards.setDefaultFace(sess.defaultFace === 'back' ? 'front' : 'back');
+        root.innerHTML = '';
+        renderFlashPlayer(root);
+      }
+    });
     bar.appendChild(el('div', { className: 'quiz-progress' }, [
       el('span', { className: 'mono text-muted', text: sess.completed + ' / ' + sess.totalCards + ' done' }),
       el('div', { className: 'progress-bar' }, [el('div', { className: 'progress-fill', style: { width: donePct + '%' } })]),
@@ -1876,6 +1893,7 @@
       title: 'Shuffle the remaining cards',
       onClick: function () { shuffleAndRefresh(); }
     }));
+    bar.appendChild(faceToggle);
     if (retryCount) {
       bar.appendChild(el('span', { className: 'chip chip-amber', text: retryCount + ' to retry' }));
     }
@@ -1898,7 +1916,7 @@
     stage.appendChild(fc);
     root.appendChild(stage);
 
-    var footer = el('div', { className: 'flashcard-footer' });
+    var footer = el('div', { className: 'flashcard-footer' + (sess.intentionallyFlipped ? ' flipped' : '') });
     var hint = el('p', { className: 'text-muted flash-hint', style: { textAlign: 'center' }, text: 'Click card or press Space to flip' });
     var grades = el('div', { className: 'grade-btns' });
     grades.appendChild(el('button', {
@@ -1917,7 +1935,7 @@
 
     function syncFlip() {
       fc.classList.toggle('flipped', sess.flipped);
-      footer.classList.toggle('flipped', sess.flipped);
+      footer.classList.toggle('flipped', sess.intentionallyFlipped);
     }
     syncFlip();
 
@@ -1933,6 +1951,8 @@
       renderFlashPlayer(root);
     }
     function onKey(e) {
+      var control = e.target && e.target.closest && e.target.closest('button, input, select, textarea, a, [contenteditable="true"]');
+      if (control) return;
       if (e.key === ' ' || e.code === 'Space') {
         e.preventDefault();
         App.flashcards.flip();
@@ -2784,7 +2804,7 @@
     L.push('');
     L.push('---');
     L.push('');
-    L.push('_Generated by ReviewApp v1.2.2 — offline study analytics._');
+    L.push('_Generated by ReviewApp v1.3.0 — offline study analytics._');
     L.push('');
 
     return L.join('\n');
@@ -5292,7 +5312,7 @@
     root.appendChild(el('div', { className: 'settings-section', text: 'About' }));
     var about = el('div', { className: 'panel' });
     about.appendChild(el('div', { className: 'label-upper mb-1', text: 'About' }));
-    about.appendChild(el('p', { text: 'ReviewApp v1.2.2 — offline study hub for CompTIA Linux+ and Network+.' }));
+    about.appendChild(el('p', { text: 'ReviewApp v1.3.0 — offline study hub for CompTIA Linux+ and Network+.' }));
     about.appendChild(el('p', { className: 'text-muted', style: { fontSize: '0.85rem' }, text: 'Vanilla HTML/CSS/JS. No network required. All data stays in your browser.' }));
     var c = App.content.counts();
     about.appendChild(el('p', { className: 'mono text-muted mt-1', style: { fontSize: '0.8rem' }, text: 'Loaded: ' + c.questions + 'Q · ' + c.flashcards + 'C · ' + c.labs + 'L · ' + c.notes + 'N' }));

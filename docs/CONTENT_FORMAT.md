@@ -1,6 +1,6 @@
 # ReviewApp Content Format
 
-This document describes every schema field used by ReviewApp content files. Content is loaded from classic JavaScript files that self-register via `window.ReviewApp.content.register(...)`.
+This document describes the schemas used by the content currently shipped in ReviewApp. Linux+ content is stored as classic JavaScript files that self-register via `window.ReviewApp.content.register(...)`; JSON is supported only when using Settings → Deep-scan folder. The checked-in Linux+ files are not JSON files.
 
 ---
 
@@ -214,9 +214,12 @@ window.ReviewApp.content.register({
 | `objectiveSteps` | (number\|number[])[] | no | Which step indices satisfy each objective (parallel to `objectives`). Defaults to objective *i* ↔ step *i* when omitted. Once all of an objective's steps are complete it is checked automatically, and checking an objective completes its steps. |
 | `steps` | array | yes | Step objects |
 | `steps[].do` | string | yes | Instruction |
+| `steps[].command` | string | no | Internal command metadata for command-based steps; not shown in the learner UI |
 | `steps[].hint` | string | no | Revealable hint |
 | `steps[].solution` | string | no | Revealable solution (copyable) |
-| `steps[].check` | string | no | Verification guidance |
+| `steps[].expectedOutput` | string | no | Concrete representative output shown by **View output**; use `(no output)` when appropriate |
+| `steps[].expectedOutputDynamic` | boolean | no | Marks output whose values or formatting vary by system or run |
+| `steps[].check` | string | no | One-line learner-facing verification guidance |
 | `tags` | string[] | no | Filtering |
 
 ---
@@ -262,13 +265,24 @@ Alternatively use **Settings → Deep-scan folder** to load files without editin
 
 ## JSON alternative
 
-Deep-scan also accepts `.json` files with the same object shape as the argument to `register()`:
+Deep-scan also accepts `.json` files with the same object shape as the argument to `register()`. This is an import alternative, not the format of the checked-in Linux+ banks:
 
 ```json
 {
   "type": "questions",
   "cert": "linux-plus",
-  "chapter": "Ch 02 · …",
-  "items": [ … ]
+  "chapter": "Ch 02 · Working with Files",
+  "items": [
+    {
+      "q": "Which command prints the current working directory?",
+      "type": "mcq",
+      "options": ["pwd", "cd", "ls", "cwd"],
+      "answer": 0,
+      "explain": "pwd prints the current working directory.",
+      "tags": ["paths", "navigation"]
+    }
+  ]
 }
 ```
+
+JSON deep-scan payloads use the same fields described above. For labs, `mockData` is an optional array of supplied files or data, while command steps may include internal `command`, `expectedOutput`, and `expectedOutputDynamic` metadata. When loading the repository's normal manifest, use `.js` paths under `certifications/` and call **Reload** after changing them.

@@ -83,6 +83,8 @@
       ts: Date.now(),
       cert: cert,
       chapter: chapter,
+      scope: opts.chapter ? 'chapter' : 'all',
+      defaultFace: opts.defaultFace === 'back' ? 'back' : 'front',
       cardsById: cardsById,
       totalCards: order.length,
       queue: order.map(cardKey),
@@ -90,7 +92,10 @@
       retry: [],                 // card keys marked Again in the current pass
       done: {},                  // cardKey -> true once answered Next
       stats: {},                 // cardKey -> { attempts, agains }
-      flipped: false,
+      flipped: opts.defaultFace === 'back',
+      // The preferred starting face is not an intentional flip. Grading
+      // controls should only appear after the learner flips the card.
+      intentionallyFlipped: false,
       finished: false,
       completed: 0,              // cards answered Next
       agains: 0,                 // total Again marks
@@ -104,6 +109,10 @@
 
   function getSession() {
     if (!session) session = App.store.getFlashSession();
+    if (session) {
+      if (!session.defaultFace) session.defaultFace = session.flipped ? 'back' : 'front';
+      if (typeof session.intentionallyFlipped !== 'boolean') session.intentionallyFlipped = false;
+    }
     return session;
   }
 
@@ -125,7 +134,19 @@
   function flip() {
     if (!session) return;
     session.flipped = !session.flipped;
+    session.intentionallyFlipped = true;
     persistSession();
+  }
+
+  // Change the preferred face without altering the current card or its queue.
+  function setDefaultFace(face) {
+    var active = getSession();
+    if (!active || active.finished) return null;
+    active.defaultFace = face === 'back' ? 'back' : 'front';
+    active.flipped = active.defaultFace === 'back';
+    active.intentionallyFlipped = false;
+    persistSession();
+    return active.defaultFace;
   }
 
   /* Move forward; promote the retry queue when the current pass ends. */
@@ -173,7 +194,8 @@
       session.completed++;
       session.done[k] = true;
     }
-    session.flipped = false;
+    session.flipped = session.defaultFace === 'back';
+    session.intentionallyFlipped = false;
     var more = advance();
     if (!more) session.finished = true;
     persistSession();
@@ -229,7 +251,8 @@
     session.queue = completedHead.concat(shuffled);
     session.index = completedHead.length;
     session.retry = [];
-    session.flipped = false;
+    session.flipped = session.defaultFace === 'back';
+    session.intentionallyFlipped = false;
     persistSession();
     return true;
   }
@@ -320,6 +343,7 @@
     startSession: startSession,
     currentCard: currentCard,
     flip: flip,
+    setDefaultFace: setDefaultFace,
     grade: grade,
     shuffle: shuffle,
     endSession: endSession,
