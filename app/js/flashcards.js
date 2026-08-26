@@ -111,7 +111,9 @@
     if (!session) session = App.store.getFlashSession();
     if (session) {
       if (!session.defaultFace) session.defaultFace = session.flipped ? 'back' : 'front';
-      if (typeof session.intentionallyFlipped !== 'boolean') session.intentionallyFlipped = false;
+      // Before `intentionallyFlipped` was persisted, a saved back-facing card
+      // could only have reached that state through a manual flip.
+      if (typeof session.intentionallyFlipped !== 'boolean') session.intentionallyFlipped = !!session.flipped;
     }
     return session;
   }
@@ -136,6 +138,10 @@
     session.flipped = !session.flipped;
     session.intentionallyFlipped = true;
     persistSession();
+  }
+
+  function canGrade() {
+    return !!(session && !session.finished && session.intentionallyFlipped);
   }
 
   // Change the preferred face without altering the current card or its queue.
@@ -343,6 +349,7 @@
     startSession: startSession,
     currentCard: currentCard,
     flip: flip,
+    canGrade: canGrade,
     setDefaultFace: setDefaultFace,
     grade: grade,
     shuffle: shuffle,

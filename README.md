@@ -166,6 +166,8 @@ each file directly:
 ```text
 node tests/answer-validation.test.js
 node tests/backup-import.test.js
+node tests/flashcards.test.js
+node tests/labs.test.js
 node tests/markdown.test.js
 node tests/perms-exercise.test.js
 node tests/question-quality.test.js

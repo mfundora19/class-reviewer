@@ -2247,7 +2247,8 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   font-size: 0.92rem;
   transition: border-color var(--motion-normal) var(--ease), background-color var(--motion-normal) var(--ease);
 }
-.notes-preview h1, .notes-preview h2, .notes-preview h3 { margin: 0.8em 0 0.35em; }
+.notes-preview h1, .notes-preview h2, .notes-preview h3,
+.notes-preview h4, .notes-preview h5, .notes-preview h6 { margin: 0.8em 0 0.35em; }
 .note-section-title {
   margin-top: 1rem;
   padding-bottom: 0.3rem;

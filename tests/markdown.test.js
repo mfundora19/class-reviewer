@@ -65,5 +65,10 @@ assert.strictEqual(
   markdown.renderInline('Use **bold** and *italic*.'),
   'Use <strong>bold</strong> and <em>italic</em>.'
 );
+assert.strictEqual(
+  markdown.render('##### Detail heading'),
+  '<h5>Detail heading</h5>',
+  'level-five Markdown headings should render as h5 elements'
+);
 
 console.log('PASS: inline Markdown rendering checks');

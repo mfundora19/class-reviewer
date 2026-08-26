@@ -135,7 +135,7 @@
       }
 
       // headings
-      var hm = line.match(/^(#{1,3})\s+(.+)$/);
+      var hm = line.match(/^(#{1,6})\s+(.+)$/);
       if (hm) {
         closeList();
         var level = hm[1].length;
