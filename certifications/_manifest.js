@@ -47,12 +47,17 @@ window.ReviewApp.content.setManifest({
     // ====================  Network+  ====================
     // ----------------- Flashcards -----------------
     "network-plus/flashcards/ch01-intro-to-networking-flashcards.js",
+    "network-plus/flashcards/ch02-infrastructure-documentation-flashcards.js",
+
     // ----------------- Questions -----------------
     "network-plus/questions/ch01-intro-to-networking-questions.js",
+    "network-plus/questions/ch02-infrastructure-documentation-questions.js",
     // ----------------- Labs -----------------
     "network-plus/labs/ch01-intro-to-networking-labs.js",
+    "network-plus/labs/ch02-infrastructure-documentation-labs.js",
     // ----------------- Notes -----------------
     "network-plus/notes/ch01-notes.js",
+    "network-plus/notes/ch02-notes.js",
     
 
 

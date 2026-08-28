@@ -1,7 +1,7 @@
 window.ReviewApp.content.register({
 type: "flashcards",
 cert: "network-plus",
-chapter: "Chapter 1 — Introduction to Networking",
+chapter: "Chapter 1: Introduction to Networking",
 items: [
 {
 front: "What is the difference between a physical topology and a logical topology?",

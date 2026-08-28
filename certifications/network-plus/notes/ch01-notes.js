@@ -1,7 +1,7 @@
 window.ReviewApp.content.register({
 type: "notes",
 cert: "network-plus",
-chapter: "Chapter 1 — Introduction to Networking",
+chapter: "Chapter 1: Introduction to Networking",
 items: [
 {
 title: "Network Models and Topologies",
