@@ -731,6 +731,77 @@
     });
   }
 
+  // Resolve chapter identity by number when content files use slightly
+  // different labels (for example, "Ch 01" versus "Chapter 1"). This keeps
+  // every stats surface on the same canonical chapter key.
+  function chapterNumber(value) {
+    var match = String(value || '').match(/(?:ch(?:apter)?|chapter)\s*0*(\d+)/i);
+    return match ? Number(match[1]) : null;
+  }
+
+  function sameChapter(left, right) {
+    if (!left || !right) return false;
+    if (left === right) return true;
+    var leftNumber = chapterNumber(left);
+    var rightNumber = chapterNumber(right);
+    return leftNumber != null && rightNumber != null && leftNumber === rightNumber;
+  }
+
+  function chapterPerformance(cert) {
+    var questions = App.content.getChapters(cert, 'questions');
+    var flashcards = App.content.getChapters(cert, 'flashcards');
+    var labs = App.content.getChapters(cert, 'labs');
+    var keys = [];
+
+    function addKeys(map) {
+      Object.keys(map).forEach(function (chapter) {
+        if (!keys.some(function (existing) { return sameChapter(existing, chapter); })) keys.push(chapter);
+      });
+    }
+    addKeys(questions); addKeys(flashcards); addKeys(labs);
+
+    var answers = getAnswers({ cert: cert });
+    var reviews = getCardReviews({ cert: cert });
+    function chapterMatches(value, key, fallback) {
+      if (!value) return false;
+      if (value === key || value === fallback) return true;
+      var valueNumber = chapterNumber(value);
+      var keyNumber = chapterNumber(key || fallback);
+      return valueNumber != null && keyNumber != null && valueNumber === keyNumber;
+    }
+    return keys.map(function (chapter) {
+      var qKey = Object.keys(questions).find(function (key) { return sameChapter(key, chapter); });
+      var fKey = Object.keys(flashcards).find(function (key) { return sameChapter(key, chapter); });
+      var lKey = Object.keys(labs).find(function (key) { return sameChapter(key, chapter); });
+      var qItems = qKey ? questions[qKey] : [];
+      var fItems = fKey ? flashcards[fKey] : [];
+      var lItems = lKey ? labs[lKey] : [];
+      var qAnswers = answers.filter(function (answer) { return chapterMatches(answer.chapter, qKey, chapter); });
+      var fReviews = reviews.filter(function (review) { return chapterMatches(review.chapter, fKey, chapter); });
+      var seenQuestions = {};
+      qAnswers.forEach(function (answer) { if (answer.qId) seenQuestions[answer.qId] = true; });
+      var reviewedCards = {};
+      fReviews.forEach(function (review) { if (review.cardId) reviewedCards[review.cardId] = true; });
+      var components = [];
+      if (qItems.length) components.push(Object.keys(seenQuestions).length / qItems.length);
+      if (fItems.length) components.push(Object.keys(reviewedCards).length / fItems.length);
+      if (lItems.length) components.push(lItems.filter(function (lab) { return isLabDone(lab._id); }).length / lItems.length);
+      return {
+        chapter: chapter,
+        questions: qItems.length,
+        questionsSeen: Object.keys(seenQuestions).length,
+        questionAnswers: qAnswers.length,
+        questionAccuracy: qAnswers.length ? Math.round(qAnswers.filter(function (answer) { return answer.correct; }).length / qAnswers.length * 100) : null,
+        flashcards: fItems.length,
+        flashcardsReviewed: Object.keys(reviewedCards).length,
+        flashcardReviews: fReviews.length,
+        labs: lItems.length,
+        labsDone: lItems.filter(function (lab) { return isLabDone(lab._id); }).length,
+        coverage: components.length ? Math.round(components.reduce(function (sum, value) { return sum + value; }, 0) / components.length * 100) : 0
+      };
+    });
+  }
+
   /* ── Active sessions ────────────────────────────────────── */
   function saveActiveSession(type, state) {
     if (state) memory.activeSessions[type] = state;
@@ -998,6 +1069,7 @@
     cardsDueCount: cardsDueCount,
     logCardReview: logCardReview,
     getCardReviews: getCardReviews,
+    chapterPerformance: chapterPerformance,
     saveFlashSession: saveFlashSession,
     getFlashSession: getFlashSession,
     clearFlashSession: clearFlashSession,

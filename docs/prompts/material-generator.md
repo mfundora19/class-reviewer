@@ -91,9 +91,12 @@ actually teaches — do not manufacture relationships it doesn't support.
 - When correctness varies by OS/distro/vendor/version, state the relevant
   distinction only if it materially affects correctness.
 
-### Step 4 — Prioritization (avoid card bloat)
+### Step 4 — Relevance, concision, and prioritization (avoid card bloat)
 
-Not every fact deserves a card. Prioritize:
+Every flashcard must test a relevant, meaningful point from the supplied
+material. Keep fronts concise and backs focused: ask one clear question and
+avoid unnecessary setup, trivia, or broad questions that combine unrelated
+facts. Prioritize:
 
 - **High value:** foundational, frequently confused with something similar,
   explicitly emphasized in the notes, practical/exam-relevant, or essential
@@ -109,14 +112,10 @@ that test the exact same fact from indistinguishable angles. Different
 phrasings of the same fact are acceptable only when they test a genuinely
 different cognitive angle (e.g., recognition vs. application).
 
-**Minimum coverage:** produce at least 70 flashcards for the chapter/topic,
-provided the notes contain enough genuinely distinct, high-value material to
-support that many without padding — scale up beyond 70 when the source is
-large enough to yield more well-justified cards. Never pad toward the
-minimum with trivial, redundant, or low-value cards; if the notes are thin,
-extract every legitimate high-value card they support, note internally that
-70 may not be reachable without padding, and prioritize quality over hitting
-the number.
+**Quantity limit:** produce only as many flashcards as the material justifies,
+with an absolute maximum of 150. Never pad toward a target; if the notes are
+thin, generate fewer cards. If more than 150 relevant cards are possible,
+select the 150 highest-value, least-overlapping cards.
 
 ### Step 5 — Output schema (exact — do not modify)
 
@@ -166,8 +165,11 @@ Before finalizing output, internally check:
    a generic template.
 3. Every fact is either directly supported by the notes or safe, accurate
    general knowledge used only to clarify — nothing invented.
-4. No duplicate or near-duplicate cards; no filler; no placeholders.
-5. Coverage matches what's actually high-value in the source, not an
+4. Every card is concise, directly relevant to the supplied material, and
+   tests one clear idea.
+5. There are no duplicate or near-duplicate cards, filler, or placeholders.
+6. The total number of cards is no more than 150.
+7. Coverage matches what's actually high-value in the source, not an
    external syllabus.
 6. Tags are lowercase, concise, and meaningful.
 7. `cert` and `chapter` are correctly formed.
@@ -203,6 +205,10 @@ question — this prompt runs unattended, so make the most reasonable
 inference and proceed.
 
 ### Step 2 — Apply certification-aware specialization
+
+Keep each question concise and directly relevant to the supplied material.
+Test one clear idea at a time; avoid unnecessary setup, trivia, and questions
+that combine unrelated facts.
 
 Let the domain determine which **question styles and cognitive skills** are
 emphasized. Illustrative patterns — reason by analogy for certifications not
@@ -343,23 +349,20 @@ Perform a blind review pass before finalizing: for each mcq/multi question,
 mentally strip the `answer` field and confirm the correct option is not
 identifiable purely from wording, length, or specificity patterns.
 
-### Step 6 — Prioritization and duplicate avoidance
+### Step 6 — Relevance, concision, and duplicate avoidance
 
-Favor high-value content: foundational facts, commonly confused pairs,
-explicitly emphasized material, practical scenarios, and content essential
-to later concepts. Avoid ten different questions testing the exact same
-fact (e.g. "DNS uses port 53" asked five different ways with no new
-cognitive angle) — different phrasings are fine only when they test
-recognition vs. application vs. scenario judgment, etc.
+Favor foundational facts, commonly confused pairs, explicitly emphasized
+material, practical scenarios, and content essential to later concepts. Every
+question must be supported by and relevant to the supplied material. Avoid
+trivia, unnecessary setup, and repeated questions testing the same fact (for
+example, asking about DNS port 53 five different ways without a new cognitive
+angle). Different phrasings are appropriate only when they test a genuinely
+different skill, such as recognition versus application.
 
-**Minimum coverage:** produce at least 70 questions for the chapter/topic,
-provided the notes contain enough genuinely distinct, high-value material to
-support that many without padding — scale up beyond 70 when the source is
-large enough to yield more well-justified questions. Never pad toward the
-minimum with trivial, redundant, or low-value questions; if the notes are
-thin, extract every legitimate question they support, note internally that
-70 may not be reachable without padding, and prioritize quality over hitting
-the number.
+**Quantity limit:** produce only as many questions as the material justifies,
+with an absolute maximum of 150. Never pad toward a target; if the notes are
+thin, generate fewer questions. If more than 150 relevant questions are
+possible, select the 150 highest-value, least-overlapping questions.
 
 ### Step 7 — Internal validation (perform silently, do not narrate)
 
@@ -372,9 +375,12 @@ Before finalizing, internally check:
    design.
 5. `match`/`command_match` pairs are coherent, unique, and non-trivial.
 6. No fabricated facts; no unsupported claims; no exam-authenticity claims.
-7. No duplicate/near-duplicate questions; no filler; no placeholders.
-8. `cert`, `chapter`, and `tags` correctly formed.
-9. The output is valid, complete JavaScript matching the schema exactly.
+7. Questions are concise, directly relevant to the supplied material, and
+   each tests one clear idea.
+8. No duplicate/near-duplicate questions, filler, or placeholders.
+9. The total number of questions is no more than 150.
+10. `cert`, `chapter`, and `tags` correctly formed.
+11. The output is valid, complete JavaScript matching the schema exactly.
 
 Do not show this checklist or your reasoning in the output.
 

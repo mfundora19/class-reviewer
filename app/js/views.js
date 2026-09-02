@@ -172,7 +172,7 @@
     } : App.content.counts();
     var stats = App.store.getDashboardStats(certId);
 
-    var termText = 'reviewapp v1.3.3 — ' + (cert ? cert.name + ' · ' : '') + compactNumber(counts.questions) + ' questions · ' +
+    var termText = 'reviewapp v1.3.5 — ' + (cert ? cert.name + ' · ' : '') + compactNumber(counts.questions) + ' questions · ' +
       compactNumber(counts.flashcards) + ' cards · ' + compactNumber(counts.labs) + ' labs — SYSTEM READY';
     var strip = el('div', { className: 'terminal-strip', 'aria-label': 'System status' });
     root.appendChild(strip);
@@ -588,7 +588,10 @@
       var qItems = questionChapter ? (questionChapters[questionChapter] || []) : [];
       var cardItems = flashChapter ? (flashChapters[flashChapter] || []) : [];
       var labItems = labChapter ? (labChapters[labChapter] || []) : [];
-      var seen = qItems.filter(function (q) { return !!seenQuestions[q.qId]; }).length;
+      var performance = App.store.chapterPerformance(certId).find(function (item) {
+        return item.chapter === chapter || (App.content.chapterNumber(item.chapter) != null && App.content.chapterNumber(item.chapter) === App.content.chapterNumber(chapter));
+      }) || { questionsSeen: 0, flashcardsReviewed: 0 };
+      var seen = performance.questionsSeen;
       var chapterReviews = flashChapter ? reviews.filter(function (r) {
         return resolveChapter('flashcards', r.chapter) === flashChapter;
       }) : [];
@@ -598,15 +601,9 @@
       chapterReviews.forEach(function (r) {
         if (r.cardId && cardIds[r.cardId]) cardSeen[r.cardId] = true;
       });
-      var cardSeenCount = Object.keys(cardSeen).length;
+      var cardSeenCount = performance.flashcardsReviewed;
       var doneLabCount = labItems.filter(function (lab) { return !!doneLabs[lab._id]; }).length;
-      var phaseParts = [];
-      if (cardItems.length) phaseParts.push(cardSeenCount / cardItems.length);
-      if (qItems.length) phaseParts.push(seen / qItems.length);
-      if (labItems.length) phaseParts.push(doneLabCount / labItems.length);
-      var pct = phaseParts.length
-        ? Math.round((phaseParts.reduce(function (sum, value) { return sum + value; }, 0) / phaseParts.length) * 100)
-        : 0;
+      var pct = performance.coverage || 0;
       return {
         chapter: chapter,
         number: chapterNumber(chapter, index),
@@ -614,6 +611,8 @@
         questions: qItems.length,
         cards: cardItems.length,
         labs: labItems.length,
+        // Stats is authoritative for per-chapter coverage. Use its counts so
+        // Chapter 1 and other chapters cannot drift between views.
         pct: Math.min(100, pct),
         accuracy: App.store.accuracyFor({ cert: certId, chapter: questionChapter || chapter }),
         questionChapter: questionChapter,
@@ -629,6 +628,8 @@
     });
 
     function pendingPhase(row) {
+      // Use the same reviewed/seen counts as Stats for the next-action
+      // decision, so a fully covered chapter is never offered again.
       if (row.cards && !row.flashComplete) return { type: 'flashcards', completed: row.cardSeen, total: row.cards };
       if (row.questions && !row.quizComplete) return { type: 'quiz', completed: row.quizSeen, total: row.questions };
       if (row.labs && !row.labsComplete) return { type: 'labs', completed: row.labDoneCount, total: row.labs };
@@ -1863,6 +1864,14 @@
     var donePct = sess.totalCards ? Math.round((sess.completed / sess.totalCards) * 100) : 0;
     var retryCount = sess.retry.length;
 
+    // View-only peek: while a previous card is on screen the live session is
+    // untouched (no grading, no scheduling). The peeked card shows its front
+    // face first, like seeing the card again for real.
+    var peek = App.flashcards.peekCard();
+    var isPeeking = !!peek;
+    var view = peek || card;
+    var localFlip = false;
+
     if (sess.cert || sess.chapter) {
       var contextLabel = sess.scope === 'all' || !sess.chapter ? 'All content' : sess.chapter;
       root.appendChild(makeContextHeader(sess.cert, contextLabel, 'Flashcards'));
@@ -1893,6 +1902,13 @@
       title: 'Shuffle the remaining cards',
       onClick: function () { shuffleAndRefresh(); }
     }));
+    bar.appendChild(el('button', {
+      className: 'btn btn-ghost btn-sm flash-previous', text: 'Previous',
+      title: 'See the previous card again — does not change your progress (P)',
+      'aria-label': 'Show the previous card again without changing progress',
+      disabled: App.flashcards.canGoPrevious() ? null : 'disabled',
+      onClick: function () { peekPrevious(); }
+    }));
     bar.appendChild(faceToggle);
     if (retryCount) {
       bar.appendChild(el('span', { className: 'chip chip-amber', text: retryCount + ' to retry' }));
@@ -1901,41 +1917,71 @@
 
     var stage = el('div', { className: 'flashcard-stage' });
     var fc = el('div', {
-      className: 'flashcard' + (sess.flipped ? ' flipped' : ''),
-      role: 'button', tabindex: '0', 'aria-label': 'Flashcard, press space to flip',
-      onClick: function () { App.flashcards.flip(); syncFlip(); }
+      className: 'flashcard' + (isPeeking ? (localFlip ? ' flipped' : '') : (sess.flipped ? ' flipped' : '')),
+      role: 'button', tabindex: '0',
+      'aria-label': isPeeking ? 'Viewing a previous card, press space to flip' : 'Flashcard, press space to flip',
+      onClick: function (e) {
+        if (e.target && e.target.closest && e.target.closest('button, a, input, select, textarea')) return;
+        if (isPeeking) localFlip = !localFlip;
+        else App.flashcards.flip();
+        syncFlip();
+      },
+      onKeydown: function (e) {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          e.stopPropagation();
+          if (isPeeking) localFlip = !localFlip;
+          else App.flashcards.flip();
+          syncFlip();
+        }
+      }
     });
+    var peekLabel = isPeeking ? 'Previous · ' : '';
     fc.appendChild(el('div', { className: 'flashcard-face front' }, [
-      el('div', { className: 'flashcard-label', text: 'Front' }),
-      el('div', { className: 'flashcard-text', html: inlineHtml(card.front) })
+      el('div', { className: 'flashcard-label', text: peekLabel + 'Front' }),
+      el('div', { className: 'flashcard-text', html: inlineHtml(view.front) })
     ]));
     fc.appendChild(el('div', { className: 'flashcard-face back' }, [
-      el('div', { className: 'flashcard-label', text: 'Back' }),
-      el('div', { className: 'flashcard-text', html: inlineHtml(card.back) })
+      el('div', { className: 'flashcard-label', text: peekLabel + 'Back' }),
+      el('div', { className: 'flashcard-text', html: inlineHtml(view.back) })
     ]));
     stage.appendChild(fc);
     root.appendChild(stage);
 
-    var footer = el('div', { className: 'flashcard-footer' + (sess.intentionallyFlipped ? ' flipped' : '') });
-    var hint = el('p', { className: 'text-muted flash-hint', style: { textAlign: 'center' }, text: 'Click card or press Space to flip' });
-    var grades = el('div', { className: 'grade-btns' });
-    grades.appendChild(el('button', {
-      className: 'btn btn-danger', text: '1 · Again',
-      title: 'Review this card again later',
-      onClick: function () { gradeAndRefresh('again'); }
-    }));
-    grades.appendChild(el('button', {
-      className: 'btn btn-primary', text: '2 · Next',
-      title: 'I know this card',
-      onClick: function () { gradeAndRefresh('next'); }
-    }));
-    footer.appendChild(hint);
-    footer.appendChild(grades);
+    var footer;
+    if (isPeeking) {
+      // Peek mode is view-only: no grade controls, just a way back.
+      footer = el('div', { className: 'flashcard-footer' });
+      footer.appendChild(el('p', { className: 'text-muted flash-hint', style: { textAlign: 'center' }, text: 'Viewing a previous card — your progress is not affected' }));
+      footer.appendChild(el('div', { className: 'peek-actions' }, [
+        el('button', {
+          className: 'btn btn-secondary btn-sm', text: 'Current card',
+          title: 'Return to the current card (Esc)',
+          onClick: function () { returnToCurrent(); }
+        })
+      ]));
+    } else {
+      footer = el('div', { className: 'flashcard-footer' + (sess.intentionallyFlipped ? ' flipped' : '') });
+      var hint = el('p', { className: 'text-muted flash-hint', style: { textAlign: 'center' }, text: 'Click card or press Space to flip' });
+      var grades = el('div', { className: 'grade-btns' });
+      grades.appendChild(el('button', {
+        className: 'btn btn-danger', text: '1 · Again',
+        title: 'Review this card again later',
+        onClick: function () { gradeAndRefresh('again'); }
+      }));
+      grades.appendChild(el('button', {
+        className: 'btn btn-primary', text: '2 · Next',
+        title: 'I know this card',
+        onClick: function () { gradeAndRefresh('next'); }
+      }));
+      footer.appendChild(hint);
+      footer.appendChild(grades);
+    }
     root.appendChild(footer);
 
     function syncFlip() {
-      fc.classList.toggle('flipped', sess.flipped);
-      footer.classList.toggle('flipped', sess.intentionallyFlipped);
+      fc.classList.toggle('flipped', isPeeking ? localFlip : sess.flipped);
+      if (!isPeeking) footer.classList.toggle('flipped', sess.intentionallyFlipped);
     }
     syncFlip();
 
@@ -1944,7 +1990,20 @@
       root.innerHTML = '';
       renderFlashPlayer(root);
     }
+    function peekPrevious() {
+      if (!App.flashcards.peekBack()) return;
+      root.innerHTML = '';
+      renderFlashPlayer(root);
+    }
+    function returnToCurrent() {
+      App.flashcards.peekReturn();
+      root.innerHTML = '';
+      renderFlashPlayer(root);
+    }
     function shuffleAndRefresh() {
+      // Shuffling is a live-session action: leave peek mode first so the deck
+      // change never happens under a card the learner is only viewing.
+      App.flashcards.peekReturn();
       App.flashcards.shuffle();
       App.toast('Deck shuffled', 'info');
       root.innerHTML = '';
@@ -1953,8 +2012,28 @@
     function onKey(e) {
       var control = e.target && e.target.closest && e.target.closest('button, input, select, textarea, a, [contenteditable="true"]');
       if (control) return;
-      if (e.key === ' ' || e.code === 'Space') {
+      if (isPeeking) {
+        // Peek mode is view-only: flip the viewed card or step back/return,
+        // but never shuffle or grade while a previous card is on screen.
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          returnToCurrent();
+        } else if (e.key === 'p' || e.key === 'P') {
+          e.preventDefault();
+          peekPrevious();
+        } else if (e.key === ' ' || e.code === 'Space') {
+          e.preventDefault();
+          localFlip = !localFlip;
+          syncFlip();
+        }
+        return;
+      }
+      if (e.key === 'p' || e.key === 'P') {
         e.preventDefault();
+        peekPrevious();
+      } else if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        e.stopPropagation();
         App.flashcards.flip();
         syncFlip();
       } else if (e.key === 's' || e.key === 'S') {
@@ -2823,7 +2902,7 @@
     L.push('');
     L.push('---');
     L.push('');
-    L.push('_Generated by ReviewApp v1.3.3 — offline study analytics._');
+    L.push('_Generated by ReviewApp v1.3.5 — offline study analytics._');
     L.push('');
 
     return L.join('\n');
@@ -3147,10 +3226,40 @@
     }
 
     function buildChapterRows() {
-      var qMap = App.content.getChapters(certId, 'questions');
-      var fMap = App.content.getChapters(certId, 'flashcards');
-      var lMap = App.content.getChapters(certId, 'labs');
-      var keys = [];
+      var canonical = App.store.chapterPerformance(certId);
+      return canonical.map(function (item, index) {
+        var chapter = item.chapter;
+        var qMap = App.content.getChapters(certId, 'questions');
+        var fMap = App.content.getChapters(certId, 'flashcards');
+        var lMap = App.content.getChapters(certId, 'labs');
+        var qKey = Object.keys(qMap).find(function (key) { return key === chapter || (App.content.chapterNumber(key) != null && App.content.chapterNumber(key) === App.content.chapterNumber(chapter)); });
+        var fKey = Object.keys(fMap).find(function (key) { return key === chapter || (App.content.chapterNumber(key) != null && App.content.chapterNumber(key) === App.content.chapterNumber(chapter)); });
+        var lKey = Object.keys(lMap).find(function (key) { return key === chapter || (App.content.chapterNumber(key) != null && App.content.chapterNumber(key) === App.content.chapterNumber(chapter)); });
+        var qItems = qKey ? qMap[qKey] : [];
+        var fItems = fKey ? fMap[fKey] : [];
+        var lItems = lKey ? lMap[lKey] : [];
+        var qAnswers = App.store.getAnswers({ cert: certId }).filter(function (a) { return a.chapter === qKey || (App.content.chapterNumber(a.chapter) != null && App.content.chapterNumber(a.chapter) === App.content.chapterNumber(chapter)); });
+        var fReviews = App.store.getCardReviews({ cert: certId }).filter(function (r) { return r.chapter === fKey || (App.content.chapterNumber(r.chapter) != null && App.content.chapterNumber(r.chapter) === App.content.chapterNumber(chapter)); });
+        var qSeen = {}; qAnswers.forEach(function (a) { if (a.qId) qSeen[a.qId] = true; });
+        var fSeen = {}; fReviews.forEach(function (r) { if (r.cardId) fSeen[r.cardId] = true; });
+        var labsDoneCount = lItems.filter(function (lab) { return !!labsDone[lab._id]; }).length;
+        return {
+          key: chapter, number: chapterNumber(chapter, index), title: chapterTitle(chapter),
+          qKey: qKey || chapter, fKey: fKey, lKey: lKey, questions: qItems, cards: fItems, labs: lItems,
+          qAnswers: qAnswers, fReviews: fReviews, seenQuestions: item.questionsSeen, reviewedCards: item.flashcardsReviewed,
+          labsDone: labsDoneCount, coverage: item.coverage, accuracy: item.questionAccuracy,
+          // Keep the dashboard's chapter numbers tied to the same canonical
+          // performance record used by Stats, including cards and quizzes.
+          questionTotal: item.questions, cardTotal: item.flashcards, labTotal: item.labs,
+          status: item.coverage >= 90 && (item.questionAccuracy == null || item.questionAccuracy >= 80) ? 'Strong' : item.questionAccuracy != null && item.questionAccuracy < 60 && qAnswers.length >= 3 ? 'Needs review' : item.coverage > 0 ? 'In progress' : 'Not started',
+          lastTs: Math.max.apply(null, qAnswers.concat(fReviews).map(function (x) { return x.ts || x.sessionTs || 0; }).concat(lItems.map(function (x) { return labsDone[x._id] || 0; })).concat([0]))
+        };
+      });
+    }
+
+    /* Legacy chapter-row implementation removed; the store is the canonical
+       source for every chapter metric shown in Stats. */
+    /*
       function addKeys(map) {
         Object.keys(map).forEach(function (key) {
           var number = App.content.chapterNumber ? App.content.chapterNumber(key) : null;
@@ -3212,7 +3321,7 @@
           lastTs: Math.max.apply(null, qAnswers.concat(fReviews).map(function (x) { return x.ts || x.sessionTs || 0; }).concat(lItems.map(function (x) { return labsDone[x._id] || 0; })).concat([0]))
         };
       });
-    }
+    */
 
     function renderLineChart(points, color, label) {
       var usable = points.filter(function (p) { return p.value != null; });
@@ -5331,7 +5440,7 @@
     root.appendChild(el('div', { className: 'settings-section', text: 'About' }));
     var about = el('div', { className: 'panel' });
     about.appendChild(el('div', { className: 'label-upper mb-1', text: 'About' }));
-    about.appendChild(el('p', { text: 'ReviewApp v1.3.3 — offline study hub for CompTIA Linux+ and Network+.' }));
+    about.appendChild(el('p', { text: 'ReviewApp v1.3.5 — offline study hub for CompTIA Linux+ and Network+.' }));
     about.appendChild(el('p', { className: 'text-muted', style: { fontSize: '0.85rem' }, text: 'Vanilla HTML/CSS/JS. No network required. All data stays in your browser.' }));
     var c = App.content.counts();
     about.appendChild(el('p', { className: 'mono text-muted mt-1', style: { fontSize: '0.8rem' }, text: 'Loaded: ' + c.questions + 'Q · ' + c.flashcards + 'C · ' + c.labs + 'L · ' + c.notes + 'N' }));

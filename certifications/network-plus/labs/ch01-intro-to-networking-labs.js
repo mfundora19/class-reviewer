@@ -1,7 +1,7 @@
 window.ReviewApp.content.register({
 type: "labs",
 cert: "network-plus",
-chapter: "Chapter 1 — Introduction to Networking",
+chapter: "Chapter 1: Introduction to Networking",
 items: [
 {
 title: "Classify the Network Model and Topology",

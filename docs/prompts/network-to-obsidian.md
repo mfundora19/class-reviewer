@@ -18,15 +18,17 @@ Before finalizing, check that every meaningful idea from the source remains repr
 
 ---
 
-## 1. SOURCE FIDELITY (non-negotiable)
+## 1. SOURCE FIDELITY AND DIRECT EXPLANATION (non-negotiable)
 
-- Every technical fact, number, acronym expansion, port, protocol name, and relationship must come from the source. Never invent or "correct" content using outside networking knowledge.
+- Use the source as the primary basis for the material, but write the explanation directly. Do not begin sections with phrases such as **"According to the source"**, **"The source says"**, or similar commentary about where the information came from.
+- Present the concept, fact, relationship, or procedure itself so the result reads like polished study material, not a report about the source.
+- Every technical fact, number, acronym expansion, port, protocol name, and relationship must be supported by the source. Never invent or "correct" content using outside networking knowledge.
 - Preserve the source's own emphasis. If the source flags something as a Certification objective, Exam Tip, Note, or "remember this," carry that emphasis into the notes.
 - Preserve source order: chapter → section → subsection → topic, in the sequence the source presents them. Do not reorganize into a generic "networking notes" template.
 - If the source is ambiguous, incomplete, or contradictory, do not resolve it silently. Flag it with:
   > [!missing] Note
   > The source does not specify X / leaves Y unresolved.
-- Only add outside context when it is small, clearly necessary for comprehension (e.g., spelling out a syntax pattern the source assumes the reader knows), and clearly marked as such — see Section 9 (Proactive Syntax/Definitions).
+- You may add a brief, basic clarification when it is genuinely needed to understand the material and can be stated confidently. Keep additions close to the relevant explanation; do not expand into unrelated background or speculation.
 - Do not manufacture CLI examples, diagrams, or comparisons that the source does not support.
 
 ---

@@ -451,10 +451,18 @@ button, input, select, textarea { font: inherit; color: inherit; }
 a { color: var(--accent-cyan); text-decoration: none; transition: color var(--motion-fast) var(--ease); }
 a:hover { text-decoration: underline; }
 img, svg { display: block; max-width: 100%; }
-:focus { outline: none; }
 :focus-visible {
   outline: 2px solid var(--accent-cyan);
   outline-offset: 2px;
+}
+/* Page-level containers are not interactive targets, but they can end up
+   holding keyboard focus (for example after a flashcard flip blurs the card).
+   The global :focus-visible outline would then paint a viewport-wide
+   rectangle whose only visible edge is a stray vertical cyan line near the
+   app's right edge. Real controls keep their focus rings. */
+body:focus-visible,
+#view-root:focus-visible {
+  outline: none;
 }
 
 /* Ambient background */
@@ -1238,7 +1246,11 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   transition: border-color var(--motion-fast) var(--ease), background var(--motion-fast) var(--ease);
 }
 .fc-chapter-option:hover { border-color: var(--border-glow); background: var(--bg-hover); }
-.fc-chapter-option:focus-visible { outline: 2px solid var(--accent-cyan); outline-offset: 2px; }
+.fc-chapter-option:focus,
+.fc-chapter-option:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
 .fc-chapter-option.selected {
   border-color: var(--accent-cyan);
   background: var(--accent-cyan-dim);
@@ -1879,6 +1891,7 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 }
 .flash-toolbar .quiz-progress { flex: 1 1 14rem; min-width: min(100%, 14rem); margin-bottom: 0; }
 .flash-shuffle,
+.flash-previous,
 .flash-face-toggle {
   flex: 0 0 auto;
   min-width: 5.5rem;
@@ -1887,10 +1900,16 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   color: var(--text-primary);
 }
 .flash-shuffle:hover,
+.flash-previous:hover:not(:disabled),
 .flash-face-toggle:hover {
   background: var(--bg-hover);
   border-color: var(--border-glow);
   box-shadow: var(--shadow-sm);
+}
+.peek-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
 }
 .flashcard-stage {
   perspective: 1200px;
@@ -1906,6 +1925,15 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   transform-style: preserve-3d;
   transition: transform 0.55s var(--ease);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+/* The card is a click target, not a form control: never draw a focus ring
+   during keyboard flipping. */
+.flashcard:focus,
+.flashcard:focus-visible,
+.flashcard:active {
+  outline: none !important;
+  box-shadow: none !important;
 }
 .flashcard.flipped { transform: rotateY(180deg); }
 .flashcard-face {

@@ -10,6 +10,7 @@
 
   var session = null;
   var pendingStartCard = null;
+  var PEEK_HISTORY_MAX = 200;
 
   function cardKey(card) {
     return card._key || card._id;
@@ -100,7 +101,9 @@
       completed: 0,              // cards answered Next
       agains: 0,                 // total Again marks
       attempts: 0,               // total grades
-      reviews: []                // per-attempt records, committed only on completion
+      reviews: [],               // per-attempt records, committed only on completion
+      history: [],               // cards shown so far, for the view-only Previous peek
+      peekStep: 0                // how many history steps back the learner is viewing
     };
     App.store.setLastStudy({ type: 'flashcards', cert: session.cert, ts: Date.now() });
     persistSession();
@@ -114,6 +117,11 @@
       // Before `intentionallyFlipped` was persisted, a saved back-facing card
       // could only have reached that state through a manual flip.
       if (typeof session.intentionallyFlipped !== 'boolean') session.intentionallyFlipped = !!session.flipped;
+      // Sessions saved before the Previous peek existed have no history; older
+      // snapshots may also carry a peekStep that no longer fits the queue.
+      if (!Array.isArray(session.history)) session.history = [];
+      if (!(session.peekStep > 0)) session.peekStep = 0;
+      if (session.peekStep > session.history.length) session.peekStep = session.history.length;
     }
     return session;
   }
@@ -140,6 +148,52 @@
     persistSession();
   }
 
+  /* ── Previous-card peek (view-only) ────────────────────────
+     The learner can look back at cards already shown without affecting the
+     Leitner schedule, the retry queue, or any recorded attempt: peeking never
+     calls grade(), logCardReview, or gradeCard, and grading controls are
+     hidden while a previous card is on screen. */
+  function pushHistory(key) {
+    if (!key) return;
+    var h = session.history || (session.history = []);
+    if (h[h.length - 1] === key) return;
+    h.push(key);
+    if (h.length > PEEK_HISTORY_MAX) h.shift();
+    // A peek cursor deeper than the history is meaningless after a change.
+    if (session.peekStep > h.length) session.peekStep = h.length;
+  }
+
+  function peeking() {
+    return !!(session && session.peekStep > 0 && session.history.length);
+  }
+
+  function canGoPrevious() {
+    return !!(session && !session.finished && (session.peekStep || 0) < session.history.length);
+  }
+
+  /* The card currently being viewed while peeking, or null for the live one. */
+  function peekCard() {
+    if (!session || !(session.peekStep > 0)) return null;
+    var key = session.history[session.history.length - session.peekStep];
+    return (key && session.cardsById[key]) || null;
+  }
+
+  /* Step one card further back. Purely visual: no scheduling state changes. */
+  function peekBack() {
+    if (!canGoPrevious()) return false;
+    session.peekStep = (session.peekStep || 0) + 1;
+    persistSession();
+    return true;
+  }
+
+  /* Return from the peek to the live session card. */
+  function peekReturn() {
+    if (!session || !(session.peekStep > 0)) return false;
+    session.peekStep = 0;
+    persistSession();
+    return true;
+  }
+
   function canGrade() {
     return !!(session && !session.finished && session.intentionallyFlipped);
   }
@@ -155,13 +209,17 @@
     return active.defaultFace;
   }
 
-  /* Move forward; promote the retry queue when the current pass ends. */
+  /* Move forward; promote the retry queue when the current pass ends.
+     The card being left is recorded in the peek history so Previous can show
+     it again later without re-grading it. */
   function advance() {
     if (session.index + 1 < session.queue.length) {
+      pushHistory(session.queue[session.index]);
       session.index++;
       return true;
     }
     if (session.retry.length) {
+      pushHistory(session.queue[session.index]);
       session.queue = session.retry;
       session.retry = [];
       session.index = 0;
@@ -256,7 +314,10 @@
 
     session.queue = completedHead.concat(shuffled);
     session.index = completedHead.length;
+    // Retry cards merge into the new deck; an empty retry list here is the
+    // documented pre-existing behavior of shuffle, not a peek side effect.
     session.retry = [];
+    pushHistory(currentKey);
     session.flipped = session.defaultFace === 'back';
     session.intentionallyFlipped = false;
     persistSession();
@@ -358,6 +419,11 @@
     getSession: getSession,
     startWithCard: startWithCard,
     consumePendingCard: consumePendingCard,
-    cardKey: cardKey
+    cardKey: cardKey,
+    peeking: peeking,
+    canGoPrevious: canGoPrevious,
+    peekCard: peekCard,
+    peekBack: peekBack,
+    peekReturn: peekReturn
   };
 })();

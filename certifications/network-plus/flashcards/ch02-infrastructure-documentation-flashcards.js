@@ -14,11 +14,6 @@ back: "A hierarchical design based on a star topology.",
 tags: ["network-plus", "topology", "structured-cabling"]
 },
 {
-front: "What is the relationship among TIA/EIA, EIA/TIA, and ANSI/TIA in the source?",
-back: "They refer to the same family of structured cabling standards, with ANSI/TIA reflecting ANSI's role in accrediting the standards.",
-tags: ["network-plus", "standards", "acronyms"]
-},
-{
 front: "What is the physical hierarchy from an ISP connection to a workstation?",
 back: "ISP -> EF -> Demarc -> MDF -> IDF -> Work Area.",
 tags: ["network-plus", "structured-cabling", "hierarchy"]
@@ -45,13 +40,13 @@ tags: ["network-plus", "demarc", "troubleshooting"]
 },
 {
 front: "What is an MDF?",
-back: "The main distribution frame, the centralized point of interconnection for an organization's LAN, CAN, or WAN. It may also be called an equipment room or main cross connect.",
+back: "The main distribution frame: the centralized interconnection point for an organization's LAN, CAN, or WAN. It may also be called an equipment room or main cross-connect.",
 tags: ["network-plus", "mdf", "structured-cabling"]
 },
 {
-front: "What can the term MDF refer to in practice?",
-back: "Either the racks holding the network equipment or the room containing those racks and equipment.",
-tags: ["network-plus", "mdf", "documentation"]
+front: "What connections commonly branch from an MDF?",
+back: "Ethernet connections to nearby work areas, large cable bundles to IDFs, and the incoming service-provider connection.",
+tags: ["network-plus", "mdf", "backbone"]
 },
 {
 front: "What kinds of connections commonly branch from an MDF?",
@@ -65,18 +60,13 @@ tags: ["network-plus", "mdf", "equipment"]
 },
 {
 front: "What is a data room?",
-back: "An enclosed space that holds network equipment. It may also be called a telecommunications room or data closet.",
+back: "An enclosed space that holds network equipment, also called a telecommunications room or data closet.",
 tags: ["network-plus", "data-room", "physical-security"]
 },
 {
 front: "What physical considerations apply to a data room?",
 back: "Size, equipment clearance, wall materials, physical security, cooling, ventilation, and maintaining a constant temperature.",
 tags: ["network-plus", "data-room", "physical-installation"]
-},
-{
-front: "Why do data rooms require cooling and ventilation?",
-back: "Network equipment is sensitive to heat, so appropriate cooling and ventilation help maintain suitable operating temperatures.",
-tags: ["network-plus", "cooling", "data-room"]
 },
 {
 front: "What is a rack used for?",
@@ -87,16 +77,6 @@ tags: ["network-plus", "rack", "physical-installation"]
 front: "What are common rack forms?",
 back: "Two-post, four-post, six-post, open-frame, and enclosed racks.",
 tags: ["network-plus", "rack"]
-},
-{
-front: "What are rack ears?",
-back: "Mounting hardware attached to equipment that helps secure the device to rack posts.",
-tags: ["network-plus", "rack", "hardware"]
-},
-{
-front: "What rack mounting-hole types are mentioned in the source?",
-back: "Round or square holes, which may be threaded or nonthreaded. Square-hole racks are described as a newer approach that can allow bolt-free mounting.",
-tags: ["network-plus", "rack", "mounting"]
 },
 {
 front: "What are common ways racks can be mounted?",
@@ -121,11 +101,6 @@ tags: ["network-plus", "rack", "dimensions"]
 {
 front: "What standard rack width is given in the source?",
 back: "19 inches, although 23-inch racks are also encountered.",
-tags: ["network-plus", "rack", "dimensions"]
-},
-{
-front: "How is rack depth treated in the source?",
-back: "Rack depth varies considerably by manufacturer.",
 tags: ["network-plus", "rack", "dimensions"]
 },
 {
@@ -269,11 +244,6 @@ back: "Organizing cables to support the highest potential performance of the cab
 tags: ["network-plus", "cable-management"]
 },
 {
-front: "How does good cable management help technicians?",
-back: "It helps identify cable purpose, prevent damage and accidents, avoid tripping hazards, troubleshoot problems, and maintain an organized installation.",
-tags: ["network-plus", "cable-management"]
-},
-{
 front: "How much exposed twisted-pair cable should remain before termination?",
 back: "No more than 1 inch.",
 tags: ["network-plus", "termination", "numbers"]
@@ -310,18 +280,18 @@ tags: ["network-plus", "cable-management", "physical-security"]
 },
 {
 front: "What is EMI?",
-back: "Electromagnetic interference, which can introduce noise that interferes with network signals.",
+back: "Electromagnetic interference: noise from electrical activity that can interfere with network signals.",
+tags: ["network-plus", "emi", "cabling"]
+},
+{
+front: "What are examples of EMI sources?",
+back: "Motors, power lines, televisions, copiers, fluorescent lights, and other sources of electrical activity.",
 tags: ["network-plus", "emi", "cabling"]
 },
 {
 front: "How far should cable be kept from fluorescent lights or other listed EMI sources?",
 back: "At least 3 feet.",
 tags: ["network-plus", "emi", "numbers"]
-},
-{
-front: "What are examples of EMI sources listed in the source?",
-back: "Motors, power lines, televisions, copiers, fluorescent lights, and other sources of electrical activity.",
-tags: ["network-plus", "emi", "cabling"]
 },
 {
 front: "What is a plenum?",
@@ -369,16 +339,6 @@ back: "Color can represent cable purpose, but the color scheme must be documente
 tags: ["network-plus", "labeling", "documentation"]
 },
 {
-front: "What can environmental monitoring systems detect in a data room?",
-back: "Temperature, humidity, airflow, secure-door status, power-supply problems, light conditions, and sound conditions.",
-tags: ["network-plus", "environment", "monitoring"]
-},
-{
-front: "How can environmental sensors notify technicians?",
-back: "They can send alerts by text or email.",
-tags: ["network-plus", "environment", "monitoring"]
-},
-{
 front: "What is an ICS?",
 back: "An industrial control system that acquires real-time data from a physical system and manages that system or presents data to humans for monitoring and management.",
 tags: ["network-plus", "ics", "ot"]
@@ -409,24 +369,9 @@ back: "For security, they are often isolated from sensitive data resources or In
 tags: ["network-plus", "scada", "ot", "security"]
 },
 {
-front: "How can environmental alarms be configured?",
-back: "They can escalate as the severity of a condition increases.",
-tags: ["network-plus", "monitoring", "environment"]
-},
-{
-front: "Why are environmental trends useful?",
-back: "Recorded environmental data lets technicians review recent conditions and identify patterns of fluctuation.",
-tags: ["network-plus", "monitoring", "trends"]
-},
-{
 front: "How should data rooms be physically secured?",
 back: "They should be behind locked doors with access limited to appropriate IT personnel.",
 tags: ["network-plus", "physical-security", "data-room"]
-},
-{
-front: "Why are security cameras used near data-room entrances?",
-back: "They can deter tampering and provide evidence or information after a break-in.",
-tags: ["network-plus", "physical-security", "cameras"]
 },
 {
 front: "How are security cameras typically treated as network devices?",
@@ -509,11 +454,6 @@ back: "A standard operating procedure used so employees perform recurring comple
 tags: ["network-plus", "sop", "processes"]
 },
 {
-front: "What factors should determine the format of network documentation?",
-back: "Company needs, network complexity, available resources, intended audience, and technician experience and training.",
-tags: ["network-plus", "documentation", "processes"]
-},
-{
 front: "What software information should be included in network documentation?",
 back: "Operating systems, configurations, applications, Active Directory information, product keys, licenses, leases, licensing restrictions, storage and run locations, departments using the software, and dependent client/server systems.",
 tags: ["network-plus", "software", "documentation"]
@@ -522,11 +462,6 @@ tags: ["network-plus", "software", "documentation"]
 front: "What can an EULA define?",
 back: "Who may use an application, how long it may be used, how many users may install or access it, whether it may be provided over a network or Internet, and how many backup copies may be stored.",
 tags: ["network-plus", "eula", "licensing"]
-},
-{
-front: "Why should password documentation be highly secure but accessible to more than one appropriate person?",
-back: "It must be protected from unauthorized access while ensuring the organization is not locked out if one network administrator becomes unavailable.",
-tags: ["network-plus", "passwords", "documentation"]
 },
 {
 front: "What tools does the source mention for securely storing credentials?",
@@ -552,16 +487,6 @@ tags: ["network-plus", "inventory", "security"]
 front: "What information should an inventory record include?",
 back: "Device identification, model number, serial number, location, warranty information, technical support contact information, software version, vendor, and licensing information.",
 tags: ["network-plus", "inventory", "documentation"]
-},
-{
-front: "What is the recommended general direction for systematic device naming?",
-back: "Top-down or outside-in, moving from large-scale information toward details such as building -> floor -> data room -> rack.",
-tags: ["network-plus", "naming", "documentation"]
-},
-{
-front: "What security problem can overly descriptive device names create?",
-back: "They can reveal unnecessary information about the location of especially sensitive systems or data and therefore provide useful information to attackers.",
-tags: ["network-plus", "naming", "security"]
 },
 {
 front: "What is an RFP?",
@@ -609,11 +534,6 @@ back: "It provides multiple components, services, or connections in the same rol
 tags: ["network-plus", "redundancy", "availability"]
 },
 {
-front: "What trade-off does redundancy introduce?",
-back: "It improves availability but increases cost.",
-tags: ["network-plus", "redundancy", "availability"]
-},
-{
 front: "What is automatic failover?",
 back: "A redundant component immediately assumes the duties of a failed component without manual intervention.",
 tags: ["network-plus", "failover", "redundancy"]
@@ -637,36 +557,6 @@ tags: ["network-plus", "lifecycle", "asset-management"]
 front: "What are the six system life-cycle phases in the source?",
 back: "Requirements analysis, design planning, development and testing, implementation, documentation and maintenance, and evaluation.",
 tags: ["network-plus", "lifecycle", "processes"]
-},
-{
-front: "What happens during requirements analysis?",
-back: "Network requirements and business needs are identified.",
-tags: ["network-plus", "lifecycle", "requirements"]
-},
-{
-front: "What happens during design planning?",
-back: "Broad goals are developed into detailed design decisions.",
-tags: ["network-plus", "lifecycle", "design"]
-},
-{
-front: "What happens during development and testing?",
-back: "Equipment is purchased and tested before deployment.",
-tags: ["network-plus", "lifecycle", "testing"]
-},
-{
-front: "What happens during implementation?",
-back: "Equipment is deployed or replaced and testing continues until a new stable baseline is achieved.",
-tags: ["network-plus", "lifecycle", "implementation"]
-},
-{
-front: "What happens during documentation and maintenance?",
-back: "The network is monitored, problems are detected and addressed, and documentation is kept updated.",
-tags: ["network-plus", "lifecycle", "maintenance"]
-},
-{
-front: "What happens during evaluation?",
-back: "Cost-benefit analysis is performed, equipment approaching end of life is identified, and decisions are made about discarding, replacing, or upgrading it.",
-tags: ["network-plus", "lifecycle", "evaluation"]
 },
 {
 front: "What is configuration management?",
@@ -714,11 +604,6 @@ back: "A configuration optimized for compliance and performance that can serve a
 tags: ["network-plus", "golden-configuration", "configuration-management"]
 },
 {
-front: "How can automation help configuration management?",
-back: "It can reduce repetitive human work and consistently identify configurations, monitor changes, apply patches or updates, adapt configurations, and perform remediation.",
-tags: ["network-plus", "automation", "configuration-management"]
-},
-{
 front: "What is configuration auditing?",
 back: "A review of historical changes to determine whether changes were evaluated and approved, produced the desired effect, maintained compliance, and kept documentation and backups current.",
 tags: ["network-plus", "auditing", "configuration-management"]
@@ -735,12 +620,12 @@ tags: ["network-plus", "eos", "security"]
 },
 {
 front: "What is EOL?",
-back: "End-of-life, which may refer to the same point as EOS or an earlier point when a product is no longer sold or produced while support continues.",
+back: "End-of-life, which may mean the same point as EOS or an earlier point when a product is no longer sold or produced while support continues.",
 tags: ["network-plus", "eol", "lifecycle"]
 },
 {
 front: "Why should decommissioning be planned before EOS?",
-back: "Because after support ends, security updates and bug fixes generally stop, increasing the risk of continued production use.",
+back: "After support ends, security updates and bug fixes generally stop, increasing the risk of continued production use.",
 tags: ["network-plus", "eos", "decommissioning"]
 },
 {
@@ -759,11 +644,6 @@ back: "Back up required data, test the backups, and document the backups before 
 tags: ["network-plus", "decommissioning", "backup"]
 },
 {
-front: "Why might decommissioning be performed in stages?",
-back: "To reduce unintended consequences when removing systems from production.",
-tags: ["network-plus", "decommissioning", "risk-management"]
-},
-{
 front: "What is change management intended to control?",
 back: "Changes to network systems and resources so they are properly planned, approved, implemented, tested, documented, and reversible when necessary.",
 tags: ["network-plus", "change-management"]
@@ -779,11 +659,6 @@ back: "So they can plan around periods when network resources or services will b
 tags: ["network-plus", "change-management", "notification"]
 },
 {
-front: "What is an installation as a software change?",
-back: "Introducing new software and integrating it with relevant network resources.",
-tags: ["network-plus", "software-changes", "installation"]
-},
-{
 front: "What is a patch?",
 back: "A correction, improvement, or enhancement that can fix bugs, close vulnerabilities, or add minor enhancements while most of the code remains unchanged.",
 tags: ["network-plus", "patch", "software-changes"]
@@ -795,18 +670,18 @@ tags: ["network-plus", "patch-management", "change-management"]
 },
 {
 front: "What is an upgrade?",
-back: "A major software change that enhances functionality and features while also correcting bugs and vulnerabilities.",
+back: "A major software change that enhances functionality and features while correcting bugs and vulnerabilities.",
 tags: ["network-plus", "upgrade", "software-changes"]
-},
-{
-front: "What is a rollback?",
-back: "Reverting software to a previous version after an attempted patch or upgrade fails.",
-tags: ["network-plus", "rollback", "change-management"]
 },
 {
 front: "What risks can firmware updates introduce?",
 back: "They can remove existing features or create compatibility problems even when they improve functionality.",
 tags: ["network-plus", "firmware", "change-management"]
+},
+{
+front: "What is a rollback?",
+back: "Reverting software to a previous version after an attempted patch or upgrade fails.",
+tags: ["network-plus", "rollback", "change-management"]
 },
 {
 front: "What are the core firmware-management practices from the source?",
@@ -824,11 +699,6 @@ back: "To determine compatibility and reversal procedures without exposing the p
 tags: ["network-plus", "change-management", "testing"]
 },
 {
-front: "What does determining scope mean during a change?",
-back: "Deciding which users, segments, or devices are affected and whether distribution is centralized or performed machine by machine.",
-tags: ["network-plus", "change-management", "scope"]
-},
-{
 front: "When should a planned network change normally occur?",
 back: "During an off-hours maintenance window unless the change is an emergency.",
 tags: ["network-plus", "change-management", "maintenance-window"]
@@ -844,21 +714,6 @@ back: "The current configuration, including router, switch, and server operating
 tags: ["network-plus", "change-management", "backup"]
 },
 {
-front: "What does a usability test evaluate after implementation?",
-back: "It has a typical user exercise the system to verify usability and normal operation.",
-tags: ["network-plus", "change-management", "testing"]
-},
-{
-front: "What is a stress test?",
-back: "A test that subjects a system to a higher load than normal.",
-tags: ["network-plus", "change-management", "testing"]
-},
-{
-front: "What decision should be made after testing a change in production?",
-back: "Determine whether to keep the change or roll it back based on the results.",
-tags: ["network-plus", "change-management", "rollback"]
-},
-{
 front: "What should happen if a change is unsuccessful?",
 back: "Revert according to the rollback plan and notify affected personnel of the completion and reason for the rollback.",
 tags: ["network-plus", "change-management", "rollback"]
@@ -869,19 +724,9 @@ back: "Reenable access as appropriate, notify affected personnel, and record the
 tags: ["network-plus", "change-management", "documentation"]
 },
 {
-front: "What should happen if a maintenance-window overrun is expected?",
-back: "Inform technical staff and users about the anticipated delay and what they should expect.",
-tags: ["network-plus", "maintenance-window", "communication"]
-},
-{
 front: "What are the four rollback approaches summarized for different software upgrade types?",
 back: "Use the patch uninstall utility for an OS patch; uninstall or reinstall the previous client version for a client upgrade; uninstall or reinstall the previous shared application for a shared upgrade; restore a full system backup for an OS upgrade, with OS uninstall as a last resort.",
 tags: ["network-plus", "rollback", "software"]
-},
-{
-front: "Why should replaced components sometimes be retained temporarily?",
-back: "An old component may need to be reinstalled or referenced later, especially when it is the organization's only example of that component.",
-tags: ["network-plus", "change-management", "hardware"]
 },
 {
 front: "What general principles apply to hardware, software, network, environmental, and documentation changes?",
@@ -889,69 +734,14 @@ back: "Use proper channels, minimize business impact, plan thoroughly, and docum
 tags: ["network-plus", "change-management", "processes"]
 },
 {
-front: "What is a project in the context of change management?",
-back: "A technical effort with a defined beginning and ending.",
-tags: ["network-plus", "project-management"]
-},
-{
-front: "What does project management control?",
-back: "A desired outcome within planned project scope, scheduled time, and budgeted cost.",
-tags: ["network-plus", "project-management"]
-},
-{
-front: "Why do larger organizations generally require more change documentation?",
-back: "Formal processes protect the person making the change, users, managers, and the organization while reducing unnecessary disruption and individual blame.",
-tags: ["network-plus", "change-management", "documentation"]
-},
-{
 front: "What should a change request identify about authorization?",
 back: "The person submitting the request and the person authorizing it, which may be different depending on the system.",
 tags: ["network-plus", "change-management", "change-request"]
 },
 {
-front: "What factors generally influence the complexity of change approval?",
-back: "Cost, time involved, number of users affected, potential productivity risk, and difficulty of rollback.",
-tags: ["network-plus", "change-management", "approval"]
-},
-{
-front: "What is the role of a change coordinator?",
-back: "Coordinating tasks such as user training, departments, notification timing, authorized downtime, management communication about problems, and budget.",
-tags: ["network-plus", "change-management", "coordination"]
-},
-{
-front: "What additional documentation may accompany a major change?",
-back: "Testing documentation, test data and scenarios, test hardware or software, implementation procedures, vendor documentation and contacts, configuration-backup locations, and rollback-backup locations.",
-tags: ["network-plus", "change-management", "documentation"]
-},
-{
-front: "What network documentation should be updated after a major change?",
-back: "Network configuration, IP address utilization, network additions, and physical location changes.",
-tags: ["network-plus", "documentation", "change-management"]
-},
-{
-front: "What happens when a formal change is closed?",
-back: "After implementation and testing succeed and users have time to settle into the change, the change is formally closed, often followed by a debriefing and lessons learned.",
-tags: ["network-plus", "change-management", "closure"]
-},
-{
-front: "What is the key reliability distinction between MTBF and MTTR?",
-back: "MTBF describes expected time between failures, while MTTR describes average time to repair after a failure.",
-tags: ["network-plus", "mtbf", "mttr"]
-},
-{
 front: "What is the key relationship among baseline, SSOT, version control, monitoring, and auditing?",
 back: "The baseline provides the known stable state, SSOT stores configuration information centrally, version control tracks changes, monitoring checks the current state, and auditing reviews historical changes and compliance.",
 tags: ["network-plus", "configuration-management", "workflow"]
-},
-{
-front: "What is the key physical-installation relationship to memorize for horizontal cabling?",
-back: "100 m maximum = 90 m fixed horizontal cabling + 10 m workstation connection.",
-tags: ["network-plus", "cabling", "numbers"]
-},
-{
-front: "What is the key infrastructure relationship to memorize for structured cabling?",
-back: "ISP -> EF -> Demarc -> MDF -> IDF -> Work Area.",
-tags: ["network-plus", "structured-cabling", "hierarchy"]
 },
 {
 front: "What is the key lifecycle sequence for retiring a system?",
