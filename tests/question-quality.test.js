@@ -2,8 +2,8 @@
  *
  * The LLM prompt is the generator in this project, so its output cannot be
  * tested deterministically. These checks cover the prompt contract, the
- * schema of the checked-in question banks, and the runtime's answer remapping
- * when choices are shuffled.
+ * schema and 75-100 item budget of the checked-in question banks, and the
+ * runtime's answer remapping when choices are shuffled.
  *
  * Run with: node tests/question-quality.test.js
  */
@@ -14,46 +14,39 @@ var fs = require('fs');
 var path = require('path');
 var vm = require('vm');
 
-var promptPath = path.join(__dirname, '..', 'docs', 'prompt-generator.md');
+var promptPath = path.join(__dirname, '..', 'docs', 'prompts', 'material-generator.md');
 var prompt = fs.readFileSync(promptPath, 'utf8');
 var manifestPath = path.join(__dirname, '..', 'certifications', '_manifest.js');
 var manifest = fs.readFileSync(manifestPath, 'utf8');
 
 [
-  'ANSWER-CHOICE QUALITY',
-  'balanced set of answers',
-  'type: "match"',
-  'analyze the notes',
-  'coherent group',
-  'counterpart',
-  'supported by the supplied notes',
+  'comparable in length',
+  '`match`',
+  'analyze the supplied notes',
+  'coherent',
+  'supported by and relevant to the supplied material',
   'do not force',
-  'Balance the options, not the question stem',
-  'short, direct questions',
-  'QUESTION STEM STYLE',
-  'Never refer to the source material in the question stem',
-  'systematically be the longest or shortest',
-  'not the longest',
-  'not make it the shortest',
+  'applies within one option set, not the question stem',
   'plausible',
-  'literal shell syntax and punctuation-only choices',
-  'blind clue review',
-  'source order',
-  'exactly 5 options for every mcq and multi question',
-  'randomly/aleatorily select the correct-choice count from 1, 2, 3, or 4',
-  'never use 0 or 5 correct choices',
-  'independently randomize which A–E positions hold the correct choices',
-  '45% mcq, 20% multi, 10% tf, 10% fill, and 15% match'
+  'blind review pass',
+  'keep the question stem itself as concise as the objective allows',
+  'always emit exactly 5 options',
+  'vary the count of correct answers across',
+  '1\u20134 zero-based indices',
+  'most important material only',
+  'at least 75 questions and at most 100',
+  'at least 75\nflashcards and at most 100'
 ].forEach(function (requiredText) {
   assert.ok(prompt.toLowerCase().indexOf(requiredText.toLowerCase()) >= 0,
-    'questions prompt should contain: ' + requiredText);
+    'material-generator prompt should contain: ' + requiredText);
 });
 
 function loadQuestionPayloads() {
   var files = [
     'ch01-exploring-linux-questions.js',
     'ch02-servers-services-security-questions.js',
-    'ch03-files-directories-search-questions.js'
+    'ch03-files-directories-search-questions.js',
+    'ch04-filtering-redirecting-editing-flashcards.js'
   ];
   var payloads = [];
   files.forEach(function (file) {
@@ -73,19 +66,54 @@ function loadQuestionPayloads() {
 }
 
 var payloads = loadQuestionPayloads();
-assert.strictEqual(payloads.length, 3, 'all checked-in question banks should register');
+assert.strictEqual(payloads.length, 4, 'all checked-in Linux+ question banks should register');
 [
   'linux-plus/questions/ch01-exploring-linux-questions.js',
   'linux-plus/questions/ch02-servers-services-security-questions.js',
-  'linux-plus/questions/ch03-files-directories-search-questions.js'
+  'linux-plus/questions/ch03-files-directories-search-questions.js',
+  'linux-plus/questions/ch04-filtering-redirecting-editing-flashcards.js'
 ].forEach(function (file) {
   assert.ok(manifest.indexOf('"' + file + '"') >= 0,
     'manifest should load the question bank: ' + file);
 });
-assert.ok(manifest.indexOf('contentVersion: "1.2.5"') >= 0,
+assert.ok(manifest.indexOf('contentVersion: "1.2.6"') >= 0,
   'manifest should version the content snapshot contract');
-assert.deepStrictEqual(payloads.map(function (payload) { return payload.items.length; }), [19, 87, 166],
+assert.deepStrictEqual(payloads.map(function (payload) { return payload.items.length; }), [95, 87, 100, 100],
   'question banks should contain all expected chapter questions');
+
+// Every checked-in question bank must honor the 75-100 quantity window from
+// the material-generator prompt (flashcards and questions alike).
+var budgetPayloads = [];
+var bankDir = path.join(__dirname, '..', 'certifications');
+fs.readdirSync(bankDir).filter(function (entry) {
+  return fs.statSync(path.join(bankDir, entry)).isDirectory();
+}).forEach(function (certDir) {
+  ['flashcards', 'questions'].forEach(function (kind) {
+    var dir = path.join(bankDir, certDir, kind);
+    if (!fs.statSync(dir).isDirectory()) return;
+    fs.readdirSync(dir).filter(function (f) { return f.endsWith('.js'); }).forEach(function (file) {
+      var source = fs.readFileSync(path.join(dir, file), 'utf8');
+      var context = {
+        window: {
+          ReviewApp: {
+            content: {
+              register: function (payload) { budgetPayloads.push(payload); }
+            }
+          }
+        }
+      };
+      vm.runInNewContext(source, context, { filename: certDir + '/' + kind + '/' + file });
+    });
+  });
+});
+assert.ok(budgetPayloads.length >= payloads.length,
+  'the budget sweep should load at least the Linux+ question banks');
+budgetPayloads.forEach(function (payload) {
+  assert.ok(payload.type === 'flashcards' || payload.type === 'questions',
+    'budget sweep should only load flashcards and questions payloads');
+  assert.ok(payload.items.length >= 75 && payload.items.length <= 100,
+    payload.cert + '/' + payload.chapter + ' (' + payload.type + ') should hold 75-100 items, got ' + payload.items.length);
+});
 
 var questionCount = 0;
 var multiAnswerCounts = {};
@@ -164,8 +192,8 @@ payloads.forEach(function (payload) {
   });
 });
 
-assert.strictEqual(questionCount, 272,
-  'all active Linux+ question banks should provide 272 questions to the registry');
+assert.strictEqual(questionCount, 382,
+  'all active Linux+ question banks should provide 382 questions to the registry');
 var wildcardQuestion = null;
 payloads.forEach(function (payload) {
   payload.items.forEach(function (question) {
@@ -352,7 +380,7 @@ assert.deepStrictEqual(cleanedExamSession.state.flagged, { 0: true });
 
 var originalContent = global.window.ReviewApp.content;
 global.window.ReviewApp.content = {
-  getManifest: function () { return { contentVersion: '1.2.5' }; }
+  getManifest: function () { return { contentVersion: '1.2.6' }; }
 };
 assert.strictEqual(quiz.sanitizeQuizSession({
   contentVersion: '1.0.9',

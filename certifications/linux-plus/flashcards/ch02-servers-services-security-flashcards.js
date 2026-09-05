@@ -224,7 +224,7 @@ window.ReviewApp.content.register({
       tags: ["mongodb", "history"]
     },
     {
-      front: "MongoDB security caution from the notes",
+      front: "What security caution applies to older MongoDB versions?",
       back: "Older versions installed with authentication disabled by default; admins should enable authentication, configure roles, and restrict network access.",
       tags: ["mongodb", "security"]
     },
@@ -449,7 +449,7 @@ window.ReviewApp.content.register({
       tags: ["clustering", "beowulf", "pvm"]
     },
     {
-      front: "Name two newer clustering technologies mentioned in the notes.",
+      front: "Name two newer clustering technologies covered in this chapter.",
       back: "Apache Hadoop and Linux Virtual Server (LVS).",
       tags: ["clustering", "hadoop", "lvs"]
     },
@@ -479,7 +479,7 @@ window.ReviewApp.content.register({
       tags: ["containers", "docker", "kubernetes"]
     },
     {
-      front: "What analogy describes ports and IP addresses in the notes?",
+      front: "What analogy describes the relationship between IP addresses and ports?",
       back: "A business phone number (IP address) plus an extension (port number) to reach a specific service.",
       tags: ["ports", "analogy"]
     }

@@ -136,7 +136,7 @@ Each step's bottom **Verify** row gives a concise expectation. When an example o
 
 **AI prompts**
 
-- **[AI Prompt Generator](./docs/prompt-generator.md)** — ready-made prompts that turn your notes into complete content files (flashcards, questions, labs, notes)
+- **[Material Generator prompts](./docs/prompts/material-generator.md)** — ready-made prompts that turn your notes into complete content files (flashcards, questions, labs, notes)
 - **[Book/PDF → Obsidian Notes](./docs/prompts/linux-to-obsidian.md)** — a copy-and-paste master prompt that converts a book or PDF into polished, structured Obsidian study notes
 - **[Stats UI Polish & Markdown Report](./docs/prompts/stats-polish-prompt.md)** — a detailed developer-oriented prompt for polishing the Stats view and its Markdown export
 

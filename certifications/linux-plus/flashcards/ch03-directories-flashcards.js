@@ -7,34 +7,34 @@ window.ReviewApp.content.register({
     { front: "What is the command-line interface (CLI)?", back: "A text-based prompt provided by the shell where commands can be entered and run as programs.", tags: ["shell", "basics"] },
     { front: "Absolute pathname", back: "The full pathname to a file or directory starting from the root, e.g. /etc/passwd.", tags: ["paths"] },
     { front: "Relative pathname", back: "The pathname of a target relative to your current directory in the tree, e.g. ./subfolder or ../subfolder.", tags: ["paths"] },
-    { front: "Parent directory", back: "The directory one level closer to the root from your current directory.", tags: ["paths"] },
+    
     { front: "What is a user's home directory?", back: "A location unique to the user account for storing personal files; you're placed there at login.", tags: ["paths", "home"] },
     { front: "What does the ~ metacharacter represent?", back: "The current user's home directory; ~mary refers to another user's (mary's) home directory.", tags: ["metacharacters", "home"] },
     { front: "pwd", back: "Prints the current working directory (the directory you're presently located in).", tags: ["navigation"] },
-    { front: "cd", back: "Changes directories; with no argument, returns you to your home directory.", tags: ["navigation"] },
-    { front: "cd -", back: "Jumps back to your previous working directory.", tags: ["navigation"] },
+    
+    
     { front: "Tab-completion", back: "A BASH shell feature: type enough unique letters of a name and press Tab to auto-complete; if multiple matches exist, it lists possibilities.", tags: ["shell", "basics"] },
     { front: "/ (root)", back: "Root filesystem; contains all directories not mounted separately.", tags: ["fhs"] },
     { front: "/boot", back: "Holds the Linux kernel, initramfs, and boot-related files.", tags: ["fhs"] },
-    { front: "/boot/efi", back: "The EFI System Partition, containing UEFI bootloaders.", tags: ["fhs"] },
-    { front: "/etc", back: "Stores system-wide configuration files.", tags: ["fhs"] },
-    { front: "/home", back: "Contains user home directories.", tags: ["fhs"] },
-    { front: "/root", back: "The home directory for the root (superuser) account.", tags: ["fhs"] },
-    { front: "/usr", back: "Contains most system commands and utilities (bin, sbin, lib, local, share, src, include, games).", tags: ["fhs"] },
-    { front: "/usr/local", back: "Holds locally installed programs, separate from distro-managed packages.", tags: ["fhs"] },
+    
+    
+    
+    
+    
+    
     { front: "/opt", back: "Holds optional/third-party application software.", tags: ["fhs"] },
-    { front: "/var", back: "Variable data such as logs, spools, caches, and databases (includes /var/log, /var/lib, /var/cache).", tags: ["fhs"] },
+    
     { front: "/tmp", back: "Temporary files used by programs.", tags: ["fhs"] },
-    { front: "/srv", back: "Data served by system services such as web, FTP, or repositories.", tags: ["fhs"] },
-    { front: "/mnt", back: "A temporary manual mount point for filesystems.", tags: ["fhs"] },
-    { front: "/media", back: "Auto-mounted removable media, such as USB drives or DVDs.", tags: ["fhs"] },
+    
+    
+    
     { front: "/proc", back: "A virtual filesystem exposing process and kernel information.", tags: ["fhs"] },
     { front: "/sys", back: "A virtual filesystem exposing device and kernel interfaces.", tags: ["fhs"] },
-    { front: "/dev", back: "Contains device files (usually implemented as devtmpfs).", tags: ["fhs"] },
-    { front: "/run", back: "Holds runtime process state; replaces the older /var/run.", tags: ["fhs"] },
-    { front: "$ (metacharacter)", back: "Marks the following text as a shell variable.", tags: ["metacharacters"] },
-    { front: "# (metacharacter)", back: "Begins a shell script comment.", tags: ["metacharacters"] },
-    { front: "& (metacharacter)", back: "Runs a command in the background.", tags: ["metacharacters"] },
+    
+    
+    
+    
+    
     { front: "; (metacharacter)", back: "Terminates/separates commands on the same line.", tags: ["metacharacters"] },
     { front: "< << > >> (metacharacters)", back: "Input/output redirection symbols.", tags: ["metacharacters"] },
     { front: "| (metacharacter)", back: "Pipes the output of one command into another as input.", tags: ["metacharacters"] },
@@ -46,14 +46,14 @@ window.ReviewApp.content.register({
     { front: "What are binary data files?", back: "Files containing machine language (0s and 1s) that store info such as common functions and graphics, usually supporting a program.", tags: ["file-types"] },
     { front: "Are directories actually files?", back: "Yes — directories are special files that act as placeholders to organize other data.", tags: ["file-types"] },
     { front: "Linked files", back: "Files associated with one another; they may represent the same data or point to another file (like a shortcut).", tags: ["file-types", "links"] },
-    { front: "Special device files", back: "Files that represent devices (like an HDD or SSD) on the system; typically found only in /dev.", tags: ["file-types"] },
+    
     { front: "Named pipe files", back: "Files that pass information from one process in memory to another; one process writes while another reads.", tags: ["file-types"] },
     { front: "Socket files", back: "A variant of named pipe files that lets a process on another computer write to a file while a local process reads from it.", tags: ["file-types"] },
     { front: "Max filename length in Linux", back: "255 characters, typically alphanumeric characters plus underscore ( _ ), dash ( - ), and period ( . ).", tags: ["filenames"] },
     { front: "Hidden files", back: "Files whose names start with a period ( . ); view them with ls -a.", tags: ["filenames"] },
     { front: "Are file extensions required in Linux?", back: "No — unlike Windows, Linux extensions are optional; the OS doesn't rely on them to identify file type.", tags: ["filenames"] },
     { front: ".sh extension", back: "Shell script — a text file containing commands executed by the shell.", tags: ["filenames", "extensions"] },
-    { front: ".so extension", back: "A shared object (program library) file.", tags: ["filenames", "extensions"] },
+    
     { front: ".tar / .gz / .tar.gz extensions", back: ".tar = archive of files; .gz/.bz2/.xz/.Z = compressed files; .tar.gz/.tgz = compressed archived files.", tags: ["filenames", "extensions"] },
     { front: "virtual directory", back: "The single merged directory structure combining files from all storage devices into one tree, based at the root directory.", tags: ["paths", "basics"] },
     { front: "ls — Important options", back: "-a → show all files incl. hidden\n-d → show a directory's own metadata, not contents\n-F → append type indicator (*, /, =, >, @, |)\n-i → show inode number\n-l → long listing (type, perms, links, owner, group, mtime, name)\n-R → recursive listing\n-h → human-readable sizes (use with -l)", tags: ["ls", "commands"] },
@@ -62,14 +62,14 @@ window.ReviewApp.content.register({
     { front: "ls -l field order", back: "Type+permissions, number of hard links, owner, group, file size, last modified date, filename.", tags: ["ls", "permissions"] },
     { front: "ls -l first character = file type", back: "- regular file, d directory, l symbolic link, c character device, b block device, p named pipe, s socket.", tags: ["ls", "file-types"] },
     { front: "Where do you find a command's syntax in man pages?", back: "In the Synopsis section of the command's man page.", tags: ["man", "basics"] },
-    { front: "tree command", back: "Displays a pseudo-graphical tiered view of files and directories, useful without a graphical desktop.", tags: ["commands", "navigation"] },
+    
     { front: "lsof command", back: "'List open files' — displays all files currently open by a user or process on the system.", tags: ["commands"] },
     { front: "touch", back: "Creates empty files, or updates a file's access/modification timestamps if it already exists; accepts multiple filenames.", tags: ["commands", "files"] },
     { front: "How does a directory locate a file?", back: "A directory is a special file storing each contained file's name along with that file's inode number.", tags: ["file-types", "directories"] },
     { front: "mkdir — Important options", back: "-p → create missing parent directories as needed\n-v → print confirmation message for each directory created", tags: ["mkdir", "commands"] },
     { front: "What happens if mkdir is used on a nested path without -p?", back: "It fails with 'No such file or directory' because the parent directory doesn't exist yet.", tags: ["mkdir", "commands"] },
     { front: "cp — Important options", back: "-a → archive: recursive copy preserving perms/ownership/timestamps\n-f → force overwrite\n-i → prompt before overwrite\n-n → never overwrite\n-R/-r → recursive copy of directories\n-u → only overwrite if source is newer\n-v → verbose", tags: ["cp", "commands"] },
-    { front: "What happens if cp copies a directory without -R?", back: "cp refuses and prints 'cp: omitting directory' rather than copying it.", tags: ["cp", "commands"] },
+    
     { front: "mv — Important options", back: "-f → force overwrite\n-i → prompt before overwrite\n-n → never overwrite\n-u → only overwrite if source is newer\n-v → verbose", tags: ["mv", "commands"] },
     { front: "Can mv move and rename a file in one command?", back: "Yes — the source uses the file's current path/name, the destination uses the new path/name.", tags: ["mv", "commands"] },
     { front: "rsync", back: "Used for fast copies of large files or many files at once; often used for backups and can securely copy over a network, typically tunneled through OpenSSH.", tags: ["rsync", "commands"] },
@@ -112,7 +112,7 @@ window.ReviewApp.content.register({
     { front: "diff output notation (e.g. 2,3c2,3)", back: "Means lines 2–3 of the first file must be changed to match lines 2–3 of the second; diff also uses 'a' for additions and 'd' for deletions.", tags: ["diff"] },
     { front: "sdiff", back: "Compares two files and displays them side by side (one file per column), easier to read than raw diff output.", tags: ["diff", "commands"] },
     { front: "which", back: "Shows the full pathname of a shell command by searching directories in $PATH; if not found, lists the directories searched instead.", tags: ["which", "commands"] },
-    { front: "PATH environment variable", back: "Sets the directories Linux searches for a command's binary, with entries separated by a colon (:).", tags: ["environment", "path"] },
+    
     { front: "How does which reveal aliases?", back: "It shows the alias definition (e.g. alias ls='ls --color=auto') along with the underlying binary path.", tags: ["which", "alias"] },
     { front: "whereis", back: "Locates a command's program binary, source code files, and man pages.", tags: ["whereis", "commands"] },
     { front: "locate", back: "Searches the prebuilt mlocate.db database (in /var/lib/mlocate/) to check whether a file exists on the system.", tags: ["locate", "commands"] },
@@ -125,7 +125,6 @@ window.ReviewApp.content.register({
     { front: "find — Other common criteria", back: "-empty → empty files/dirs\n-fstype x → files on filesystem type x\n-group x → owned by group/GID x\n-inum x → file with inode x\n-name x → match filename x\n-regex x → match filename via regex\n-size -/+x → size less/more/equal to x\n-user x → owned by user/UID x\n-maxdepth n → limit search depth to n levels", tags: ["find", "commands"] },
     { front: "find -type values", back: "b = block, c = character, d = directory, p = named pipe, f = regular file, l = symbolic link, s = socket.", tags: ["find", "file-types"] },
     { front: "find /usr/bin -perm /4000", back: "Audits for the SUID permission bit (octal 4000), useful for finding potentially dangerous SUID binaries.", tags: ["find", "permissions", "security"] },
-    { front: "grep -d skip", back: "Tells grep to skip directories (instead of erroring) while searching a path like /etc/*.", tags: ["grep", "commands"] },
-    { front: "grep -R / -r", back: "Searches an entire directory tree recursively instead of just the top level.", tags: ["grep", "commands"] }
+    { front: "grep -d skip", back: "Tells grep to skip directories (instead of erroring) while searching a path like /etc/*.", tags: ["grep", "commands"] }
   ]
 });

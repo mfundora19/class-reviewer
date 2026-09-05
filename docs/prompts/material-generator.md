@@ -4,6 +4,11 @@ Five independent, self-contained master prompts for generating ReviewApp study
 content (Flashcards, Questions, Labs, Notes, Command Summary) from raw notes
 for **any** IT/cybersecurity/networking certification — CompTIA or otherwise.
 
+**Content-bank policy:** Flashcards and Questions each produce a single bank
+of 75–100 items per chapter/topic — never fewer than 75, never more than 100 —
+built from the chapter's most important material (see each prompt's
+"Quantity window" rule). Labs, Notes, and Command Summary have no fixed count.
+
 **How to use:** copy exactly one section below (from its `## Name` heading to
 the next `=====================` separator), paste it into a fresh LLM
 conversation, attach or paste your notes, and send. Each section works alone —
@@ -112,10 +117,33 @@ that test the exact same fact from indistinguishable angles. Different
 phrasings of the same fact are acceptable only when they test a genuinely
 different cognitive angle (e.g., recognition vs. application).
 
-**Quantity limit:** produce only as many flashcards as the material justifies,
-with an absolute maximum of 150. Never pad toward a target; if the notes are
-thin, generate fewer cards. If more than 150 relevant cards are possible,
-select the 150 highest-value, least-overlapping cards.
+**Quantity window (absolute):** every chapter/topic must produce **at least 75
+flashcards and at most 100** — a fixed target of 100 is wrong, and so is
+stopping below 75. This floor exists so the bank is large enough to support
+spaced review, weak-spot drills, and search across the whole chapter.
+
+If the notes support more than 100 relevant cards, rank candidates and keep
+the 100 that matter most (tie-break toward the most foundational and most
+frequently confused). If the notes appear too thin to reach 75, first mine
+them more deeply for well-supported relationships (definitions, purposes,
+distinctions, commands, flags, ports, procedures, examples, comparisons)
+before deciding they are genuinely thin; do not manufacture filler, trivia,
+or near-duplicates to hit the floor, and never exceed 100.
+
+**Selection — most important material only:** the bank must be the chapter's
+most important material, not a uniform sample of it. Rank every candidate
+card by exam relevance:
+
+1. Explicitly emphasized, high-value, or foundational material the rest of
+   the chapter builds on (core definitions, key distinctions, essential
+   commands, central procedures).
+2. Material the certification is known to test heavily in this domain,
+   applied to what the notes actually teach.
+3. Supporting terminology and secondary distinctions worth recalling.
+
+Include every rank-1 item, then fill toward 75–100 with rank-2 and selective
+rank-3 material; drop everything below. When choosing between overlapping
+candidates, prefer the least-overlapping, most distinguishing cards.
 
 ### Step 5 — Output schema (exact — do not modify)
 
@@ -168,12 +196,12 @@ Before finalizing output, internally check:
 4. Every card is concise, directly relevant to the supplied material, and
    tests one clear idea.
 5. There are no duplicate or near-duplicate cards, filler, or placeholders.
-6. The total number of cards is no more than 150.
+6. The total number of cards is between 75 and 100 inclusive.
 7. Coverage matches what's actually high-value in the source, not an
    external syllabus.
-6. Tags are lowercase, concise, and meaningful.
-7. `cert` and `chapter` are correctly formed.
-8. The output is valid, complete JavaScript matching the schema exactly.
+8. Tags are lowercase, concise, and meaningful.
+9. `cert` and `chapter` are correctly formed.
+10. The output is valid, complete JavaScript matching the schema exactly.
 
 Do not show this checklist or your reasoning in the output.
 
@@ -349,7 +377,7 @@ Perform a blind review pass before finalizing: for each mcq/multi question,
 mentally strip the `answer` field and confirm the correct option is not
 identifiable purely from wording, length, or specificity patterns.
 
-### Step 6 — Relevance, concision, and duplicate avoidance
+### Step 6 — Relevance, importance, prioritization, and duplicate avoidance
 
 Favor foundational facts, commonly confused pairs, explicitly emphasized
 material, practical scenarios, and content essential to later concepts. Every
@@ -359,10 +387,28 @@ example, asking about DNS port 53 five different ways without a new cognitive
 angle). Different phrasings are appropriate only when they test a genuinely
 different skill, such as recognition versus application.
 
-**Quantity limit:** produce only as many questions as the material justifies,
-with an absolute maximum of 150. Never pad toward a target; if the notes are
-thin, generate fewer questions. If more than 150 relevant questions are
-possible, select the 150 highest-value, least-overlapping questions.
+**Selection — most important material only:** the bank must cover the
+chapter's most important material, not sample it uniformly. Rank candidate
+questions by exam relevance — first the explicitly emphasized, foundational,
+and commonly confused material the chapter centers on; then the material this
+certification is known to test in this domain; then supporting terminology
+and secondary distinctions. Cover all rank-1 material first, then fill with
+rank-2 and selective rank-3 questions. Never manufacture filler or
+near-duplicates to reach a count, and never exhaust the budget on trivia
+while core material goes untested.
+
+**Quantity window (absolute):** every chapter/topic must produce **at least
+75 questions and at most 100** — a fixed target of 100 is wrong, and so is
+stopping below 75. This floor exists so the bank is large enough to support
+random-mix, weak-spot, and exam-simulation practice across the whole chapter.
+
+If the notes support more than 100 relevant questions, rank candidates and
+keep the 100 that matter most (tie-break toward foundational concepts and
+commonly confused material). If the notes appear too thin to reach 75, mine
+them more deeply for well-supported angles (application scenarios,
+distinctions, calculations, procedure order, interpretation of provided
+output) before deciding they are genuinely thin; do not pad with filler, and
+never exceed 100.
 
 ### Step 7 — Internal validation (perform silently, do not narrate)
 
@@ -378,7 +424,7 @@ Before finalizing, internally check:
 7. Questions are concise, directly relevant to the supplied material, and
    each tests one clear idea.
 8. No duplicate/near-duplicate questions, filler, or placeholders.
-9. The total number of questions is no more than 150.
+9. The total number of questions is between 75 and 100 inclusive.
 10. `cert`, `chapter`, and `tags` correctly formed.
 11. The output is valid, complete JavaScript matching the schema exactly.
 

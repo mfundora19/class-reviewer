@@ -16,4 +16,4 @@ practical details.
 
 Prompt templates are grouped in [`prompts/`](./prompts/). See [`prompts/README.md`](./prompts/README.md) for the index.
 
-- **[AI Prompt Generator](./prompt-generator.md)** — copy-and-paste prompts for generating ReviewApp content files (flashcards, questions, labs, notes) from your notes.
+- **[Material Generator prompts](./prompts/material-generator.md)** — copy-and-paste prompts for generating ReviewApp content files (flashcards, questions, labs, notes) from your notes.

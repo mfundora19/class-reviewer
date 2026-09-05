@@ -51,14 +51,7 @@ answer: 1,
 explain: "Active Directory is the centralized directory database containing user account and security information for a Windows domain.",
 tags: ["network-plus", "active-directory", "client-server"]
 },
-{
-type: "mcq",
-q: "What service manages user sign-on and resource access in a Windows domain?",
-options: ["AD DS", "SMTP", "DBMS", "IIS", "ARP"],
-answer: 0,
-explain: "Active Directory Domain Services manages domain sign-on and the access permitted by Active Directory.",
-tags: ["network-plus", "ad-ds", "windows"]
-},
+
 {
 type: "mcq",
 q: "A computer requests a resource from another computer. What is the requesting computer called?",
@@ -91,14 +84,7 @@ answer: 1,
 explain: "Client-server networks are more scalable because users, devices, and resources can be managed centrally.",
 tags: ["network-plus", "scalability", "client-server"]
 },
-{
-type: "mcq",
-q: "Which operating system is identified as a server operating system and NOS example in the chapter?",
-options: ["Windows Server", "ChromeOS only", "iOS", "Android", "macOS only"],
-answer: 0,
-explain: "Windows Server, Ubuntu Server, and Red Hat Enterprise Linux are given as server operating system examples.",
-tags: ["network-plus", "nos", "server-os"]
-},
+
 {
 type: "mcq",
 q: "Which interface is commonly used to manage routers and switches?",
@@ -107,36 +93,10 @@ answer: 1,
 explain: "Network devices such as routers and switches are typically managed through a CLI, or command-line interface.",
 tags: ["network-plus", "cli", "network-management"]
 },
-{
-type: "mcq",
-q: "Which pairing is correct?",
-options: ["Cisco — Junos OS", "Juniper — IOS", "Cisco — IOS", "Windows — Junos OS", "Ubuntu — IOS"],
-answer: 2,
-explain: "The chapter identifies IOS with Cisco devices and Junos OS with Juniper devices.",
-tags: ["network-plus", "ios", "junos"]
-},
-{
-type: "tf",
-q: "In a traditional P2P network, each computer can control its own administration, resources, and security.",
-answer: true,
-explain: "P2P gives each computer responsibility for its own resources and access control.",
-tags: ["network-plus", "p2p"]
-},
-{
-type: "tf",
-q: "A Windows workgroup provides the same centralized directory control as Active Directory.",
-answer: false,
-explain: "In a workgroup, each computer maintains its own users and rights; Active Directory provides centralized directory management.",
-tags: ["network-plus", "workgroup", "active-directory"]
-},
-{
-type: "fill",
-q: "The centralized directory database used by a Windows domain is called ______.",
-answer: "Active Directory",
-accepts: ["AD"],
-explain: "Active Directory contains centralized user account and security information for a Windows domain.",
-tags: ["network-plus", "active-directory"]
-},
+
+
+
+
 {
 type: "mcq",
 q: "A browser requests a webpage from a server located on another network. What role does the browser's computer have?",
@@ -145,14 +105,7 @@ answer: 2,
 explain: "The computer making the request is the client, while the computer providing the webpage is the server.",
 tags: ["network-plus", "client-server", "web"]
 },
-{
-type: "mcq",
-q: "What is the primary protocol used by web browsers and web servers?",
-options: ["SMTP", "HTTP", "FTP", "SNMP", "RDP"],
-answer: 1,
-explain: "HTTP is the primary protocol used by web servers and browsers.",
-tags: ["network-plus", "http", "web"]
-},
+
 {
 type: "mcq",
 q: "A browser connection uses HTTP layered over TLS. What protocol name describes the resulting web service?",
@@ -161,46 +114,11 @@ answer: 2,
 explain: "HTTPS is HTTP layered over SSL or TLS encryption.",
 tags: ["network-plus", "https", "tls"]
 },
-{
-type: "multi",
-q: "Which two browser indicators does the chapter recommend checking to help verify a secure web transmission?",
-options: ["https in the URL", "A padlock icon", "FTP in the URL", "A RAID alert", "A MAC address"],
-answer: [0, 1],
-explain: "The source specifically recommends checking for https in the URL and the padlock icon.",
-tags: ["network-plus", "https", "web-security"]
-},
-{
-type: "mcq",
-q: "Which protocol is used to send an email from the client to the sender's mail server?",
-options: ["IMAP4", "POP3", "SMTP", "DNS", "RDP"],
-answer: 2,
-explain: "SMTP is used to send email to the sender's mail server and onward to the recipient's mail server.",
-tags: ["network-plus", "smtp", "email"]
-},
-{
-type: "mcq",
-q: "A user needs email to remain stored on the server while accessing the same mailbox from several devices. Which protocol best fits the chapter's description?",
-options: ["POP3", "SMTP", "IMAP4", "FTP", "Telnet"],
-answer: 2,
-explain: "IMAP4 keeps email stored on the server and is described as ideal for access from multiple devices.",
-tags: ["network-plus", "imap4", "email"]
-},
-{
-type: "mcq",
-q: "What does POP3 typically do with downloaded email?",
-options: ["Keeps it permanently on the server", "Moves it into DNS", "Downloads it to the client and typically removes it from the server", "Encrypts it with SSH", "Converts it to SQL"],
-answer: 2,
-explain: "POP3 downloads email to the client and typically removes it from the server.",
-tags: ["network-plus", "pop3", "email"]
-},
-{
-type: "mcq",
-q: "What service helps a client find a web server by name?",
-options: ["DNS", "SMTP", "FTP", "RDP", "SNMP"],
-answer: 0,
-explain: "DNS, the Domain Name System, helps clients find web servers and other resources.",
-tags: ["network-plus", "dns", "name-resolution"]
-},
+
+
+
+
+
 {
 type: "mcq",
 q: "Which software component is responsible for making requested database changes and organizing data for viewing, reporting, or exporting?",
@@ -209,30 +127,9 @@ answer: 0,
 explain: "A DBMS performs requested database changes and organizes data for viewing, reporting, or exporting.",
 tags: ["network-plus", "dbms", "databases"]
 },
-{
-type: "mcq",
-q: "Which language is commonly used by DBMSs to configure and interact with database objects and data?",
-options: ["HTML", "SQL", "SMTP", "SNMP", "ARP"],
-answer: 1,
-explain: "Many DBMSs use SQL, or Structured Query Language, to work with database objects and data.",
-tags: ["network-plus", "sql", "databases"]
-},
-{
-type: "mcq",
-q: "Which database product is identified as open source in the chapter?",
-options: ["Oracle Database", "Microsoft SQL Server", "MySQL", "Active Directory", "IIS"],
-answer: 2,
-explain: "MySQL is given as an open-source SQL database product.",
-tags: ["network-plus", "mysql", "databases"]
-},
-{
-type: "mcq",
-q: "Which protocol transfers files but does not provide encryption by itself?",
-options: ["FTP", "SFTP", "SSH", "HTTPS", "RDP"],
-answer: 0,
-explain: "FTP transfers files but is not secure because it does not provide encryption by itself.",
-tags: ["network-plus", "ftp", "file-transfer"]
-},
+
+
+
 {
 type: "mcq",
 q: "Which secure file-transfer option is based on SSH?",
@@ -257,14 +154,7 @@ answer: 2,
 explain: "The chapter states that Telnet transmissions are not encrypted, which led to its replacement by more secure options such as SSH.",
 tags: ["network-plus", "telnet", "ssh"]
 },
-{
-type: "mcq",
-q: "Which protocol provides secure, encrypted remote desktop access in Windows environments?",
-options: ["RDP", "POP3", "FTP", "DNS", "SMTP"],
-answer: 0,
-explain: "RDP, or Remote Desktop Protocol, provides secure encrypted remote transmissions in Windows.",
-tags: ["network-plus", "rdp", "remote-access"]
-},
+
 {
 type: "match",
 q: "Match each network service protocol with its primary function.",
@@ -287,13 +177,7 @@ answer: [0, 1],
 explain: "SSL and TLS are identified as encryption protocols that can add security to data transmitted by other TCP/IP protocols.",
 tags: ["network-plus", "ssl", "tls"]
 },
-{
-type: "tf",
-q: "Open source software is always synonymous with free software.",
-answer: false,
-explain: "The chapter explicitly says open source is not synonymous with free, although Apache and Nginx happen to be both.",
-tags: ["network-plus", "open-source"]
-},
+
 {
 type: "mcq",
 q: "Which web server application is embedded in Windows Server according to the chapter?",
@@ -302,14 +186,7 @@ answer: 2,
 explain: "IIS, or Internet Information Services, is embedded in the Windows Server operating system.",
 tags: ["network-plus", "iis", "web"]
 },
-{
-type: "mcq",
-q: "Which topology has all devices connected to one central device?",
-options: ["Mesh", "Bus", "Star", "Hybrid", "Ring"],
-answer: 2,
-explain: "In a star topology, all devices connect to a single central device.",
-tags: ["network-plus", "star-topology", "topology"]
-},
+
 {
 type: "mcq",
 q: "Which topology connects each device to multiple other devices?",
@@ -342,14 +219,7 @@ answer: 2,
 explain: "The chapter's example combines a bus topology between switches with star topologies from each switch to its computers, making it hybrid.",
 tags: ["network-plus", "hybrid-topology", "topology"]
 },
-{
-type: "mcq",
-q: "In a hub-and-spoke topology, what is the central device called?",
-options: ["Spoke", "Node", "Hub", "Gateway", "Backbone"],
-answer: 2,
-explain: "The central device is called the hub, while the peripheral devices are called spokes.",
-tags: ["network-plus", "hub-and-spoke", "topology"]
-},
+
 {
 type: "mcq",
 q: "What is a backbone?",
@@ -430,14 +300,7 @@ answer: 1,
 explain: "Routers and switches are identified as Cisco intermediary devices.",
 tags: ["network-plus", "cisco", "network-devices"]
 },
-{
-type: "mcq",
-q: "A group of LANs spans two cities and is connected by routers and a provider link. What network type is this?",
-options: ["PAN", "LAN", "WAN", "BAN", "WLAN"],
-answer: 2,
-explain: "A WAN is a group of LANs spread over a wide geographic area and commonly uses routers at the LAN edges.",
-tags: ["network-plus", "wan", "network-types"]
-},
+
 {
 type: "mcq",
 q: "A small group of connected LANs is located around a single geographic area such as government offices near a state capital. Which network type fits the chapter?",
@@ -446,14 +309,7 @@ answer: 2,
 explain: "The chapter describes a MAN or CAN as a group of connected LANs in the same geographic area.",
 tags: ["network-plus", "man", "can"]
 },
-{
-type: "mcq",
-q: "A smartphone and computer communicate as a network of personal devices. What network type is this?",
-options: ["WAN", "PAN", "SAN", "MAN", "CAN"],
-answer: 1,
-explain: "A PAN is a personal area network connecting personal devices such as a smartphone and computer.",
-tags: ["network-plus", "pan", "network-types"]
-},
+
 {
 type: "mcq",
 q: "A network consists of two or more devices connected wirelessly. What type is it?",
@@ -684,13 +540,7 @@ answer: 0,
 explain: "ARP is listed with ICMP as a supporting Network-layer protocol associated with IP.",
 tags: ["network-plus", "arp", "network-layer"]
 },
-{
-type: "fill",
-q: "The process of dividing an oversized network-layer packet into smaller packets is called ______.",
-answer: "fragmentation",
-explain: "The chapter calls the division of an oversized packet into smaller packets fragmentation.",
-tags: ["network-plus", "fragmentation", "network-layer"]
-},
+
 {
 type: "mcq",
 q: "What is firmware?",
@@ -722,14 +572,7 @@ answer: 2,
 explain: "Rack-level protection targets the cabinet holding network devices and can neutralize a fire quickly with less impact on surrounding equipment.",
 tags: ["network-plus", "safety", "fire-suppression"]
 },
-{
-type: "mcq",
-q: "Which fire extinguisher class is specified for electrical fires?",
-options: ["Class A", "Class B", "Class C", "Class D", "Class K"],
-answer: 2,
-explain: "The chapter states that electrical fires require a Class C fire extinguisher.",
-tags: ["network-plus", "safety", "fire"]
-},
+
 {
 type: "mcq",
 q: "A security-controlled door should unlock during a power failure so people can safely exit and firefighters can enter. Which failure policy is being used?",
@@ -754,14 +597,7 @@ answer: 1,
 explain: "An SDS explains proper handling, first aid, fire-fighting measures, accidental release measures, and disposal information for chemicals.",
 tags: ["network-plus", "sds", "safety"]
 },
-{
-type: "mcq",
-q: "What federal agency is identified as the main U.S. workplace safety and health regulator?",
-options: ["ISO", "OSHA", "EAS", "FCC", "IANA"],
-answer: 1,
-explain: "OSHA, the Occupational Safety and Health Administration, is identified as the main federal workplace safety and health agency.",
-tags: ["network-plus", "osha", "safety"]
-},
+
 {
 type: "mcq",
 q: "Before working near electrical devices in a data-center rack, what does the chapter say OSHA safety rules require?",
@@ -778,30 +614,9 @@ answer: 0,
 explain: "The chapter gives eye protection as an example of PPE when dust or fumes are generated by power tools.",
 tags: ["network-plus", "ppe", "tool-safety"]
 },
-{
-type: "multi",
-q: "Which three are recommended heavy-lifting practices?",
-options: ["Keep your back straight", "Lift with your legs", "Keep the load close to your body", "Twist while lifting", "Lift only with your back"],
-answer: [0, 1, 2],
-explain: "The source recommends keeping the back straight, lifting with the legs, and keeping the load close while avoiding twisting.",
-tags: ["network-plus", "safety", "lifting"]
-},
-{
-type: "mcq",
-q: "What is grounding intended to accomplish?",
-options: ["Increase network bandwidth", "Direct fault electricity into the earth", "Assign IP addresses", "Encrypt traffic", "Create a star topology"],
-answer: 1,
-explain: "Grounding provides a path for fault electricity to flow into the earth rather than dangerously through the device.",
-tags: ["network-plus", "grounding", "electrical-safety"]
-},
-{
-type: "mcq",
-q: "What is the minimum ESD level stated as capable of damaging certain sensitive components?",
-options: ["1 volt", "5 volts", "10 volts", "100 volts", "1,500 volts"],
-answer: 2,
-explain: "The chapter states that it can take only 10 volts to damage certain components.",
-tags: ["network-plus", "esd", "hardware-safety"]
-},
+
+
+
 {
 type: "mcq",
 q: "A technician experiences no spark or noticeable shock but has damaged a motherboard. Which chapter concept best explains this?",
@@ -834,14 +649,7 @@ answer: 1,
 explain: "The recommended method is to wear an ESD strap connected to a metallic part of the computer chassis.",
 tags: ["network-plus", "esd", "safety"]
 },
-{
-type: "mcq",
-q: "How should a sensitive component be stored when not in use?",
-options: ["On top of an antistatic bag", "Inside an antistatic bag", "Directly on carpet", "Under a powered device", "Inside a metal water container"],
-answer: 1,
-explain: "Sensitive components should be stored inside an antistatic bag, not on top of it.",
-tags: ["network-plus", "esd", "storage"]
-},
+
 {
 type: "mcq",
 q: "What is the correct first step in the seven-step troubleshooting model?",
@@ -906,14 +714,7 @@ answer: 3,
 explain: "Step 4 establishes the plan, including the scope and potential impact of the change.",
 tags: ["network-plus", "troubleshooting", "change-management"]
 },
-{
-type: "mcq",
-q: "Which practice best fits the chapter's change-management guidance?",
-options: ["Make changes during the busiest period", "Choose the least invasive solution", "Change every setting simultaneously", "Skip backups", "Avoid documenting current settings"],
-answer: 1,
-explain: "The chapter emphasizes selecting the least invasive solution and minimizing disruption.",
-tags: ["network-plus", "change-management", "troubleshooting"]
-},
+
 {
 type: "multi",
 q: "Before implementing a network change, which three actions does the chapter recommend?",
@@ -930,22 +731,8 @@ answer: 1,
 explain: "One change at a time makes it possible to determine whether that particular change resolved the problem.",
 tags: ["network-plus", "troubleshooting", "step-5"]
 },
-{
-type: "mcq",
-q: "For a major network change, what rollout approach does the chapter recommend when appropriate?",
-options: ["Deploy to everyone immediately", "Roll out in stages", "Disable all testing", "Use P2P first", "Skip user notification"],
-answer: 1,
-explain: "Staged rollout allows a technician to verify the change with a few users before affecting many users.",
-tags: ["network-plus", "change-management", "step-5"]
-},
-{
-type: "mcq",
-q: "Which step verifies the system works after the solution is implemented?",
-options: ["Step 2", "Step 3", "Step 4", "Step 6", "Step 7"],
-answer: 3,
-explain: "Step 6 verifies functionality and considers preventive measures.",
-tags: ["network-plus", "troubleshooting", "step-6"]
-},
+
+
 {
 type: "mcq",
 q: "Why should the user sometimes test the system after a technician's fix?",
@@ -1025,13 +812,7 @@ answer: false,
 explain: "The chapter recommends making only one change at a time so the effect of each change can be evaluated.",
 tags: ["network-plus", "troubleshooting"]
 },
-{
-type: "fill",
-q: "The protocol data unit at OSI Layer 3 is a ______.",
-answer: "packet",
-explain: "The Network-layer PDU is called a packet.",
-tags: ["network-plus", "osi", "pdu"]
-},
+
 {
 type: "fill",
 q: "The protocol data unit for TCP at the Transport layer is a ______.",
@@ -1053,13 +834,7 @@ answer: "decapsulation",
 explain: "Decapsulation reverses encapsulation by removing lower-layer headers and trailers.",
 tags: ["network-plus", "decapsulation", "osi"]
 },
-{
-type: "fill",
-q: "The acronym ______ stands for electrostatic discharge.",
-answer: "ESD",
-explain: "ESD stands for electrostatic discharge, commonly called static electricity.",
-tags: ["network-plus", "esd", "safety"]
-},
+
 {
 type: "multi",
 q: "Which four actions are consistent with the chapter's final troubleshooting and change-management practices?",

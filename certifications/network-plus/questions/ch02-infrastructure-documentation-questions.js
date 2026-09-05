@@ -155,14 +155,7 @@ answer: 1,
 explain: "For port-side intake switches, the ports face the cold aisle and draw in cooler air.",
 tags: ["rack", "airflow"]
 },
-{
-type: "mcq",
-q: "What is the typical length range of a patch cable given in the source?",
-options: ["1 to 5 feet", "3 to 25 feet", "10 to 50 feet", "25 to 75 feet", "50 to 100 feet"],
-answer: 1,
-explain: "The source describes a patch cable as usually 3 to 25 feet long.",
-tags: ["cabling", "patch-cable"]
-},
+
 {
 type: "mcq",
 q: "What is the maximum horizontal-cabling distance described by the source?",
@@ -235,14 +228,7 @@ answer: 2,
 explain: "The source says not to leave more than 1 inch of exposed or stripped cable before termination.",
 tags: ["cabling", "termination"]
 },
-{
-type: "mcq",
-q: "What general bend-radius guideline does the source give for twisted-pair cable?",
-options: ["At least 2 times the cable diameter", "At least 3 times the cable diameter", "At least 4 times the cable diameter", "At least 6 times the cable diameter", "At least 10 times the cable diameter"],
-answer: 2,
-explain: "The source gives a general guideline of a bend radius equal to or greater than four times the cable diameter.",
-tags: ["cabling", "bend-radius"]
-},
+
 {
 type: "mcq",
 q: "How far should cable be installed from fluorescent lights or other listed EMI sources according to the source?",
@@ -459,22 +445,8 @@ answer: 0,
 explain: "An MSA is a contract defining the terms of future contracts between parties.",
 tags: ["business-documents", "msa"]
 },
-{
-type: "mcq",
-q: "What does MTBF measure?",
-options: ["Average repair time", "Expected time between failures", "Number of redundant components", "Time to complete a change request", "Time required to decommission a system"],
-answer: 1,
-explain: "MTBF is the average amount of time expected to pass before the next failure for devices of a particular type.",
-tags: ["reliability", "mtbf"]
-},
-{
-type: "mcq",
-q: "What does MTTR measure?",
-options: ["Average time to repair a failed device", "Average time between failures", "Time to approve a change", "Time to complete an upgrade", "Time to restore a documentation backup"],
-answer: 0,
-explain: "MTTR is the average amount of time required to repair a failed device.",
-tags: ["reliability", "mttr"]
-},
+
+
 {
 type: "mcq",
 q: "What is the primary goal of redundancy?",
@@ -483,14 +455,7 @@ answer: 1,
 explain: "Redundancy provides multiple components, services, or connections so a failure does not create a single point of failure.",
 tags: ["reliability", "redundancy"]
 },
-{
-type: "mcq",
-q: "What distinguishes automatic failover from simple redundancy?",
-options: ["Automatic failover uses no backup component", "Automatic failover requires manual intervention", "Automatic failover allows a redundant component to assume duties without manual intervention", "Automatic failover applies only to documentation", "Automatic failover reduces hardware count"],
-answer: 2,
-explain: "Automatic failover means a redundant component immediately assumes the duties of the failed component without manual intervention.",
-tags: ["reliability", "failover"]
-},
+
 {
 type: "mcq",
 q: "What is a hot-swappable component?",
@@ -523,14 +488,7 @@ answer: 2,
 explain: "Development and testing includes purchasing equipment and testing before deployment.",
 tags: ["lifecycle", "testing"]
 },
-{
-type: "mcq",
-q: "What is configuration drift?",
-options: ["A planned move to a golden configuration", "The gradual movement away from an intended configuration", "A scheduled maintenance window", "A backup of a baseline", "A change request approval"],
-answer: 1,
-explain: "Configuration drift is the gradual movement away from an intended configuration as changes accumulate.",
-tags: ["configuration-management", "drift"]
-},
+
 {
 type: "mcq",
 q: "What is an SSOT in configuration management?",
@@ -611,14 +569,7 @@ answer: 2,
 explain: "An upgrade is a major software change that enhances functionality and features while also addressing bugs and vulnerabilities.",
 tags: ["change-management", "upgrade"]
 },
-{
-type: "mcq",
-q: "What does rollback do?",
-options: ["Moves a system to a new version", "Reverts software to a previous version after an unsuccessful patch or upgrade", "Deletes all configuration backups", "Adds redundancy", "Creates an RFP"],
-answer: 1,
-explain: "Rollback returns software to a previous version when an attempted patch or upgrade fails.",
-tags: ["change-management", "rollback"]
-},
+
 {
 type: "mcq",
 q: "Where should firmware updates be obtained according to the source?",
@@ -754,13 +705,7 @@ answer: true,
 explain: "The source explicitly states that structured cabling is hierarchical and assumes a star topology.",
 tags: ["structured-cabling", "topology"]
 },
-{
-type: "tf",
-q: "The organization is generally responsible for the ISP side of the demarc.",
-answer: false,
-explain: "The ISP is generally responsible for its network up to the demarc; the organization is responsible for the customer side.",
-tags: ["demarc", "responsibility"]
-},
+
 {
 type: "tf",
 q: "A patch panel changes the data transmitted on a network connection.",
@@ -775,20 +720,8 @@ answer: true,
 explain: "The source distinguishes copper electrical signaling from fiber transmission using pulses of light from a laser or LED.",
 tags: ["fiber", "cabling"]
 },
-{
-type: "tf",
-q: "A network diagram must include every device on the network.",
-answer: false,
-explain: "The source says diagrams may intentionally omit devices that are not relevant to the aspect being illustrated.",
-tags: ["network-diagrams"]
-},
-{
-type: "tf",
-q: "Configuration drift is the gradual movement away from an intended configuration.",
-answer: true,
-explain: "That is the source's definition of configuration drift.",
-tags: ["configuration-management", "drift"]
-},
+
+
 {
 type: "tf",
 q: "EOS generally marks the point when a product stops receiving vendor support, including security updates and bug fixes.",
@@ -796,13 +729,7 @@ answer: true,
 explain: "The source defines EOS as the withdrawal of support and notes that security updates and bug fixes generally stop afterward.",
 tags: ["eos", "lifecycle"]
 },
-{
-type: "tf",
-q: "The source recommends allowing patches to install automatically without first understanding their impact.",
-answer: false,
-explain: "The 14-step process says not to generally allow patches to be installed automatically and to understand the impact first.",
-tags: ["patch-management", "change-management"]
-},
+
 {
 type: "fill",
 q: "What is the name of the responsibility boundary where the ISP network ends and the customer's network begins?",
@@ -826,20 +753,8 @@ accepts: ["100 m", "100m"],
 explain: "The source specifies a 100 m maximum composed of 90 m fixed horizontal cabling and 10 m of connection to the workstation.",
 tags: ["cabling", "distance"]
 },
-{
-type: "fill",
-q: "What is the abbreviation for mean time between failures?",
-answer: "MTBF",
-explain: "MTBF means mean time between failures.",
-tags: ["reliability", "mtbf"]
-},
-{
-type: "fill",
-q: "What is the abbreviation for mean time to repair?",
-answer: "MTTR",
-explain: "MTTR means mean time to repair.",
-tags: ["reliability", "mttr"]
-},
+
+
 {
 type: "fill",
 q: "What is the central configuration repository called the single source of truth?",

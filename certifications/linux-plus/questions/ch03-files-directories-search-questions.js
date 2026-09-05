@@ -19,22 +19,8 @@ answer: 1,
 explain: "`pwd` prints the working directory. `cd` changes directories, while `ls` lists directory contents.",
 tags: ["paths", "pwd"]
 },
-{
-q: "What does `cd` with no argument do?",
-type: "mcq",
-options: ["Moves to the root directory", "Moves to the previous directory", "Returns to the user's home directory", "Lists the current directory", "Stays in the current directory"],
-answer: 2,
-explain: "Plain `cd` returns you to your home directory. `cd -` instead returns to the previous working directory.",
-tags: ["paths", "cd"]
-},
-{
-q: "Which metacharacter refers to the current user's home directory?",
-type: "mcq",
-options: ["$", "~", "#", "&", "!"],
-answer: 1,
-explain: "`~` is the special home-directory variable. `$` is used for shell variables.",
-tags: ["paths", "metacharacters"]
-},
+
+
 {
 q: "Which command changes to another user's home directory when supported by the shell?",
 type: "mcq",
@@ -51,14 +37,7 @@ answer: 1,
 explain: "A relative pathname is interpreted from the current working directory. An absolute pathname starts at `/`.",
 tags: ["paths", "relative"]
 },
-{
-q: "In the Linux directory tree, what is the parent directory?",
-type: "mcq",
-options: ["The directory closest to `/dev` in the filesystem tree, regardless of the current path.", "The directory one level closer to the root than the current directory in the tree.", "The home directory assigned to the current user rather than the current path's parent.", "The directory that contains the system administrator's home directory in every case.", "The directory one level farther from the root than the current directory."],
-answer: 1,
-explain: "The parent directory is one level closer to the root than the current directory.",
-tags: ["paths", "directories"]
-},
+
 {
 q: "Which shell feature lets you type enough unique characters and press Tab to complete a pathname?",
 type: "mcq",
@@ -67,54 +46,12 @@ answer: 1,
 explain: "Bash provides Tab completion. If multiple matches exist, it can present the possibilities.",
 tags: ["bash", "paths"]
 },
-{
-q: "Which directory contains system-wide configuration files?",
-type: "mcq",
-options: ["/etc", "/var", "/srv", "/opt", "/var/config"],
-answer: 0,
-explain: "`/etc` stores system-wide configuration files. `/var` stores variable data such as logs and caches.",
-tags: ["filesystem", "etc"]
-},
-{
-q: "Which directory contains user home directories?",
-type: "mcq",
-options: ["/home", "/root", "/usr", "/tmp", "/users"],
-answer: 0,
-explain: "`/home` contains ordinary users' home directories. `/root` is specifically the root user's home directory.",
-tags: ["filesystem", "home"]
-},
-{
-q: "Which directory is the home directory for the root user?",
-type: "mcq",
-options: ["/home/root", "/root", "/usr/root", "/var/root", "/home/admin"],
-answer: 1,
-explain: "The notes identify `/root` as the root user's home directory.",
-tags: ["filesystem", "root"]
-},
-{
-q: "Where are Linux kernel and boot-related files normally stored?",
-type: "mcq",
-options: ["/boot", "/etc", "/run", "/usr/src", "/var/lib/boot"],
-answer: 0,
-explain: "`/boot` contains the Linux kernel, initramfs, and boot-related files.",
-tags: ["filesystem", "boot"]
-},
-{
-q: "Which directory is associated with UEFI bootloaders and the EFI System Partition?",
-type: "mcq",
-options: ["/boot/efi", "/etc/efi", "/usr/efi", "/var/efi", "/boot/grub"],
-answer: 0,
-explain: "The notes identify `/boot/efi` as the EFI System Partition for UEFI bootloaders.",
-tags: ["filesystem", "uefi"]
-},
-{
-q: "Which directory contains most system commands and utilities?",
-type: "mcq",
-options: ["/usr", "/var", "/srv", "/mnt", "/home"],
-answer: 0,
-explain: "`/usr` contains most system commands and utilities, along with libraries and other shared data.",
-tags: ["filesystem", "usr"]
-},
+
+
+
+
+
+
 {
 q: "Which subdirectory contains user binary commands?",
 type: "mcq",
@@ -123,22 +60,8 @@ answer: 0,
 explain: "The notes identify `/usr/bin` as the location for user binary commands.",
 tags: ["filesystem", "usr", "bin"]
 },
-{
-q: "Which `/usr` subdirectory contains system binary commands?",
-type: "mcq",
-options: ["/usr/share", "/usr/sbin", "/usr/include", "/usr/local", "/usr/bin"],
-answer: 1,
-explain: "`/usr/sbin` contains system binary commands. `/usr/bin` contains user binary commands.",
-tags: ["filesystem", "usr", "sbin"]
-},
-{
-q: "Which `/usr` subdirectories contain libraries?",
-type: "mcq",
-options: ["/usr/lib and /usr/lib64", "/usr/bin and /usr/sbin", "/usr/src and /usr/share", "/usr/local and /usr/include", "/usr/libexec and /usr/share"],
-answer: 0,
-explain: "The notes list `/usr/lib` and `/usr/lib64` as library directories.",
-tags: ["filesystem", "libraries"]
-},
+
+
 {
 q: "Which directory is intended for optional or third-party application software?",
 type: "mcq",
@@ -163,38 +86,10 @@ answer: 0,
 explain: "`/var/log` is used for system and application logs.",
 tags: ["filesystem", "logs", "var"]
 },
-{
-q: "Which directory is used for temporary files created by programs?",
-type: "mcq",
-options: ["/tmp", "/srv", "/mnt", "/run", "/var/cache"],
-answer: 0,
-explain: "`/tmp` contains temporary files used by programs.",
-tags: ["filesystem", "tmp"]
-},
-{
-q: "Which directory is intended for data served by system services such as web or FTP services?",
-type: "mcq",
-options: ["/srv", "/media", "/opt", "/proc", "/usr/share"],
-answer: 0,
-explain: "`/srv` contains data served by system services, such as web, FTP, or repositories.",
-tags: ["filesystem", "srv"]
-},
-{
-q: "Which directory is a temporary manual mount point?",
-type: "mcq",
-options: ["/mnt", "/media", "/run", "/boot", "/home"],
-answer: 0,
-explain: "`/mnt` is described as a temporary manual mount point. `/media` is for automatically mounted removable media.",
-tags: ["filesystem", "mounts"]
-},
-{
-q: "Which directory is commonly used for automatically mounted removable media such as USB devices and DVDs?",
-type: "mcq",
-options: ["/media", "/mnt", "/dev", "/srv", "/sys"],
-answer: 0,
-explain: "`/media` is used for auto-mounted removable media.",
-tags: ["filesystem", "media"]
-},
+
+
+
+
 {
 q: "Which directory is a virtual filesystem containing process and kernel information?",
 type: "mcq",
@@ -203,30 +98,9 @@ answer: 0,
 explain: "`/proc` is a virtual filesystem for process and kernel information. `/sys` exposes devices and kernel interfaces.",
 tags: ["filesystem", "proc"]
 },
-{
-q: "Which directory contains device files?",
-type: "mcq",
-options: ["/dev", "/proc", "/sys", "/run", "/sys/kernel"],
-answer: 0,
-explain: "`/dev` contains device files, usually through devtmpfs.",
-tags: ["filesystem", "dev", "devices"]
-},
-{
-q: "Which directory stores runtime process state and replaces `/var/run`?",
-type: "mcq",
-options: ["/run", "/tmp", "/proc", "/var/lib", "/var/tmp"],
-answer: 0,
-explain: "`/run` stores runtime process state and replaces `/var/run`.",
-tags: ["filesystem", "run"]
-},
-{
-q: "Which shell metacharacter expands to a shell variable's value?",
-type: "mcq",
-options: ["$", "#", ";", "|", "%"],
-answer: 0,
-explain: "`$` tells the shell that the following text refers to a variable.",
-tags: ["metacharacters", "variables"]
-},
+
+
+
 {
 q: "Which shell metacharacter runs a command in the background?",
 type: "mcq",
@@ -243,22 +117,8 @@ answer: 0,
 explain: "`|` pipes the output of one command into another command.",
 tags: ["metacharacters", "pipe"]
 },
-{
-q: "Which wildcard represents any number of characters?",
-type: "mcq",
-options: ["?", "*", "[ ]", "~", "{ }"],
-answer: 1,
-explain: "The `*` wildcard represents anything, while `?` represents a single character.",
-tags: ["wildcards", "metacharacters"]
-},
-{
-q: "Which wildcard represents a single character?",
-type: "mcq",
-options: ["*", "?", "[ ]", "#", "{ }"],
-answer: 1,
-explain: "`?` matches a single character. `*` can match any number of characters.",
-tags: ["wildcards", "metacharacters"]
-},
+
+
 {
 q: "Which shell metacharacter is used for a range wildcard?",
 type: "mcq",
@@ -283,14 +143,7 @@ answer: 1,
 explain: "The notes state that double quotes allow variables, while single quotes preserve literal text.",
 tags: ["quoting", "variables"]
 },
-{
-q: "What is the primary purpose of `echo`?",
-type: "mcq",
-options: ["Display text on the terminal", "Create a directory", "Delete a file", "Search the filesystem", "Read input from the terminal"],
-answer: 0,
-explain: "`echo` prints text to the terminal screen.",
-tags: ["shell", "echo"]
-},
+
 {
 q: "Which filename characteristic makes a file hidden in Linux?",
 type: "mcq",
@@ -299,14 +152,7 @@ answer: 1,
 explain: "Files whose names begin with `.` are hidden files. `ls -a` displays them.",
 tags: ["filenames", "hidden"]
 },
-{
-q: "Which command lists hidden files in a directory?",
-type: "mcq",
-options: ["ls -h", "ls -a", "ls -R", "ls -d", "ls -l"],
-answer: 1,
-explain: "`ls -a` displays all file and subdirectory names, including hidden files.",
-tags: ["ls", "hidden"]
-},
+
 {
 q: "Which statement about Linux file extensions is correct?",
 type: "mcq",
@@ -315,14 +161,7 @@ answer: 2,
 explain: "Linux does not require filename extensions; they are optional.",
 tags: ["filenames", "extensions"]
 },
-{
-q: "What is the maximum filename length in Linux?",
-type: "mcq",
-options: ["64 characters", "128 characters", "255 characters", "1024 characters", "512 characters"],
-answer: 2,
-explain: "The notes state that filenames can include up to 255 characters.",
-tags: ["filenames"]
-},
+
 {
 q: "Which command displays file and subdirectory names along with metadata?",
 type: "mcq",
@@ -331,14 +170,7 @@ answer: 0,
 explain: "`ls` lists files and directories and can display metadata. `stat` provides more detailed metadata for a file.",
 tags: ["ls", "metadata"]
 },
-{
-q: "Which `ls` option displays a directory's own metadata instead of its contents?",
-type: "mcq",
-options: ["-a", "-d", "-R", "-i", "-D"],
-answer: 1,
-explain: "`-d` displays the directory entry itself instead of listing its contents.",
-tags: ["ls", "options"]
-},
+
 {
 q: "Which `ls` option appends indicators showing file types?",
 type: "mcq",
@@ -363,14 +195,7 @@ answer: 0,
 explain: "`-l` displays file type, permissions, hard link count, owner, group, modification time, and filename.",
 tags: ["ls", "permissions"]
 },
-{
-q: "Which `ls` option recursively lists a directory tree?",
-type: "mcq",
-options: ["-R", "-r", "-d", "-F", "-S"],
-answer: 0,
-explain: "`-R` recursively displays a directory and all subdirectories in its tree.",
-tags: ["ls", "recursive"]
-},
+
 {
 q: "What does `ls -lh` add compared with `ls -l`?",
 type: "mcq",
@@ -379,22 +204,8 @@ answer: 2,
 explain: "`-h` makes sizes human-readable, such as `30K`, when used with long listing.",
 tags: ["ls", "human-readable"]
 },
-{
-q: "In an `ls -l` entry, what does the first character `d` represent?",
-type: "mcq",
-options: ["Device", "Directory", "Data file", "Daemon", "Document"],
-answer: 1,
-explain: "The first character identifies file type, and `d` means directory.",
-tags: ["ls", "filetypes"]
-},
-{
-q: "In an `ls -l` entry, what does the first character `l` represent?",
-type: "mcq",
-options: ["Log file", "Library", "Symbolic link", "Local file", "Regular file"],
-answer: 2,
-explain: "The leading `l` identifies a symbolic link.",
-tags: ["ls", "symlink"]
-},
+
+
 {
 q: "Which command creates an empty file or updates a file's timestamps?",
 type: "mcq",
@@ -411,22 +222,8 @@ answer: 0,
 explain: "`mkdir` creates directories. `rmdir` removes empty directories.",
 tags: ["mkdir", "directories"]
 },
-{
-q: "Which `mkdir` option creates missing parent directories automatically?",
-type: "mcq",
-options: ["-v", "-p", "-m", "-Z", "-d"],
-answer: 1,
-explain: "`mkdir -p` creates any missing parent directories needed for the full path.",
-tags: ["mkdir", "options"]
-},
-{
-q: "Which `mkdir` option prints a message for each directory created?",
-type: "mcq",
-options: ["-p", "-v", "-m", "-Z", "-d"],
-answer: 1,
-explain: "`-v` is verbose and reports each directory created.",
-tags: ["mkdir", "options"]
-},
+
+
 {
 q: "What happens when `mkdir Projects/42/` is run and `Projects` does not exist?",
 type: "mcq",
@@ -435,14 +232,7 @@ answer: 1,
 explain: "Without `-p`, `mkdir` fails if required parent directories do not already exist.",
 tags: ["mkdir", "paths"]
 },
-{
-q: "Which command returns to the previous working directory?",
-type: "mcq",
-options: ["cd ..", "cd -", "cd ~", "cd /", "cd /home"],
-answer: 1,
-explain: "`cd -` jumps to the previous working directory. Plain `cd` returns home.",
-tags: ["cd", "paths"]
-},
+
 {
 q: "Which command copies a file or directory locally?",
 type: "mcq",
@@ -459,30 +249,9 @@ answer: 2,
 explain: "Both the source and destination are required in the basic `cp` syntax.",
 tags: ["cp", "syntax"]
 },
-{
-q: "Which option is required by `cp` when copying a directory tree?",
-type: "mcq",
-options: ["-h", "-R", "-i", "-u", "-f"],
-answer: 1,
-explain: "`-R` or `-r` recursively copies a directory and its contents.",
-tags: ["cp", "recursive"]
-},
-{
-q: "What does `cp` do when asked to copy a directory without `-R` or `-r`?",
-type: "mcq",
-options: ["Copies only the directory entry and skips its contents.", "Refuses the directory and reports that it is omitting the directory.", "Deletes the directory before copying its contents as a regular file.", "Converts the directory into a regular file at the destination.", "Creates an empty destination directory."],
-answer: 1,
-explain: "Without recursive mode, `cp` refuses to copy a directory and reports `cp: omitting directory`.",
-tags: ["cp", "recursive"]
-},
-{
-q: "Which `cp` option preserves permissions, ownership, and timestamps while copying recursively?",
-type: "mcq",
-options: ["-a", "-f", "-n", "-v", "-R"],
-answer: 0,
-explain: "`-a` is archive mode and performs a recursive copy while preserving permissions, ownership, and timestamps.",
-tags: ["cp", "archive"]
-},
+
+
+
 {
 q: "Which `cp` option asks before overwriting an existing destination file?",
 type: "mcq",
@@ -507,14 +276,7 @@ answer: 0,
 explain: "`mv` moves files or directories and can also rename them.",
 tags: ["mv", "files"]
 },
-{
-q: "Can `mv` rename a directory without a special recursive option?",
-type: "mcq",
-options: ["Yes", "No, `-R` is required", "Only with `-p`", "Only for empty directories", "Only when the directory is mounted"],
-answer: 0,
-explain: "Renaming an entire directory with `mv` works like renaming a file and requires no extra option.",
-tags: ["mv", "directories"]
-},
+
 {
 q: "Which command can move a file to a new directory and rename it in one operation?",
 type: "mcq",
@@ -531,14 +293,7 @@ answer: 1,
 explain: "`rsync` is used for fast copying of large files or many files and is commonly used for backups.",
 tags: ["rsync", "backup"]
 },
-{
-q: "Which `rsync` option enables archive mode?",
-type: "mcq",
-options: ["-a", "-h", "-t", "--stats", "-r"],
-answer: 0,
-explain: "`-a` is archive mode and is shorthand for `-rlptgoD`.",
-tags: ["rsync", "archive"]
-},
+
 {
 q: "Which command is the main utility for removing files and directory trees?",
 type: "mcq",
@@ -571,14 +326,7 @@ answer: 0,
 explain: "`-I` provides a single confirmation in the described bulk or recursive cases, unlike `-i`, which prompts for each file.",
 tags: ["rm", "safety"]
 },
-{
-q: "Which option allows `rm` to remove a directory tree recursively?",
-type: "mcq",
-options: ["-R", "-d", "-p", "-a", "-u"],
-answer: 0,
-explain: "`rm -R` or `rm -r` recursively removes directory contents and then the directories.",
-tags: ["rm", "recursive"]
-},
+
 {
 q: "Which command removes empty directories only?",
 type: "mcq",
@@ -587,14 +335,7 @@ answer: 1,
 explain: "`rmdir` removes empty directories only. Non-empty directories require recursive `rm`.",
 tags: ["rmdir", "directories"]
 },
-{
-q: "Which `rmdir` option removes a chain of empty parent directories?",
-type: "mcq",
-options: ["-p", "-v", "-R", "-i", "-d"],
-answer: 0,
-explain: "`rmdir -p` removes a directory tree of empty directories when given the full path.",
-tags: ["rmdir", "options"]
-},
+
 {
 q: "What is the key structural difference between hard and symbolic links?",
 type: "mcq",
@@ -643,14 +384,7 @@ answer: 0,
 explain: "`readlink -f <file>` resolves a chain of symbolic links to the final target name and directory location.",
 tags: ["links", "readlink"]
 },
-{
-q: "What is a stale symbolic link?",
-type: "mcq",
-options: ["A hard link with two directory entries that refer to the same inode.", "A symbolic link whose target was moved or deleted, so the link no longer resolves.", "A file whose timestamp no longer matches the metadata in its directory entry.", "A link that cannot be changed because its filesystem is mounted read-only.", "A symbolic link whose target is on another filesystem."],
-answer: 1,
-explain: "A stale or dead link points to a target that has been deleted or moved. The link itself is not automatically updated or removed.",
-tags: ["links", "security"]
-},
+
 {
 q: "Which command displays the contents of a small text file and can concatenate multiple files?",
 type: "mcq",
@@ -659,46 +393,11 @@ answer: 0,
 explain: "`cat` concatenates and displays text files and is commonly used for small files.",
 tags: ["cat", "reading"]
 },
-{
-q: "Which `cat` option displays line numbers?",
-type: "mcq",
-options: ["-l", "-n", "-c", "-N", "-s"],
-answer: 1,
-explain: "`cat -n` numbers the lines of the displayed file.",
-tags: ["cat", "options"]
-},
-{
-q: "Which `grep` option makes the search case-insensitive?",
-type: "mcq",
-options: ["-i", "-v", "-n", "-c", "-w"],
-answer: 0,
-explain: "`grep -i` ignores case. By default, `grep` is case-sensitive.",
-tags: ["grep", "options"]
-},
-{
-q: "What does `grep -v` display?",
-type: "mcq",
-options: ["Only matching lines", "Lines that do not match the pattern", "Only line numbers", "A count of matches", "Whole-word matches only"],
-answer: 1,
-explain: "`-v` inverts the match, showing lines that do not match the pattern.",
-tags: ["grep", "options"]
-},
-{
-q: "Which `grep` option displays the line number for each match?",
-type: "mcq",
-options: ["-n", "-c", "-v", "-i", "-H"],
-answer: 0,
-explain: "`grep -n` prefixes matching lines with their line numbers.",
-tags: ["grep", "options"]
-},
-{
-q: "Which `grep` option displays the number of matching lines?",
-type: "mcq",
-options: ["-c", "-n", "-v", "-i", "-m"],
-answer: 0,
-explain: "`grep -c` reports the number of matching lines.",
-tags: ["grep", "options"]
-},
+
+
+
+
+
 {
 q: "Which command normally displays the first 10 lines of a file?",
 type: "mcq",
@@ -715,14 +414,7 @@ answer: 1,
 explain: "`tail` displays the last lines of a file, defaulting to 10.",
 tags: ["tail", "reading"]
 },
-{
-q: "Which `tail` option follows a file and displays newly appended lines?",
-type: "mcq",
-options: ["-f", "-n", "-c", "-w", "--pid"],
-answer: 0,
-explain: "`tail -f` follows the file and is useful for monitoring logs in real time.",
-tags: ["tail", "logs"]
-},
+
 {
 q: "On systems using journald, which command can follow new journal messages?",
 type: "mcq",
@@ -739,14 +431,7 @@ answer: 0,
 explain: "`less` supports backward movement, while `more` does not.",
 tags: ["less", "more", "pager"]
 },
-{
-q: "Which key exits `less`?",
-type: "mcq",
-options: ["x", "q", "Esc", "Ctrl+D", "Space"],
-answer: 1,
-explain: "Press `q` to exit `less`.",
-tags: ["less", "pager"]
-},
+
 {
 q: "Which command is the default pager for `man` pages?",
 type: "mcq",
@@ -787,14 +472,7 @@ answer: 1,
 explain: "`-q` means brief and reports that the files differ without showing the detailed changes.",
 tags: ["diff", "options"]
 },
-{
-q: "Which `diff` option displays two files side by side?",
-type: "mcq",
-options: ["-y", "-q", "-e", "-s", "-u"],
-answer: 0,
-explain: "`diff -y` displays the files in two columns for side-by-side comparison.",
-tags: ["diff", "options"]
-},
+
 {
 q: "Which command shows the full pathname of a shell command by searching directories in `PATH`?",
 type: "mcq",
@@ -803,14 +481,7 @@ answer: 0,
 explain: "`which` searches directories in `$PATH` and shows the command's full pathname. It can also reveal aliases.",
 tags: ["which", "path"]
 },
-{
-q: "What does the `PATH` environment variable contain?",
-type: "mcq",
-options: ["User passwords", "Directories searched for command binaries", "Filesystem mount points", "Kernel parameters", "Command aliases"],
-answer: 1,
-explain: "`PATH` specifies the directories Linux searches for a command's binary. Entries are separated by colons.",
-tags: ["path", "environment"]
-},
+
 {
 q: "Which command locates a program binary, source files, and man pages?",
 type: "mcq",
@@ -859,14 +530,7 @@ answer: 0,
 explain: "`find` recursively searches from a starting path using criteria such as name, owner, time, size, type, or permissions.",
 tags: ["find", "metadata"]
 },
-{
-q: "What does `find .` use as its starting directory?",
-type: "mcq",
-options: ["The root directory", "The current working directory", "The user's home directory", "The `/tmp` directory", "The directory containing the shell executable"],
-answer: 1,
-explain: "A dot (`.`) designates the current working directory as `find`'s starting point.",
-tags: ["find", "paths"]
-},
+
 {
 q: "Which `find` criterion searches for a specified filename?",
 type: "mcq",
@@ -891,14 +555,7 @@ answer: 0,
 explain: "`-type` searches by type, such as `f` for regular file, `d` for directory, or `l` for symbolic link.",
 tags: ["find", "filetypes"]
 },
-{
-q: "Which `find` option limits how many levels down the directory tree are searched?",
-type: "mcq",
-options: ["-maxdepth", "-depth", "-mindepth", "-size", "-empty"],
-answer: 0,
-explain: "`-maxdepth` limits the depth of the recursive search.",
-tags: ["find", "maxdepth"]
-},
+
 {
 q: "Which command can audit `/usr/bin` for the SUID permission bit?",
 type: "mcq",
@@ -915,14 +572,7 @@ answer: 0,
 explain: "`grep -R` or `grep -r` recursively searches a directory tree for matching text.",
 tags: ["grep", "recursive"]
 },
-{
-q: "Which `grep` option causes directories encountered while searching to be skipped?",
-type: "mcq",
-options: ["-d skip", "-r", "-R", "-v", "-h"],
-answer: 0,
-explain: "`grep -d skip` tells `grep` to skip directories instead of producing errors for them in the described search.",
-tags: ["grep", "directories"]
-},
+
 {
 q: "Which of the following are valid Linux file types?",
 type: "multi",
@@ -1067,14 +717,7 @@ answer: false,
 explain: "Deleting one hard-link name does not remove the underlying data as long as at least one other hard-link name still references the same inode.",
 tags: ["links", "hardlink"]
 },
-{
-q: "Symbolic links always share the same inode number as their target.",
-type: "tf",
-options: ["True", "False"],
-answer: false,
-explain: "Symbolic links have their own inode and point to the target's name and location.",
-tags: ["links", "symlink", "inode"]
-},
+
 {
 q: "Hard links can exist on different filesystems.",
 type: "tf",
@@ -1083,14 +726,7 @@ answer: false,
 explain: "The notes require the original and hard links to exist on the same filesystem.",
 tags: ["links", "hardlink"]
 },
-{
-q: "`cd -` returns to the previous working directory.",
-type: "tf",
-options: ["True", "False"],
-answer: true,
-explain: "The notes explicitly identify `cd -` as the way to jump back to the previous working directory.",
-tags: ["cd", "paths"]
-},
+
 {
 q: "`locate` searches the live filesystem every time it is run.",
 type: "tf",
@@ -1099,22 +735,8 @@ answer: false,
 explain: "`locate` searches a prebuilt database, which may not contain recently created files.",
 tags: ["locate", "search"]
 },
-{
-q: "`ls -a` includes hidden files in its output.",
-type: "tf",
-options: ["True", "False"],
-answer: true,
-explain: "`-a` means all and includes files whose names begin with a period.",
-tags: ["ls", "hidden"]
-},
-{
-q: "`rm -r` can remove a directory tree containing files and subdirectories.",
-type: "tf",
-options: ["True", "False"],
-answer: true,
-explain: "Recursive `rm` removes directory contents and then the directory itself.",
-tags: ["rm", "recursive"]
-},
+
+
 {
 q: "`rmdir` is used to remove non-empty directories.",
 type: "tf",
@@ -1123,14 +745,7 @@ answer: false,
 explain: "`rmdir` removes empty directories only. A non-empty directory requires recursive `rm`.",
 tags: ["rmdir", "directories"]
 },
-{
-q: "`grep` is case-insensitive by default.",
-type: "tf",
-options: ["True", "False"],
-answer: false,
-explain: "`grep` is case-sensitive by default; use `-i` to ignore case.",
-tags: ["grep", "case"]
-},
+
 {
 q: "`less` can move backward through a file.",
 type: "tf",
@@ -1155,14 +770,7 @@ answer: true,
 explain: "The notes explicitly state that `-maxdepth 2` limits the search to the current directory and one level below it.",
 tags: ["find", "maxdepth"]
 },
-{
-q: "A symbolic link can become a security risk when its target is deleted and a malicious file is later placed at the old target path.",
-type: "tf",
-options: ["True", "False"],
-answer: true,
-explain: "The notes describe this stale-link scenario and warn that the link can resolve to the malicious replacement.",
-tags: ["symlink", "security"]
-},
+
 {
 q: "The shell metacharacter for the home directory is ___",
 type: "fill",
@@ -1170,27 +778,9 @@ answer: "~",
 explain: "The tilde refers to the current user's home directory and can also be used with another username such as `~mary`.",
 tags: ["metacharacters", "home"]
 },
-{
-q: "The command that prints the current working directory is ___",
-type: "fill",
-answer: "pwd",
-explain: "`pwd` prints the present working directory.",
-tags: ["pwd", "paths"]
-},
-{
-q: "The command used to create directories is ___",
-type: "fill",
-answer: "mkdir",
-explain: "`mkdir` creates directories.",
-tags: ["mkdir", "directories"]
-},
-{
-q: "The `mkdir` option that creates missing parent directories is ___",
-type: "fill",
-answer: "-p",
-explain: "`mkdir -p` creates the necessary parent directories along the requested path.",
-tags: ["mkdir", "options"]
-},
+
+
+
 {
 q: "The command used to copy a file or directory locally is ___",
 type: "fill",
@@ -1205,48 +795,12 @@ answer: "mv",
 explain: "`mv` can move items, rename them, or do both at once.",
 tags: ["mv", "files"]
 },
-{
-q: "The command used to remove empty directories only is ___",
-type: "fill",
-answer: "rmdir",
-explain: "`rmdir` specifically removes empty directories.",
-tags: ["rmdir", "directories"]
-},
-{
-q: "The command used to create a symbolic link is ___",
-type: "fill",
-answer: "ln -s",
-explain: "`ln -s` creates a symbolic link to the specified original file.",
-tags: ["links", "symlink"]
-},
-{
-q: "The command used to remove a linked filename without modifying the original link target is ___",
-type: "fill",
-answer: "unlink",
-explain: "The notes specify `unlink` with the linked filename to remove that link.",
-tags: ["links", "unlink"]
-},
-{
-q: "The command used to show the first 10 lines of a file by default is ___",
-type: "fill",
-answer: "head",
-explain: "`head` defaults to the first 10 lines.",
-tags: ["head", "reading"]
-},
-{
-q: "The command used to monitor newly appended lines in a log file is ___",
-type: "fill",
-answer: "tail -f",
-explain: "`tail -f` follows the file and displays lines as they are appended.",
-tags: ["tail", "logs"]
-},
-{
-q: "The command used to determine a file's basic type is ___",
-type: "fill",
-answer: "file",
-explain: "`file` provides basic information about a file's type.",
-tags: ["file", "metadata"]
-},
+
+
+
+
+
+
 {
 q: "The command used to display detailed metadata such as inode and timestamps is ___",
 type: "fill",
@@ -1261,13 +815,7 @@ answer: "diff",
 explain: "`diff` compares text files line by line and reports required changes.",
 tags: ["diff", "comparison"]
 },
-{
-q: "The environment variable containing the directories searched for command binaries is ___",
-type: "fill",
-answer: "PATH",
-explain: "`PATH` contains the directories Linux searches for executable command binaries.",
-tags: ["path", "environment"]
-},
+
 {
 q: "Match the `ls` options with their descriptions.",
 type: "command_match",

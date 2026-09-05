@@ -28,11 +28,7 @@ front: "What is a demarc?",
 back: "The demarcation point where the ISP's network ends and the customer's network begins, dividing responsibility between the provider and organization.",
 tags: ["network-plus", "demarc", "troubleshooting"]
 },
-{
-front: "How is responsibility generally divided at the demarc?",
-back: "The ISP is generally responsible for its network up to the demarc, while the organization is generally responsible for the customer side.",
-tags: ["network-plus", "demarc", "responsibility"]
-},
+
 {
 front: "What should a technician check when determining who is responsible for an ISP connection problem?",
 back: "Determine which side of the demarc the affected equipment or connection is located on.",
@@ -83,21 +79,9 @@ front: "What are common ways racks can be mounted?",
 back: "Wall-mounted, ceiling-mounted, freestanding on the floor, or bolted to the floor.",
 tags: ["network-plus", "rack", "physical-installation"]
 },
-{
-front: "What is the standard rack height given in the source?",
-back: "42U, or about 6 feet.",
-tags: ["network-plus", "rack", "dimensions"]
-},
-{
-front: "How much vertical space is 1 RU?",
-back: "1.75 inches.",
-tags: ["network-plus", "rack", "dimensions"]
-},
-{
-front: "How tall is a typical half-rack according to the source?",
-back: "Usually 18U to 22U.",
-tags: ["network-plus", "rack", "dimensions"]
-},
+
+
+
 {
 front: "What standard rack width is given in the source?",
 back: "19 inches, although 23-inch racks are also encountered.",
@@ -133,11 +117,7 @@ front: "What is an IDF?",
 back: "The intermediate distribution frame, which provides an intermediate connection between the MDF and end-user equipment on each floor and in each building.",
 tags: ["network-plus", "idf", "structured-cabling"]
 },
-{
-front: "How many IDFs per floor does the source say ANSI/TIA standards specify at minimum?",
-back: "At least one IDF per floor, although large organizations may use several.",
-tags: ["network-plus", "idf", "standards"]
-},
+
 {
 front: "What topology results when an MDF connects to multiple IDFs and those IDFs connect to workstations?",
 back: "An extended star topology.",
@@ -148,11 +128,7 @@ front: "What does a work area include?",
 back: "Workstations, printers, other networked devices, patch cables, wall jacks, and cabling connecting those devices to a data room.",
 tags: ["network-plus", "work-area", "structured-cabling"]
 },
-{
-front: "What does the source say about wall-jack outlets?",
-back: "ANSI/TIA standards call for each wall jack to contain at least one voice and one data outlet, although actual environments can vary.",
-tags: ["network-plus", "wall-jack", "standards"]
-},
+
 {
 front: "What factors should be considered when selecting and installing a rack?",
 back: "Physical structure, dimensions, equipment mounting, access, airflow, power distribution, cooling, cable management, and the number and type of devices.",
@@ -183,16 +159,8 @@ front: "What is horizontal cabling?",
 back: "Cabling that connects workstations to the closest data room and switches located there.",
 tags: ["network-plus", "horizontal-cabling", "cabling"]
 },
-{
-front: "What is the maximum horizontal-cabling distance in the source?",
-back: "100 meters total.",
-tags: ["network-plus", "horizontal-cabling", "numbers"]
-},
-{
-front: "How is the 100 m horizontal-cabling limit divided?",
-back: "Up to 90 m between network equipment in the data room and the wall jack, plus up to 10 m between the wall jack and the workstation.",
-tags: ["network-plus", "horizontal-cabling", "numbers"]
-},
+
+
 {
 front: "What is backbone cabling?",
 back: "Cabling or wireless links that interconnect the EF and MDF, MDF and IDFs, and floors or buildings through vertical or other cross-connect paths.",
@@ -223,21 +191,9 @@ front: "What is STP?",
 back: "Shielded twisted pair, a copper-based twisted-pair cable with metallic shielding around individual pairs and/or around all pairs.",
 tags: ["network-plus", "stp", "cabling"]
 },
-{
-front: "What are the two fiber types identified in the source?",
-back: "SMF (single-mode fiber) and MMF (multimode fiber).",
-tags: ["network-plus", "fiber", "smf", "mmf"]
-},
-{
-front: "How does copper cabling transmit data according to the source?",
-back: "Using electrical signals.",
-tags: ["network-plus", "cabling", "copper"]
-},
-{
-front: "How does fiber-optic cabling transmit data?",
-back: "Using pulses of light from a laser or LED through glass or plastic fibers.",
-tags: ["network-plus", "fiber", "transmission"]
-},
+
+
+
 {
 front: "What is cable management?",
 back: "Organizing cables to support the highest potential performance of the cables and connected hardware while minimizing damage, injury, and troubleshooting difficulty.",
@@ -253,16 +209,8 @@ front: "Why should excessive exposed conductor be avoided at twisted-pair termin
 back: "It increases the possibility of crosstalk, or interference between wires.",
 tags: ["network-plus", "crosstalk", "termination"]
 },
-{
-front: "What is bend radius?",
-back: "The radius of the maximum safe curve or loop for a cable without impairing data transmission.",
-tags: ["network-plus", "bend-radius", "cabling"]
-},
-{
-front: "What bend-radius guideline does the source give for twisted-pair cable?",
-back: "A bend radius equal to or greater than four times the cable diameter.",
-tags: ["network-plus", "bend-radius", "numbers"]
-},
+
+
 {
 front: "Why should continuity be verified for each installed cable segment?",
 back: "Testing individual segments confirms reliable transmission and makes troubleshooting easier than diagnosing faults across multiple long cable runs.",
@@ -293,11 +241,7 @@ front: "How far should cable be kept from fluorescent lights or other listed EMI
 back: "At least 3 feet.",
 tags: ["network-plus", "emi", "numbers"]
 },
-{
-front: "What is a plenum?",
-back: "The area above a ceiling tile or below subflooring where air can circulate.",
-tags: ["network-plus", "plenum", "cabling"]
-},
+
 {
 front: "What kind of cable should be used in a plenum?",
 back: "Plenum-rated cable installed according to applicable local electrical codes.",
@@ -308,11 +252,7 @@ front: "What distinguishes plenum-rated cable from regular PVC cable?",
 back: "Plenum-rated cable uses a flame-resistant jacket that produces less smoke than regular PVC cable.",
 tags: ["network-plus", "plenum", "safety"]
 },
-{
-front: "What should technicians do with cable runs that are installed too tightly?",
-back: "Leave some slack because overly tight runs can create connectivity and transmission problems.",
-tags: ["network-plus", "cabling", "best-practices"]
-},
+
 {
 front: "What is a patch panel?",
 back: "A wall- or rack-mounted panel of network connections that provides a central termination point and organization point for converging patch cables.",
@@ -323,11 +263,7 @@ front: "Why is a patch panel valuable if it does not change the transmitted data
 back: "It organizes lines and makes patch cables easy to swap when devices are moved or changed.",
 tags: ["network-plus", "patch-panel", "cable-management"]
 },
-{
-front: "What should cabling documentation include?",
-back: "Cable locations, installation dates, cable lengths, and cable grades, updated whenever the network changes.",
-tags: ["network-plus", "documentation", "cabling"]
-},
+
 {
 front: "What should be explicitly labeled in a cable plant?",
 back: "Data jacks, ports, patch panels, switches, connectors, and circuits.",
@@ -368,16 +304,8 @@ front: "Why are SCADA and other OT systems often isolated on separate network se
 back: "For security, they are often isolated from sensitive data resources or Internet access.",
 tags: ["network-plus", "scada", "ot", "security"]
 },
-{
-front: "How should data rooms be physically secured?",
-back: "They should be behind locked doors with access limited to appropriate IT personnel.",
-tags: ["network-plus", "physical-security", "data-room"]
-},
-{
-front: "How are security cameras typically treated as network devices?",
-back: "They are networked devices but are typically isolated in a secure network segment.",
-tags: ["network-plus", "security", "network-segmentation"]
-},
+
+
 {
 front: "What is network documentation intended to protect?",
 back: "The information and knowledge a network technician accumulates while working on a network.",
@@ -388,11 +316,7 @@ front: "What are major benefits of good network documentation?",
 back: "It preserves knowledge, improves communication, speeds troubleshooting, and makes information easier to find when similar problems occur.",
 tags: ["network-plus", "documentation"]
 },
-{
-front: "What is a network diagram?",
-back: "A graphical representation of network devices and their connections.",
-tags: ["network-plus", "network-diagrams"]
-},
+
 {
 front: "What information can a network diagram show?",
 back: "Logical topology, IP address pools and reservations, device names, transmission media, physical layout, floor plans, and rack layouts.",
@@ -413,36 +337,20 @@ front: "What does a Layer 3 network diagram emphasize?",
 back: "IP address spaces, routing between networks, and subnets within LANs.",
 tags: ["network-plus", "osi", "layer3"]
 },
-{
-front: "What is network mapping?",
-back: "The process of discovering and identifying devices on a network; a network map shows logical connections and addressing information.",
-tags: ["network-plus", "network-mapping"]
-},
+
 {
 front: "What is Nmap?",
 back: "Network Mapper, a network-mapping tool that can discover hosts, open ports, services, and MAC addresses.",
 tags: ["network-plus", "nmap", "network-mapping"]
 },
-{
-front: "What command invokes Nmap?",
-back: "The `nmap` command-line executable.",
-tags: ["network-plus", "nmap", "commands"]
-},
-{
-front: "What is Zenmap?",
-back: "A graphical interface for Nmap.",
-tags: ["network-plus", "nmap", "zenmap"]
-},
+
+
 {
 front: "What network tools can be used to create diagrams according to the source?",
 back: "Examples include Edraw, SmartDraw, Gliffy, Microsoft Visio, and Network Notepad.",
 tags: ["network-plus", "diagramming", "tools"]
 },
-{
-front: "What is a rack diagram?",
-back: "A diagram showing devices stacked in a rack system, typically drawn to scale.",
-tags: ["network-plus", "rack-diagram", "documentation"]
-},
+
 {
 front: "What are rack diagrams useful for?",
 back: "Planning rack installations, tracking equipment installed in a rack, and troubleshooting rack equipment.",
@@ -463,21 +371,13 @@ front: "What can an EULA define?",
 back: "Who may use an application, how long it may be used, how many users may install or access it, whether it may be provided over a network or Internet, and how many backup copies may be stored.",
 tags: ["network-plus", "eula", "licensing"]
 },
-{
-front: "What tools does the source mention for securely storing credentials?",
-back: "Password managers such as KeePass or Bitwarden.",
-tags: ["network-plus", "password-management", "security"]
-},
+
 {
 front: "How should documentation be kept current and usable?",
 back: "Store it in an easily updated and searchable central system, have others review it, have new technicians use it, collect feedback, and update it regularly.",
 tags: ["network-plus", "documentation", "processes"]
 },
-{
-front: "What is inventory management?",
-back: "The monitoring and maintenance of network assets, including additions, maintenance, removal, and disposal of outdated assets.",
-tags: ["network-plus", "inventory", "asset-management"]
-},
+
 {
 front: "Why is inventory management valuable during a security flaw?",
 back: "It helps determine how many affected devices exist and where those devices are located.",
@@ -488,21 +388,13 @@ front: "What information should an inventory record include?",
 back: "Device identification, model number, serial number, location, warranty information, technical support contact information, software version, vendor, and licensing information.",
 tags: ["network-plus", "inventory", "documentation"]
 },
-{
-front: "What is an RFP?",
-back: "A request for proposal sent to vendors asking them to submit a proposal for a product or service.",
-tags: ["network-plus", "rfp", "business-documents"]
-},
+
 {
 front: "What is an MOU?",
 back: "A memorandum of understanding documenting the intentions of two or more parties to enter a binding agreement or contract. It is generally less formal than the final agreement and usually is not legally binding.",
 tags: ["network-plus", "mou", "business-documents"]
 },
-{
-front: "What is an MSA?",
-back: "A master service agreement, a contract defining the terms of future contracts between parties.",
-tags: ["network-plus", "msa", "business-documents"]
-},
+
 {
 front: "What is an SOW?",
 back: "A statement of work that documents the detailed work required for a particular project, including tasks, deliverables, standards, payment schedule, and timeline.",
@@ -513,31 +405,15 @@ front: "What is an SLA?",
 back: "A service-level agreement that defines measurable service expectations and related terms, such as uptime guarantees and compensation for excessive outages.",
 tags: ["network-plus", "sla", "business-documents"]
 },
-{
-front: "What does MTBF represent in reliability planning?",
-back: "Mean time between failures, the average amount of time expected to pass before the next failure for a device type.",
-tags: ["network-plus", "mtbf", "reliability"]
-},
-{
-front: "What does MTTR represent in reliability planning?",
-back: "Mean time to repair, the average amount of time required to repair a failed device.",
-tags: ["network-plus", "mttr", "reliability"]
-},
-{
-front: "What is a SPoF?",
-back: "A single point of failure: a component, service, or connection whose failure can disrupt the system because no redundant alternative is available.",
-tags: ["network-plus", "spof", "reliability"]
-},
+
+
+
 {
 front: "How does redundancy improve network availability?",
 back: "It provides multiple components, services, or connections in the same role so another can take over if one fails, reducing single points of failure.",
 tags: ["network-plus", "redundancy", "availability"]
 },
-{
-front: "What is automatic failover?",
-back: "A redundant component immediately assumes the duties of a failed component without manual intervention.",
-tags: ["network-plus", "failover", "redundancy"]
-},
+
 {
 front: "What is a hot spare?",
 back: "A duplicate component that is already installed and can immediately assume the failed component's functions.",
@@ -548,16 +424,8 @@ front: "What is a cold spare?",
 back: "A duplicate component that is not installed; replacing the failed component requires an interruption of service.",
 tags: ["network-plus", "cold-spare", "redundancy"]
 },
-{
-front: "What is the system life cycle?",
-back: "The process of designing, implementing, and maintaining systems through a sequence of phases used to continuously improve the network.",
-tags: ["network-plus", "lifecycle", "asset-management"]
-},
-{
-front: "What are the six system life-cycle phases in the source?",
-back: "Requirements analysis, design planning, development and testing, implementation, documentation and maintenance, and evaluation.",
-tags: ["network-plus", "lifecycle", "processes"]
-},
+
+
 {
 front: "What is configuration management?",
 back: "The process of efficiently and effectively managing system configurations to maintain a desired state and track configuration changes over time.",
@@ -578,46 +446,18 @@ front: "What is a baseline configuration in configuration management?",
 back: "The beginning stable state in which a system functions effectively in production and the known reference used for later changes.",
 tags: ["network-plus", "baseline", "configuration-management"]
 },
-{
-front: "What does discovery mean in configuration management?",
-back: "Taking inventory of existing systems and their current configurations before establishing and storing the baseline.",
-tags: ["network-plus", "configuration-management", "discovery"]
-},
-{
-front: "What does version control provide for network configurations?",
-back: "Historical configurations, newer releases, rollback to prior versions, and an audit trail of changes.",
-tags: ["network-plus", "version-control", "configuration-management"]
-},
-{
-front: "What does configuration monitoring evaluate?",
-back: "System performance and compliance with applicable standards and requirements.",
-tags: ["network-plus", "configuration-monitoring"]
-},
-{
-front: "What is configuration drift?",
-back: "The gradual movement away from the intended configuration as small changes accumulate, potentially without proper approval or documentation.",
-tags: ["network-plus", "configuration-drift", "configuration-management"]
-},
-{
-front: "What is a golden configuration?",
-back: "A configuration optimized for compliance and performance that can serve as the comparison standard for similar systems.",
-tags: ["network-plus", "golden-configuration", "configuration-management"]
-},
-{
-front: "What is configuration auditing?",
-back: "A review of historical changes to determine whether changes were evaluated and approved, produced the desired effect, maintained compliance, and kept documentation and backups current.",
-tags: ["network-plus", "auditing", "configuration-management"]
-},
+
+
+
+
+
+
 {
 front: "What is EOS?",
 back: "End-of-support, the date when support for an older application, operating system, firmware, or hardware system is withdrawn.",
 tags: ["network-plus", "eos", "lifecycle"]
 },
-{
-front: "What usually happens to security updates and bug fixes after EOS?",
-back: "The product generally no longer receives them, making continued production use unsafe according to the source.",
-tags: ["network-plus", "eos", "security"]
-},
+
 {
 front: "What is EOL?",
 back: "End-of-life, which may mean the same point as EOS or an earlier point when a product is no longer sold or produced while support continues.",
@@ -633,56 +473,20 @@ front: "What is decommissioning?",
 back: "The process of removing a system from production, which can apply to a hard drive, network segment, or entire data center.",
 tags: ["network-plus", "decommissioning", "lifecycle"]
 },
-{
-front: "What is the first concern when decommissioning a system?",
-back: "Identify dependencies and determine whether users or business processes still rely on the system.",
-tags: ["network-plus", "decommissioning", "dependencies"]
-},
-{
-front: "What backup-related steps are part of decommissioning?",
-back: "Back up required data, test the backups, and document the backups before removing the system.",
-tags: ["network-plus", "decommissioning", "backup"]
-},
-{
-front: "What is change management intended to control?",
-back: "Changes to network systems and resources so they are properly planned, approved, implemented, tested, documented, and reversible when necessary.",
-tags: ["network-plus", "change-management"]
-},
-{
-front: "Why can poorly managed changes be dangerous?",
-back: "Even a simple change can cause lengthy downtime if it is poorly planned or implemented.",
-tags: ["network-plus", "change-management", "downtime"]
-},
+
+
+
+
 {
 front: "Why should users receive advance notice of planned changes?",
 back: "So they can plan around periods when network resources or services will be unavailable.",
 tags: ["network-plus", "change-management", "notification"]
 },
-{
-front: "What is a patch?",
-back: "A correction, improvement, or enhancement that can fix bugs, close vulnerabilities, or add minor enhancements while most of the code remains unchanged.",
-tags: ["network-plus", "patch", "software-changes"]
-},
-{
-front: "What is patch management?",
-back: "Monitoring new patches, testing them for networked devices, and installing them.",
-tags: ["network-plus", "patch-management", "change-management"]
-},
-{
-front: "What is an upgrade?",
-back: "A major software change that enhances functionality and features while correcting bugs and vulnerabilities.",
-tags: ["network-plus", "upgrade", "software-changes"]
-},
-{
-front: "What risks can firmware updates introduce?",
-back: "They can remove existing features or create compatibility problems even when they improve functionality.",
-tags: ["network-plus", "firmware", "change-management"]
-},
-{
-front: "What is a rollback?",
-back: "Reverting software to a previous version after an attempted patch or upgrade fails.",
-tags: ["network-plus", "rollback", "change-management"]
-},
+
+
+
+
+
 {
 front: "What are the core firmware-management practices from the source?",
 back: "Obtain the update from the manufacturer, confirm the exact correct update, test before deployment, test afterward, document effects, and balance risks against benefits.",
@@ -718,11 +522,7 @@ front: "What should happen if a change is unsuccessful?",
 back: "Revert according to the rollback plan and notify affected personnel of the completion and reason for the rollback.",
 tags: ["network-plus", "change-management", "rollback"]
 },
-{
-front: "What should happen after a successful change?",
-back: "Reenable access as appropriate, notify affected personnel, and record the change in the change-management system.",
-tags: ["network-plus", "change-management", "documentation"]
-},
+
 {
 front: "What are the four rollback approaches summarized for different software upgrade types?",
 back: "Use the patch uninstall utility for an OS patch; uninstall or reinstall the previous client version for a client upgrade; uninstall or reinstall the previous shared application for a shared upgrade; restore a full system backup for an OS upgrade, with OS uninstall as a last resort.",

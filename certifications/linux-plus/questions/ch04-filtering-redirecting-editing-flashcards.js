@@ -11,14 +11,7 @@ answer: 0,
 explain: "cut extracts selected portions of each record and writes them to standard output. grep searches, sort orders, sed edits streams, and wc counts text statistics.",
 tags: ["cut", "text-processing"]
 },
-{
-q: "Which cut option selects fields from each record?",
-type: "mcq",
-options: ["-c", "-d", "-f", "-b", "-s"],
-answer: 2,
-explain: "The -f option selects fields. -d defines the delimiter, while -c and -b select characters and bytes.",
-tags: ["cut", "options"]
-},
+
 {
 q: "Which cut option changes the field delimiter from its default of TAB?",
 type: "mcq",
@@ -73,22 +66,8 @@ answer: [0, 1],
 explain: "-r recursively searches directories and -i ignores case. The other options perform counting, inversion, or ERE processing.",
 tags: ["grep", "options"]
 },
-{
-q: "What does grep -v do?",
-type: "fill",
-answer: "invert match",
-accepts: ["--invert-match"],
-explain: "grep -v displays records that do not contain a match for the pattern.",
-tags: ["grep", "options"]
-},
-{
-q: "Which grep option enables extended regular expressions?",
-type: "mcq",
-options: ["-E", "-R", "-d", "-v", "-c"],
-answer: 0,
-explain: "-E activates extended regular expression syntax for the pattern.",
-tags: ["grep", "ere"]
-},
+
+
 {
 q: "A password record must begin with the text root. Which regex anchor should be used?",
 type: "mcq",
@@ -97,22 +76,8 @@ answer: 1,
 explain: "^ anchors a pattern to the beginning of a line. $ anchors it to the end.",
 tags: ["regex", "anchors"]
 },
-{
-q: "A log record must end with the text nologin. Which regex anchor belongs after nologin?",
-type: "mcq",
-options: ["^", "*", ".", "$", "+"],
-answer: 3,
-explain: "$ matches the end of a line, so nologin$ matches records ending with nologin.",
-tags: ["regex", "anchors"]
-},
-{
-q: "What does the regex . match?",
-type: "fill",
-answer: "any single character",
-accepts: ["one character"],
-explain: "In the basic regular expressions described here, a dot matches any single character.",
-tags: ["regex", "bre"]
-},
+
+
 {
 q: "What does the regex .* represent in the material?",
 type: "mcq",
@@ -127,14 +92,7 @@ answer: 1,
 explain: "The dot matches a character and * allows zero or more occurrences, so .* can span multiple characters.",
 tags: ["regex", "bre"]
 },
-{
-q: "Which regex matches any one character from the listed set?",
-type: "mcq",
-options: ["[abc]", "[^abc]", "abc*", "(abc)", "^abc"],
-answer: 0,
-explain: "[abc] matches one character chosen from the listed set.",
-tags: ["regex", "bre"]
-},
+
 {
 q: "Which regex matches a character that is not one of the listed characters?",
 type: "mcq",
@@ -159,30 +117,9 @@ answer: 1,
 explain: "In ERE syntax, + means one or more occurrences. * means zero or more.",
 tags: ["regex", "ere"]
 },
-{
-q: "Which ERE operator means zero or one occurrence?",
-type: "mcq",
-options: ["+", "?", "*", "{n}", "|"],
-answer: 1,
-explain: "? matches zero or one occurrence of the preceding character in an ERE.",
-tags: ["regex", "ere"]
-},
-{
-q: "Which ERE construct provides alternation between alternatives?",
-type: "mcq",
-options: ["()", "{}", "|", "^", "$"],
-answer: 2,
-explain: "| is the alternation operator and represents an OR relationship between alternatives.",
-tags: ["regex", "ere"]
-},
-{
-q: "Which ERE construct groups a subexpression?",
-type: "fill",
-answer: "()",
-accepts: ["parentheses"],
-explain: "Parentheses group related elements into a subexpression.",
-tags: ["regex", "ere"]
-},
+
+
+
 {
 q: "What is the main difference between grep's BRE mode and grep -E?",
 type: "mcq",
@@ -327,14 +264,7 @@ answer: 2,
 explain: "-E shows line-ending markers as $.",
 tags: ["cat", "options"]
 },
-{
-q: "Which cat option displays TAB characters as ^I?",
-type: "fill",
-answer: "-T",
-accepts: ["--show-tabs"],
-explain: "cat -T makes TAB characters visible as ^I.",
-tags: ["cat", "tabs"]
-},
+
 {
 q: "Which cat option displays non-printing characters using caret and M- notation?",
 type: "mcq",
@@ -379,14 +309,7 @@ answer: 2,
 explain: "%f formats a floating-point number.",
 tags: ["printf", "formats"]
 },
-{
-q: "Which printf escape inserts a newline?",
-type: "fill",
-answer: "\n",
-accepts: ["newline"],
-explain: "\n inserts a newline character.",
-tags: ["printf", "escape-sequences"]
-},
+
 {
 q: "Why should a script include \n explicitly when using printf for line-oriented output?",
 type: "mcq",
@@ -537,7 +460,7 @@ q: "Which commands correctly use standard input redirection?",
 type: "multi",
 options: [
 "sort < unsorted.txt",
-"tr \" \" "," < Grades.txt",
+"tr \" \" \" \" < Grades.txt",
 "grep word <<< \"this string\"",
 "sort > unsorted.txt",
 "grep word 2> input.txt"
@@ -546,22 +469,8 @@ answer: [0, 1, 2],
 explain: "< reads STDIN from a file and <<< supplies a single string as STDIN. The other choices redirect output or errors.",
 tags: ["stdin", "redirection"]
 },
-{
-q: "Which operator feeds multiple lines of input to a command?",
-type: "fill",
-answer: "<<",
-accepts: ["here document", "heredoc"],
-explain: "<< introduces a here document, which supplies multiple lines as standard input.",
-tags: ["stdin", "heredoc"]
-},
-{
-q: "Which syntax feeds a single string as standard input?",
-type: "mcq",
-options: ["<<", "<<<", "<>", ">", "2>"],
-answer: 1,
-explain: "<<< is the here-string operator and supplies a single string as standard input.",
-tags: ["stdin", "here-string"]
-},
+
+
 {
 q: "What happens when the delimiter of a here document is quoted?",
 type: "mcq",
@@ -730,22 +639,8 @@ answer: 1,
 explain: "find -print0 creates NUL-delimited input and xargs -0 reads that format safely.",
 tags: ["xargs", "find", "filenames"]
 },
-{
-q: "Which xargs option replaces a placeholder string with each input item?",
-type: "mcq",
-options: ["-t", "-0", "-I", "-n", "-p"],
-answer: 2,
-explain: "-I STR replaces each occurrence of STR with the current input item.",
-tags: ["xargs", "options"]
-},
-{
-q: "Which command-substitution syntax is preferred in the material?",
-type: "mcq",
-options: ["`command`", "$(command)", "${command}", "[[ command ]]", "{command}"],
-answer: 1,
-explain: "$(command) is preferred because it is clearer and easier to nest than backticks.",
-tags: ["command-substitution", "shell"]
-},
+
+
 {
 q: "Which statement about the two command-substitution forms is correct?",
 type: "tf",
@@ -768,21 +663,8 @@ answer: 1,
 explain: "Brace expansion generates strings such as file1 file2 file3 from a brace expression and is a Bash feature rather than a command.",
 tags: ["brace-expansion", "bash"]
 },
-{
-q: "Which expansions are produced by {1..5}?",
-type: "mcq",
-options: ["1 2 3 4 5", "0 1 2 3 4", "1..5", "5 4 3 2 1", "{1} {5}"],
-answer: 0,
-explain: "The range {1..5} expands to the sequence 1 2 3 4 5.",
-tags: ["brace-expansion", "bash"]
-},
-{
-q: "Which expansions are produced by file{1,2,3}?",
-type: "fill",
-answer: "file1 file2 file3",
-explain: "Brace expansion inserts each comma-separated alternative into the surrounding text.",
-tags: ["brace-expansion", "bash"]
-},
+
+
 {
 q: "Which editor is presented as a simple choice for straightforward text modifications?",
 type: "mcq",
@@ -815,14 +697,7 @@ accepts: ["^K"],
 explain: "Ctrl+K cuts the current line in nano.",
 tags: ["nano", "shortcuts"]
 },
-{
-q: "What does vim mean?",
-type: "fill",
-answer: "vi improved",
-accepts: ["vi improved"],
-explain: "The name vim refers to the improved open-source version of vi.",
-tags: ["vim", "vi"]
-},
+
 {
 q: "Which modes are standard Vim modes described in the chapter?",
 type: "multi",
@@ -847,114 +722,19 @@ answer: 0,
 explain: "The material specifically identifies I as the key used to enter Insert mode.",
 tags: ["vim", "insert-mode"]
 },
-{
-q: "Which key returns Vim from Insert mode to Command mode?",
-type: "fill",
-answer: "Esc",
-accepts: ["Escape"],
-explain: "Pressing Esc exits Insert mode and returns to command mode.",
-tags: ["vim", "insert-mode"]
-},
-{
-q: "Which Vim keys move left, down, up, and right respectively?",
-type: "mcq",
-options: ["h/j/k/l", "j/k/l/h", "w/b/0/$", "a/s/d/f", "u/i/o/p"],
-answer: 0,
-explain: "h moves left, j down, k up, and l right in Vim command mode.",
-tags: ["vim", "movement"]
-},
-{
-q: "Which Vim commands move to the beginning and end of the current line?",
-type: "multi",
-options: ["0", "$", "gg", "G", "w"],
-answer: [0, 1],
-explain: "0 moves to the beginning of the current line and $ moves to its end.",
-tags: ["vim", "movement"]
-},
-{
-q: "Which Vim command moves to the first line of the file?",
-type: "mcq",
-options: ["G", "gg", "0", "1G", "$"],
-answer: 1,
-explain: "gg moves to the first line of the file.",
-tags: ["vim", "movement"]
-},
-{
-q: "Which Vim command moves to the last line of the file?",
-type: "fill",
-answer: "G",
-explain: "G moves to the last line in the file.",
-tags: ["vim", "movement"]
-},
-{
-q: "Which Vim command deletes the current line?",
-type: "mcq",
-options: ["dd", "x", "yy", "p", "u"],
-answer: 0,
-explain: "dd deletes the current line; x deletes the character under the cursor.",
-tags: ["vim", "editing"]
-},
-{
-q: "Which Vim command yanks the current line?",
-type: "fill",
-answer: "yy",
-accepts: ["yank"],
-explain: "yy copies the current line into Vim's yank buffer.",
-tags: ["vim", "editing"]
-},
-{
-q: "Which Vim command pastes yanked or deleted text after the cursor?",
-type: "mcq",
-options: ["p", "P", "yy", "dd", "u"],
-answer: 0,
-explain: "p pastes yanked or deleted text after the cursor.",
-tags: ["vim", "editing"]
-},
-{
-q: "Which Vim command undoes the last change?",
-type: "mcq",
-options: ["u", "Ctrl+r", "n", "x", "G"],
-answer: 0,
-explain: "u performs undo, while Ctrl+r redoes an undone change.",
-tags: ["vim", "editing"]
-},
-{
-q: "Which Vim command redoes the last undo?",
-type: "fill",
-answer: "Ctrl+r",
-accepts: ["^R"],
-explain: "Ctrl+r redoes the last undone change in command mode.",
-tags: ["vim", "editing"]
-},
-{
-q: "How do you search forward for a pattern in Vim?",
-type: "mcq",
-options: ["/pattern", "?pattern", ":pattern", "g/pattern", "$pattern"],
-answer: 0,
-explain: "/pattern starts a forward search.",
-tags: ["vim", "search"]
-},
-{
-q: "How do you search backward for a pattern in Vim?",
-type: "fill",
-answer: "?pattern",
-explain: "?pattern starts a backward search.",
-tags: ["vim", "search"]
-},
-{
-q: "What do n and N do after a Vim search?",
-type: "mcq",
-options: [
-"They save and quit",
-"They repeat the search in the same and opposite directions",
-"They move one line down and up",
-"They enter and leave Insert mode",
-"They undo and redo"
-],
-answer: 1,
-explain: "n repeats the search in the same direction and N repeats it in the opposite direction.",
-tags: ["vim", "search"]
-},
+
+
+
+
+
+
+
+
+
+
+
+
+
 {
 q: "Which Vim command substitutes text on the current line?",
 type: "mcq",
@@ -970,29 +750,9 @@ answer: ":%s/old/new/g",
 explain: "The % address applies the substitution to the whole file and g replaces all occurrences on each matching line.",
 tags: ["vim", "substitution"]
 },
-{
-q: "Which Vim commands write and quit the editor?",
-type: "multi",
-options: [":x", ":wq", ":q", ":w", ":q!"],
-answer: [0, 1],
-explain: ":x and :wq both write the buffer and quit. :q quits without writing, while :w only writes and stays in the editor.",
-tags: ["vim", "ex-mode"]
-},
-{
-q: "Which Vim command quits without saving changes?",
-type: "mcq",
-options: [":w", ":x", ":q", ":wq", ":r"],
-answer: 2,
-explain: ":q exits without writing the buffer.",
-tags: ["vim", "ex-mode"]
-},
-{
-q: "Which Vim command forces a quit without writing the buffer?",
-type: "fill",
-answer: ":q!",
-explain: ":q! quits without saving and overrides protection.",
-tags: ["vim", "ex-mode"]
-},
+
+
+
 {
 q: "Which Vim Ex command executes a shell command and displays its output without quitting?",
 type: "mcq",
@@ -1001,13 +761,7 @@ answer: 0,
 explain: ":! command executes a shell command and displays the result without leaving Vim.",
 tags: ["vim", "ex-mode", "shell"]
 },
-{
-q: "Which Vim Ex command inserts shell-command output into the current buffer?",
-type: "fill",
-answer: ":r! command",
-explain: ":r! command runs a shell command and inserts its output into the buffer.",
-tags: ["vim", "ex-mode", "shell"]
-},
+
 {
 q: "Which Vim command reads another file into the current buffer?",
 type: "mcq",
@@ -1016,27 +770,8 @@ answer: 0,
 explain: ":r file reads the specified file and inserts its contents into the current buffer.",
 tags: ["vim", "ex-mode"]
 },
-{
-q: "Which command launches the interactive Vim tutorial?",
-type: "fill",
-answer: "vimtutor",
-explain: "vimtutor starts the built-in tutorial when it is installed.",
-tags: ["vim", "vimtutor"]
-},
-{
-q: "What does sed do?",
-type: "mcq",
-options: [
-"Provides interactive screen editing only",
-"Reads input line by line and applies editing commands",
-"Sorts text by field",
-"Counts words and bytes",
-"Compares two files graphically"
-],
-answer: 1,
-explain: "sed is a stream editor that processes input line by line and applies specified editing commands.",
-tags: ["sed", "stream-editors"]
-},
+
+
 {
 q: "Which sed option reads commands from a script file?",
 type: "mcq",
@@ -1112,38 +847,10 @@ answer: 2,
 explain: "awk provides field processing plus arithmetic, variables, programming constructs, and formatted output.",
 tags: ["awk", "text-processing"]
 },
-{
-q: "What does $0 represent in awk?",
-type: "mcq",
-options: ["The first field", "The current line", "The current line number", "The number of fields", "The last field"],
-answer: 1,
-explain: "$0 represents the entire current input record or line.",
-tags: ["awk", "variables"]
-},
-{
-q: "What does $3 represent in awk?",
-type: "fill",
-answer: "the third field",
-accepts: ["third field"],
-explain: "awk uses $1, $2, and so on to represent individual fields in the current record.",
-tags: ["awk", "fields"]
-},
-{
-q: "What does NR represent in awk?",
-type: "mcq",
-options: ["Number of records", "Current line number", "Number of fields", "Current field", "Record separator"],
-answer: 1,
-explain: "NR is the current input line number.",
-tags: ["awk", "variables"]
-},
-{
-q: "What does NF represent in awk?",
-type: "fill",
-answer: "number of fields",
-accepts: ["field count"],
-explain: "NF contains the number of fields in the current input record.",
-tags: ["awk", "variables"]
-},
+
+
+
+
 {
 q: "Which awk option sets the field separator?",
 type: "mcq",
@@ -1160,20 +867,7 @@ accepts: ["--assign"],
 explain: "-v VAR=VAL assigns a variable before the awk program runs.",
 tags: ["awk", "options"]
 },
-{
-q: "How can awk print the username and home directory from /etc/passwd?",
-type: "mcq",
-options: [
-"awk -F: '{print $1, $6}' /etc/passwd",
-"awk -t: '{print $1, $7}' /etc/passwd",
-"awk -d: '{print $2, $5}' /etc/passwd",
-"awk -F: '{print $3, $7}' /etc/passwd",
-"awk -n: '{print $1, $6}' /etc/passwd"
-],
-answer: 0,
-explain: "With colon-separated /etc/passwd fields, $1 is the username and $6 is the home directory.",
-tags: ["awk", "etc-passwd"]
-},
+
 {
 q: "Which relationships correctly describe grep, sed, and awk?",
 type: "match",
@@ -1198,20 +892,7 @@ pairs: [
 explain: "Linux conventionally assigns descriptor 0 to standard input, 1 to standard output, and 2 to standard error.",
 tags: ["stdin", "stdout", "stderr"]
 },
-{
-q: "Match each regex element with its meaning.",
-type: "match",
-context: "Basic regular expressions",
-pairs: [
-{ item: "^", match: "Beginning of line" },
-{ item: "$", match: "End of line" },
-{ item: ".", match: "Any single character" },
-{ item: "*", match: "Zero or more preceding characters" },
-{ item: "[abc]", match: "One character from the listed set" }
-],
-explain: "These symbols provide the basic matching, anchoring, and repetition behaviors described for BREs.",
-tags: ["regex", "bre"]
-},
+
 {
 q: "Match each redirection operator with its effect.",
 type: "match",
@@ -1226,20 +907,7 @@ pairs: [
 explain: "Each operator targets a particular stream or changes where a stream is sent.",
 tags: ["redirection", "shell"]
 },
-{
-q: "Match each Vim command with its action.",
-type: "match",
-context: "Vim command mode",
-pairs: [
-{ item: "dd", match: "Delete the current line" },
-{ item: "yy", match: "Yank the current line" },
-{ item: "p", match: "Paste after the cursor" },
-{ item: "u", match: "Undo the last change" },
-{ item: "G", match: "Move to the last line" }
-],
-explain: "These are standard command-mode actions described for moving through and editing a Vim buffer.",
-tags: ["vim", "editing"]
-},
+
 {
 q: "Match each text-processing utility with its primary role.",
 type: "match",
