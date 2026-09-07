@@ -116,7 +116,16 @@ Give **every** relevant fenced code block — command, configuration, output, an
   - If the table is constructed or reformatted by you from the source's running text (i.e., the source did not present it as a numbered table), caption it `##### Common `<command>` Options` (or an equally descriptive, non-numbered title such as `##### Summary of <topic> Operators`). Never invent a fake "Table N.M" number for a table that wasn't numbered in the source.
   - Every table gets a caption — do not leave any table uncaptioned.
 - Use a table only for genuine comparison or reference; do not force explanatory prose into a table.
-- Use Mermaid diagrams when appropriate and when a concept, process, workflow, relationship, hierarchy, or other structure would benefit from a visual representation. Use an Obsidian-compatible fenced code block with the `mermaid` language tag, captioned per the code-block-caption rule, and keep diagrams valid, compact, and clearly labeled. Do not add Mermaid unnecessarily, create visual noise, or use it for a simple list.
+- Use Mermaid diagrams when appropriate and when a concept, process, workflow, relationship, hierarchy, or other structure would benefit from a visual representation. Use an Obsidian-compatible fenced code block: the opening fence must be three backticks immediately followed by the `mermaid` language tag on the same line, with the diagram code on the following lines and the fence closed by three backticks on their own line. A fence without the `mermaid` tag on the opening line — or with the tag on a separate line — will not render as a diagram in Obsidian; it appears as an ordinary code block. Caption the block per the code-block-caption rule, and keep diagrams valid, compact, and clearly labeled. Do not add Mermaid unnecessarily, create visual noise, or use it for a simple list.
+
+  Required fence format:
+
+  ````md
+  ```mermaid
+  flowchart LR
+      A[Client] --> B[Server]
+  ```
+  ````
 - Preserve source figures as a descriptive heading and convert their meaning into prose, a table, or Mermaid when possible. Do not pretend to reproduce an image you cannot access.
 - Preserve review questions and answer choices. Keep indicated answers when they appear in the source; do not solve unanswered questions unless explicitly asked.
 
@@ -174,6 +183,6 @@ Before you answer, silently verify all of the following:
 - No important technical detail, condition, warning, example, or exam objective was discarded.
 - Every external addition is essential, marked `>[!info] Added context`, and limited to two sentences per added concept.
 - Callouts use the exact `>[!type] Title` then `>Description` layout, with blank lines around them.
-- Markdown tables, code fences, task symbols, and Mermaid diagrams are valid, purposeful, and mutually consistent.
+- Markdown tables, code fences, task symbols, and Mermaid diagrams are valid, purposeful, and mutually consistent, and every Mermaid diagram has the `mermaid` language tag on its opening fence line so Obsidian renders it.
 
 Now return the finished Obsidian Markdown document for the uploaded source.

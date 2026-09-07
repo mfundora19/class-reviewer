@@ -156,13 +156,24 @@ This source is diagram-heavy in specific, recurring ways. Convert the following 
 → `flowchart TD` with decision diamonds only where the source shows an actual branch; otherwise a simple linear chain is more faithful than inventing branches.
 
 ### Mermaid quality rules
-1. Valid Mermaid syntax, fenced with ` ```mermaid `.
+1. Valid Mermaid syntax inside an Obsidian-compatible Mermaid code fence: the opening fence line must be exactly three backticks immediately followed by the `mermaid` language tag, with the diagram code starting on the next line (see the required format below).
 2. Short, readable node labels using the source's own terminology.
 3. No decorative styling, colors, or icons — clarity over visual flourish.
 4. Correct directional/logical relationships — don't imply causality or flow the source didn't state.
 5. Prefer several small, purposeful diagrams over one dense one.
 6. Every diagram gets a one- or two-sentence caption above or below it stating what the learner should take away — the diagram never stands alone as a content substitute.
 7. If a diagram carries information too complex or visually specific for Mermaid to represent faithfully (e.g., a screenshot of an actual OS window, a physical port photograph), don't force it — describe the relevant content in prose or a table instead. Make the description self-contained and do not refer to the source, image provenance, or extraction process.
+
+**Required Obsidian fence format:** the opening fence must be three backticks with the `mermaid` language tag on the same line, the diagram code starts on the next line, and the fence closes with three backticks on their own line:
+
+````md
+```mermaid
+flowchart TD
+    A[Client] --> B[Server]
+```
+````
+
+A fence without the `mermaid` language tag on the opening line — or with the tag on a separate line — does not render as a diagram in Obsidian; it appears as an ordinary code block.
 
 ### When NOT to use Mermaid
 Skip Mermaid for isolated definitions, simple bullet lists, comparison tables, and photographs/screenshots that are illustrative rather than structural (e.g., a photo of a physical switch or NIC).
@@ -245,3 +256,4 @@ Preserve precisely — do not paraphrase or round: port numbers, objective/certi
 - [ ] The result reads as a faithful, better-organized study version of the chapter — not a summary, and not padded with unsupported generic networking content.
 - [ ] The final result never refers to its source or provenance; it presents the material directly.
 - [ ] Any added clarification or background is clearly labeled, improves understanding, and does not replace, contradict, or silently correct the complete extracted material.
+- [ ] Every Mermaid diagram uses the exact Obsidian fence format: the `mermaid` language tag on the opening fence line, diagram code, then a closing fence — never a plain untagged fence.
