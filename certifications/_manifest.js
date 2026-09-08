@@ -48,16 +48,20 @@ window.ReviewApp.content.setManifest({
     // ----------------- Flashcards -----------------
     "network-plus/flashcards/ch01-intro-to-networking-flashcards.js",
     "network-plus/flashcards/ch02-infrastructure-documentation-flashcards.js",
+    "network-plus/flashcards/ch03-addressing-ports-dns-troubleshooting-flashcards.js",
 
     // ----------------- Questions -----------------
     "network-plus/questions/ch01-intro-to-networking-questions.js",
     "network-plus/questions/ch02-infrastructure-documentation-questions.js",
+    "network-plus/questions/ch03-addressing-ports-dns-troubleshooting-questions.js",
     // ----------------- Labs -----------------
     "network-plus/labs/ch01-intro-to-networking-labs.js",
     "network-plus/labs/ch02-infrastructure-documentation-labs.js",
+    "network-plus/labs/ch03-addressing-ports-dns-troubleshooting-labs.js",
     // ----------------- Notes -----------------
     "network-plus/notes/ch01-notes.js",
     "network-plus/notes/ch02-notes.js",
+    "network-plus/notes/ch03-notes.js",
     
 
 

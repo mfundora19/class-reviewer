@@ -76,9 +76,17 @@ This textbook (and most Net+ study guides) uses a consistent set of recurring bo
 | **Note N-M** | `> [!info] Note N-M` | Keep the note's original number so it can be cross-referenced. |
 | **On the Job** (real-world troubleshooting anecdote) | `> [!example] On the Job — <one-line description>` | Preserve as a short narrative summary, not a verbatim transcript — retain the diagnostic sequence (what was tried, in what order, what the eventual root cause was), since this models real troubleshooting logic. |
 | **Applying Concepts** (hands-on lab activity) | `> [!todo] Applying Concepts N-M — <title>` | Preserve the objective and the numbered task list; this is an exercise, not core content, so keep it brief. |
-| **Self-Check** (end-of-section quiz) | `> [!question] Self-Check` | Preserve the questions and answer choices as a list. Do not fabricate or guess answers if the answer key isn't in the extracted text — mark unresolved items with `> [!missing]`. |
+| **Self-Check** (end-of-section quiz) | `> [!question] Self-Check` | Preserve every question and answer choice, then provide the answer so the learner can check their work. Use the source's answer key when present; otherwise determine the best-supported answer from the material and label it as derived, with a brief rationale. If the material is genuinely insufficient, say so explicitly with `> [!missing]` instead of inventing an answer. |
 
 If the source uses different box labels than these (different textbook, different edition), infer the closest matching callout type from context and stay consistent within the note.
+
+### 3.1 QUESTIONS, REVIEW QUESTIONS, AND ANSWERS (non-negotiable)
+
+- Include every question, review question, quiz question, and answer choice that appears in the material. Do not omit a question merely because the material does not include an answer key.
+- Put the answer immediately after each question, or provide a clearly matched answer key directly below the complete question list, so the learner can verify their work.
+- If an answer key is provided, preserve its answer and meaning. If no key is provided, solve the question using the information in the material and label the result `Answer (derived from material):`, followed by a concise explanation showing why it is supported.
+- A missing answer key is not a reason to leave a question unanswered. Only mark an answer as unresolved when the material truly does not support a reliable conclusion; use `> [!missing]` to identify exactly what information is missing.
+- Do not present guesses, unsupported outside facts, or silent corrections as answers. Do not invent additional likely exam questions just to populate the note; answer the questions that are actually present.
 
 ---
 
@@ -236,7 +244,8 @@ Preserve precisely — do not paraphrase or round: port numbers, objective/certi
 ## 13. EXAM-RELEVANT EMPHASIS
 
 - Always preserve Certification objective codes and Exam Tip content verbatim in meaning — these are the source's own signal of what's tested.
-- Do not invent "likely exam questions" beyond what Self-Check boxes already provide.
+- Preserve every Self-Check and review question that appears, and include a visible answer for each one. If the source provides no answer key, derive the best-supported answer from the material and briefly explain it; flag genuinely unsupported answers with `> [!missing]`.
+- Do not invent additional "likely exam questions" beyond the questions already provided in the material.
 - Do not fabricate objectives not stated in the source.
 
 ---
@@ -263,7 +272,8 @@ Preserve precisely — do not paraphrase or round: port numbers, objective/certi
 - [ ] All explicit comparisons in the source are preserved, in prose or table as appropriate.
 - [ ] No invented commands, syntax, comparisons, or acronym meanings.
 - [ ] No hallucinated attributes for any protocol/device/standard beyond what the source supports.
-- [ ] Ambiguous or missing information is flagged with `> [!missing]`, not silently resolved.
+- [ ] Ambiguous or missing information is flagged with `> [!missing]`, not silently resolved; a missing answer key alone does not justify leaving a question unanswered.
+- [ ] Every included question or review question has a clearly matched answer and, when derived, a concise rationale the learner can use to check it.
 - [ ] The result reads as a faithful, better-organized study version of the chapter — not a summary, and not padded with unsupported generic networking content.
 - [ ] The final result never refers to its source or provenance; it presents the material directly.
 - [ ] Any added clarification or background is clearly labeled, improves understanding, and does not replace, contradict, or silently correct the complete extracted material.
