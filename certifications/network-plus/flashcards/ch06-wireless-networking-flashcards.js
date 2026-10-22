@@ -5,388 +5,628 @@ chapter: "Chapter 6: Wireless Networking",
 items: [
 {
 front: "What is a WLAN?",
-back: "A wireless local area network: a LAN that transmits signals through the air via RF (radio frequency) waves instead of cables.",
+back: "A wireless local area network: a LAN that transmits signals through the air using RF (radio frequency) waves instead of cables.",
 tags: ["network-plus", "wlan"]
 },
 {
-front: "At which OSI layer do wired and wireless networks start sharing the same protocols?",
-back: "Layer 3: both use the same Layer 3 and higher protocols (IP, TCP, UDP); they differ at Layers 1 and 2.",
-tags: ["network-plus", "osi", "wireless"]
+front: "What is the wireless spectrum, also called the airwaves?",
+back: "The frequency range of electromagnetic waves used for data and voice communication.",
+tags: ["network-plus", "spectrum"]
 },
 {
-front: "What is the wireless spectrum (airwaves) per the FCC?",
-back: "The frequency range of electromagnetic waves for data and voice communication, spanning 9 kHz to 300 GHz in the United States.",
+front: "What span does the FCC define for the wireless spectrum in the United States?",
+back: "9 kHz to 300 GHz.",
 tags: ["network-plus", "spectrum", "fcc"]
 },
 {
-front: "Which Wi-Fi bands do 802.11b/g/n, 802.11a/n/ac, and 802.11ax use?",
-back: "2.4 GHz (802.11b/g/n/ax), 5 GHz (802.11a/n/ac/ax), and 6 GHz (802.11ax as Wi-Fi 6E, plus 802.11be).",
-tags: ["network-plus", "bands"]
+front: "How does a band differ from a channel?",
+back: "A band is an overall frequency range such as 2.4 GHz. A band is subdivided into channels, and each channel occupies a slice of that range.",
+tags: ["network-plus", "channels"]
 },
 {
-front: "What is a fixed frequency?",
-back: "A band consisting of only a single frequency rather than a range.",
-tags: ["network-plus", "frequency"]
+front: "Which technologies share the frequencies around 2.4 GHz?",
+back: "Wi-Fi, Bluetooth, RFID, and some satellite signals, which is why the band is crowded.",
+tags: ["network-plus", "2-4-ghz"]
 },
 {
-front: "What is a collision on a wireless network?",
-back: "Two or more devices transmitting at the same time on the same frequency so signals interfere; the damaged transmissions must be resent, lowering performance.",
+front: "Which users hold primary claims on 5 GHz?",
+back: "Radar systems operated by airports, satellites, weather stations, and the military.",
+tags: ["network-plus", "5-ghz", "radar"]
+},
+{
+front: "What is a wireless collision?",
+back: "Interference caused when multiple devices transmit at the same time on the same frequency. The affected signals must be retransmitted, which lowers throughput.",
 tags: ["network-plus", "collision"]
 },
 {
-front: "What is RFID and what does a tag hold?",
-back: "Radio Frequency Identification: electromagnetic-field tags holding 1-8 KB (serial numbers, payment or medical data) read at close range without precise positioning; used for inventory and contactless payment.",
-tags: ["network-plus", "rfid"]
-},
-{
-front: "Which bands need an FCC license and which are license-free?",
-back: "TV, FM, AM, and ham bands need licenses; Wi-Fi and CB bands are license-free as long as devices respect transmission-strength limits.",
-tags: ["network-plus", "fcc", "spectrum"]
-},
-{
-front: "What is a channel within a wireless band?",
-back: "A subdivision of a band (further split into narrowband channels) so multiple devices can share the band; the US defines 11 channels in 2.4 GHz (20 MHz each), 24 in 5 GHz, and 59 in 6 GHz.",
-tags: ["network-plus", "channel"]
-},
-{
-front: "What is FHSS?",
-back: "Frequency hopping spread spectrum: short data bursts hop from frequency to frequency hundreds of times per second. Cheaper than DSSS and better in crowded indoor spaces; used by Bluetooth (79 channels, piconet with a master clock).",
+front: "How does FHSS transmit data?",
+back: "It sends a short burst on one frequency, then the next burst on the next frequency in the sequence, hopping hundreds of times per second.",
 tags: ["network-plus", "fhss"]
 },
 {
-front: "What is DSSS?",
-back: "Direct sequence spread spectrum: data is divided into chips by a unique chipping code and spread across all available frequencies at once. Uses bandwidth more efficiently with higher throughput; used by Wi-Fi.",
+front: "How does DSSS transmit data?",
+back: "It divides the data stream into small chunks called chips and spreads them over all available frequencies at the same time.",
 tags: ["network-plus", "dsss"]
 },
 {
-front: "What is channel bonding and which band suits it best?",
-back: "Fusing adjacent channels (two 20 MHz into 40 MHz, up to 80, 160, or 320 MHz) for more than double the throughput since guard buffers become data carriers. The roomy 5 GHz band suits it best.",
+front: "What is a chipping code?",
+back: "The spreading ratio used to transform data into chips in DSSS. It is unique to each device.",
+tags: ["network-plus", "dsss"]
+},
+{
+front: "Which wireless technology uses FHSS, and how many channels does it hop across?",
+back: "Bluetooth uses FHSS across 79 channels, hopping constantly to reduce the impact of interference and collisions.",
+tags: ["network-plus", "bluetooth", "fhss"]
+},
+{
+front: "What is a Bluetooth piconet?",
+back: "A network of Bluetooth devices in which one device acts as master and supplies the clock the others use to coordinate channel hopping.",
+tags: ["network-plus", "bluetooth", "piconet"]
+},
+{
+front: "What are the tradeoffs between FHSS and DSSS?",
+back: "FHSS is cheaper and performs better in crowded indoor environments. DSSS uses bandwidth more efficiently and tends to deliver higher throughput.",
+tags: ["network-plus", "fhss", "dsss"]
+},
+{
+front: "How many Wi-Fi channels does the FCC define in the United States for 2.4 GHz, 5 GHz, and 6 GHz?",
+back: "11 channels in 2.4 GHz, 24 in 5 GHz, and 59 in 6 GHz. Some other countries define 14 channels in 2.4 GHz.",
+tags: ["network-plus", "channels"]
+},
+{
+front: "How wide is a Wi-Fi channel in the United States?",
+back: "20 MHz.",
+tags: ["network-plus", "channels"]
+},
+{
+front: "What is channel bonding?",
+back: "Combining adjacent channels, such as two 20 MHz channels into one 40 MHz channel, to increase throughput.",
 tags: ["network-plus", "channel-bonding"]
 },
 {
-front: "What is OFDMA?",
-back: "Orthogonal Frequency Division Multiple Access: the AP subdivides each channel (e.g. 2 or 4 MHz slices of a 20 MHz channel) and sends small frames to many clients simultaneously.",
+front: "Why does a bonded 40 MHz channel provide more than twice the bandwidth of one 20 MHz channel?",
+back: "The small bands at the top and bottom of each 20 MHz channel normally reserved as interference buffers can be used to carry data instead.",
+tags: ["network-plus", "channel-bonding"]
+},
+{
+front: "Which band is best suited to channel bonding, and why?",
+back: "5 GHz, because it offers more channels and is less crowded than 2.4 GHz.",
+tags: ["network-plus", "channel-bonding", "5-ghz"]
+},
+{
+front: "What does OFDMA allow an AP to do?",
+back: "Subdivide a channel into smaller frequency allocations, such as 2 or 4 MHz of a 20 MHz channel, so it can send multiple small frames to multiple clients at once.",
 tags: ["network-plus", "ofdma"]
 },
 {
-front: "What do 802.11h DFS and TPC do?",
-back: "DFS (Dynamic Frequency Selection) watches 5 GHz channels and moves the AP off channels needed by priority users, notifying clients. TPC (Transmit Power Control) lowers AP power to limit interference and tells clients the power cap.",
-tags: ["network-plus", "802-11h", "dfs", "tpc"]
-},
-{
-front: "How does a wireless signal get from transmitter to receiver?",
-back: "Current flows to an antenna, which radiates electromagnetic waves; a distant tuned antenna detects them and its receiver converts them back to current. Both ends must share the frequency (channel).",
+front: "What is a directional antenna?",
+back: "Also called a unidirectional antenna: it issues signals along a single direction, which suits point-to-point links and satellite downlinks.",
 tags: ["network-plus", "antenna"]
 },
 {
-front: "What is an antenna radiation pattern?",
-back: "The 3D map of relative strength of all electromagnetic energy an antenna sends or receives.",
-tags: ["network-plus", "radiation-pattern"]
-},
-{
-front: "Directional vs omnidirectional antenna?",
-back: "Directional (unidirectional): energy along one path, e.g. satellite downlinks and point-to-point LAN links up to 1,000 feet. Omnidirectional: roughly equal in all directions (never perfect), e.g. TV, radio, cell towers, and mobile devices.",
+front: "What is an omnidirectional antenna?",
+back: "An antenna that sends and receives with roughly equal strength in all directions. TV, radio, and cellular towers use them, as do mobile devices.",
 tags: ["network-plus", "antenna"]
 },
 {
-front: "What is wireless range?",
-back: "The geographical area an antenna or system reaches; clients must stay inside it, and even inside it obstacles can degrade or block the signal.",
-tags: ["network-plus", "range"]
+front: "Why must an AP be installed close to a separately mounted antenna?",
+back: "Wi-Fi signals attenuate rapidly over even a few feet of coax cable.",
+tags: ["network-plus", "antenna", "attenuation"]
 },
 {
-front: "Why must a separate AP antenna sit very close to the AP?",
-back: "Wi-Fi signals attenuate fast over coax cable, so extra cable feet between AP and antenna destroy signal strength.",
-tags: ["network-plus", "attenuation", "antenna"]
-},
-{
-front: "What three things shape received signal power besides the AP?",
-back: "The client own antenna, the distance to the client, and environmental noise.",
-tags: ["network-plus", "signal"]
-},
-{
-front: "What is RSSI and what do its levels mean?",
-back: "Received signal strength indicator: received power in dBm (negative, closer to 0 is better). About -30 excellent (next to AP), -50 good (VoIP/video), -70 acceptable minimum for data, -80 bare connectivity, -90 unusable. Check on Linux with iw dev.",
+front: "What does RSSI measure, and in what unit?",
+back: "The received signal strength indicator measures the power of the signal at the receiver, in dBm (decibels relative to one milliwatt).",
 tags: ["network-plus", "rssi"]
 },
 {
-front: "What is signal propagation and line of sight?",
-back: "Propagation is how a wave travels point to point. Line of sight (straight unobstructed path) is ideal for distance and clarity, but obstacles usually prevent it; satellite and infrared require clear LOS, and even energy-efficient window film can block satellite.",
-tags: ["network-plus", "propagation", "los"]
+front: "What are the typical RSSI levels and their ratings?",
+back: "About -30 dBm excellent, -50 good for time-sensitive data, -70 acceptable minimum for reliable data, -80 minimum for basic connectivity, -90 unusable.",
+tags: ["network-plus", "rssi"]
 },
 {
-front: "What is attenuation in wireless?",
-back: "Signal weakening with distance from the source; counter with more transmit power or a repeater (wireless range extender).",
-tags: ["network-plus", "attenuation"]
-},
-{
-front: "What is fading?",
-back: "Gradual energy loss as a signal meets obstacles, arriving weaker; severe fading drops connections or slows throughput.",
-tags: ["network-plus", "fading"]
-},
-{
-front: "What are interference and SNR?",
-back: "Interference is disruption by outside electromagnetic waves (wireless is more exposed than wired, no conduit or shielding). SNR (signal-to-noise ratio) is signal strength versus noise: high SNR is good, low SNR is poor; crowded metro areas suffer most.",
-tags: ["network-plus", "interference", "snr"]
-},
-{
-front: "What are refraction, reflection, scattering, and diffraction?",
-back: "Refraction: direction, speed, and wavelength change crossing media (glass, solids). Reflection: bouncing off large flat conductive surfaces (walls, floors, metal). Scattering: diffusion in many directions off small or rough objects (chairs, books, plants, rain). Diffraction: splitting into secondary waves bending around sharp edges (wall and desk corners).",
+front: "How do attenuation and fading differ?",
+back: "Attenuation is weakening with distance from the source and can be offset with more power or a repeater. Fading is gradual energy loss caused by obstacles in the signal's path.",
 tags: ["network-plus", "propagation"]
 },
 {
-front: "What are multipath signals and why are they mixed news?",
-back: "Signals reaching the receiver over many bounced paths. Good: more chances to arrive. Bad: copies arrive at different times, get misread, trigger error correction and retransmits, and slow throughput.",
+front: "How do refraction and reflection differ?",
+back: "Refraction alters a wave's direction, speed, and wavelength as it passes into a different medium such as glass or water. Reflection bounces the wave back off a large flat surface such as metal or a wall.",
+tags: ["network-plus", "propagation"]
+},
+{
+front: "How do scattering and diffraction differ?",
+back: "Scattering diffuses a signal in many directions off rough or small objects. Diffraction splits a signal into secondary waves that bend around sharp-edged obstructions.",
+tags: ["network-plus", "propagation"]
+},
+{
+front: "What are multipath signals?",
+back: "Copies of one transmission that reach the receiver by different paths. They improve the odds of arrival but can arrive at different times and cause misinterpretation and errors.",
 tags: ["network-plus", "multipath"]
 },
 {
-front: "What Wi-Fi generations map to which 802.11 standards?",
-back: "Wi-Fi 1: 802.11b (1999, 2.4 GHz, 11 Mbps). Wi-Fi 2: 802.11a (1999, 5 GHz, 54 Mbps). Wi-Fi 3: 802.11g (2003, 2.4 GHz, 54 Mbps). Wi-Fi 4: 802.11n (2009, both bands, 600 Mbps). Wi-Fi 5: 802.11ac (2013, 5 GHz, to 6.9 Gbps). Wi-Fi 6/6E: 802.11ax (2019/2021, adds 6 GHz, 9.6 Gbps). Wi-Fi 7: 802.11be (2024, 46 Gbps).",
-tags: ["network-plus", "802-11", "wifi-generations"]
+front: "At which OSI layers do WLAN standards operate?",
+back: "Layers 1 and 2. Above that, wireless and wired networks reuse the same IP, TCP, and UDP protocols.",
+tags: ["network-plus", "osi"]
 },
 {
-front: "What are the ranges of the common 802.11 standards?",
-back: "802.11b/g: 100 m. 802.11a: 50 m. 802.11n/ac: 70 m indoor, 250 m outdoor. 802.11ax: same 70/250 m. 802.11be: 30 m indoor, 120 m outdoor. Actual reach varies with antenna power, barriers, and interference.",
-tags: ["network-plus", "802-11", "range"]
+front: "What is Wi-Fi?",
+back: "The popular name for the collection of IEEE 802.11 wireless standards, including their amendments, extensions, and corrections.",
+tags: ["network-plus", "wifi"]
 },
 {
-front: "Why did 802.11a lose to 802.11b/g despite higher speed?",
-back: "5 GHz gave speed and clean air but shorter reach and higher cost, needing denser APs; the cheap compatible 2.4 GHz line won on price and coverage.",
-tags: ["network-plus", "802-11a"]
-},
-{
-front: "What made 802.11n, ac, and ax each a step change?",
-back: "802.11n: both bands plus 600 Mbps, viable for voice and video. 802.11ac: 5 GHz Gigabit-class waves with multi-transmission APs acting more like switches. 802.11ax: better modulation, multiuser, BSS coloring against neighbor interference, many more simultaneous clients for IoT, stadiums, and campuses.",
-tags: ["network-plus", "802-11n", "802-11ac", "802-11ax"]
-},
-{
-front: "What do Wi-Fi 6E and Wi-Fi 7 add?",
-back: "6E opens the 1,200 MHz-wide 6 GHz band: far more channels and speed at shorter range. Wi-Fi 7 (802.11be) exploits 6 GHz fully with higher power for farther reach and better penetration.",
-tags: ["network-plus", "wifi-6e", "wifi-7"]
-},
-{
-front: "What matters more than rated range when judging an AP?",
-back: "Saturation: how strong and fast the signal stays across its range. Newer standards beat older ones at the same distance (e.g. ac outperforms n at 75 m).",
-tags: ["network-plus", "saturation"]
+front: "How does the 802.11 access method differ from 802.3?",
+back: "802.11 uses CSMA/CA, which avoids collisions because wireless devices cannot detect them. Wired 802.3 uses CSMA/CD, which detects collisions.",
+tags: ["network-plus", "csma-ca"]
 },
 {
 front: "What are the three 802.11 frame groups?",
-back: "Management frames (association and reassociation: probes, beacons), control frames (medium access and delivery: ACK, RTS/CTS), and data frames (payload between nodes).",
-tags: ["network-plus", "802-11", "frames"]
-},
-{
-front: "How does an 802.11 data frame differ from an 802.3 Ethernet II frame?",
-back: "802.11 carries four 6-byte addresses (source, transmitter, receiver, destination) plus Frame control, Duration, and Sequence control fields with up to 2,312 data bytes; Ethernet II has two addresses (source, destination) plus Preamble and Type with 46-1,500 data bytes.",
+back: "Management frames for association and reassociation, control frames for medium access and data delivery, and data frames that carry data.",
 tags: ["network-plus", "frames"]
 },
 {
-front: "What is the Sequence Control field for?",
-back: "It records how a large packet is fragmented into smaller packets for reliable delivery.",
-tags: ["network-plus", "sequence-control"]
+front: "Which addresses appear in an 802.11 data frame?",
+back: "Four 6-byte fields: source, transmitter, receiver, and destination. An 802.3 frame carries only source and destination.",
+tags: ["network-plus", "frames"]
 },
 {
-front: "Where do error checking and fragmentation live in 802.11 vs wired TCP/IP?",
-back: "In 802.11 both happen at the MAC sublayer (data link), transparent to higher layers for easy 802.3 integration. In wired TCP/IP, error checking sits at transport and fragmentation at network.",
-tags: ["network-plus", "mac-sublayer"]
+front: "How large is the frame check sequence in 802.11 and 802.3 frames?",
+back: "6 bytes in an 802.11 frame and 4 bytes in an 802.3 Ethernet frame.",
+tags: ["network-plus", "frames"]
 },
 {
-front: "What are the MAC and LLC sublayers?",
-back: "The data link layer split: MAC (lower) manages MAC addresses in frames; LLC (upper) handles multiplexing, flow and error control, and reliability.",
-tags: ["network-plus", "mac", "llc"]
+front: "What are 802.11b's band, channel width, throughput, and range?",
+back: "2.4 GHz, 22 MHz channels, 11 Mbps maximum theoretical throughput, and about 100 m of range. It was the first standard to take hold and the least expensive.",
+tags: ["network-plus", "802-11b"]
 },
 {
-front: "What access method does 802.11 use and why?",
-back: "CSMA/CA (Collision Avoidance): radios cannot send and receive at once and cannot even detect their own collisions, so they listen first, wait a random gap, send, and require an ACK. Ethernet uses CSMA/CD (Collision Detection), now mostly moot behind switches.",
+front: "What are 802.11a's band, throughput, and range?",
+back: "5 GHz, 54 Mbps, and about 50 m. It needs more power, more APs, and costs more, so it is rarely preferred.",
+tags: ["network-plus", "802-11a"]
+},
+{
+front: "What are 802.11g's band, throughput, and compatibility?",
+back: "2.4 GHz, 54 Mbps, and backward compatible with 802.11b.",
+tags: ["network-plus", "802-11g"]
+},
+{
+front: "What are 802.11n's band and maximum throughput?",
+back: "2.4 GHz or 5 GHz, with 600 Mbps maximum theoretical throughput. It was ratified in 2009 and must be backward compatible with 802.11a, b, and g.",
+tags: ["network-plus", "802-11n"]
+},
+{
+front: "What are 802.11ac's band and key advance?",
+back: "It operates on 5 GHz and was the first Wi-Fi standard to approach Gigabit Ethernet, handling multiple transmissions at once over the same spectrum. It shipped in three waves.",
+tags: ["network-plus", "802-11ac"]
+},
+{
+front: "What is CSMA/CA?",
+back: "Carrier Sense Multiple Access with Collision Avoidance: 802.11's access method, which listens for a quiet channel and waits a brief random time before transmitting.",
 tags: ["network-plus", "csma-ca"]
 },
 {
-front: "Walk through basic CSMA/CA.",
-back: "Check for transmissions. Silent: pause randomly, then send; the receiver verifies and returns an ACK, and a received ACK means success. Busy: pause, recheck. No ACK after sending: assume loss and restart the process.",
+front: "Why do 802.11 networks deliver less real throughput than a wired network with the same rating?",
+back: "Every transmission must be verified with an ACK, so part of the available throughput is spent on acknowledgment traffic.",
 tags: ["network-plus", "csma-ca"]
 },
 {
-front: "Why is Wi-Fi throughput below its rated speed versus wired?",
-back: "Every transmission needs ACK overhead, so a 1 Gbps Wi-Fi link moves less user data than a 1 Gbps Ethernet link.",
-tags: ["network-plus", "ack", "throughput"]
+front: "What is scanning?",
+back: "The periodic survey a wireless device performs for evidence of an access point, using either active or passive scanning.",
+tags: ["network-plus", "association"]
 },
 {
-front: "What are the hidden node problem and RTS/CTS?",
-back: "Hidden nodes are distant clients that cannot hear each other at the AP and collide blindly. RTS/CTS reserves the medium: source sends Request to Send, the AP answers Clear to Send and silences others until the transmission finishes. Costly overhead, but worth it for large collision-prone packets.",
-tags: ["network-plus", "rts-cts", "hidden-node"]
-},
-{
-front: "What are active vs passive scanning in Wi-Fi association?",
-back: "Active: the client probes every channel; APs answer with probe responses (status code plus station ID) and the client, usually with user consent and password, joins on the named channel. Passive: the client listens for AP beacon frames (rate plus SSID) and then, with consent, joins.",
-tags: ["network-plus", "scanning", "association"]
-},
-{
-front: "What SSID naming practices help security and management?",
-back: "Change the factory default (which advertises vendor and model), disguise the network purpose (never Acctg for Accounting), and pick recognizable-but-uncommon names so traveling clients do not auto-join same-named foreign networks.",
+front: "What is an SSID?",
+back: "Service set identifier: the character string used to identify an access point and its network.",
 tags: ["network-plus", "ssid"]
 },
 {
-front: "What are IBSS, BSS, and ESS topologies?",
-back: "IBSS (ad hoc): a few close nodes talk directly, no AP. BSS (infrastructure): nodes share one autonomous AP (identifier: BSSID). ESS (mesh): several APs peer across a wide area, coordinated by a WLC over lightweight APs (identifier: ESSID, usually just called the SSID).",
-tags: ["network-plus", "ibss", "bss", "ess"]
+front: "What is a BSSID?",
+back: "Basic service set identifier: the identifier for the group of nodes served by a single access point.",
+tags: ["network-plus", "bssid"]
 },
 {
-front: "Autonomous AP vs lightweight AP (LAP) vs WLC?",
-back: "Autonomous APs self-manage for small networks. LAPs depend on a Wireless LAN Controller for central config and management across big multi-AP estates. The WLC also centralizes authentication, load balancing, channel planning, failover to surviving APs, and rogue AP detection. Never mix the two types on one network.",
-tags: ["network-plus", "ap", "wlc"]
-},
-{
-front: "What are roaming and reassociation?",
-back: "Roaming is moving AP to AP inside one ESS without losing service. Reassociation is the automatic re-join to the new AP when the device leaves range or the old AP errors; managers exploit scanning to balance load across APs.",
-tags: ["network-plus", "roaming"]
-},
-{
-front: "What is a rogue access point?",
-back: "An unauthorized AP on the network, which the WLC can spot when it tries to join.",
-tags: ["network-plus", "rogue-ap"]
-},
-{
-front: "What is band steering, passive vs active?",
-back: "Steering close-in clients to 5 GHz (short waves, top throughput) over 2.4 GHz (long waves, top range) even when 2.4 looks stronger, vital when 2.4 is crowded. Passive steering answers initial probes with only a 5 GHz offer; active steering also migrates already-associated 2.4 GHz clients upward.",
-tags: ["network-plus", "band-steering"]
-},
-{
-front: "What is a SOHO router in a home WLAN?",
-back: "One box combining AP, switching, routing, and gateway: ISP signal enters a cable/DSL modem, then an RJ-45 patch lead feeds the router WAN (Internet) port, with extra LAN ports for wired clients.",
-tags: ["network-plus", "soho"]
-},
-{
-front: "Where should a SOHO AP go, especially with IoT?",
-back: "Weigh distance (middle floor for three floors), obstacles (concrete may demand an AP per floor; long buildings want one per end), height (shelf, rack, or drop ceiling), and interference (away from cordless phones, fluorescents, microwaves).",
-tags: ["network-plus", "ap-placement"]
-},
-{
-front: "What goes into a wireless site survey?",
-back: "Blueprint study for obstacles, distances, and per-floor demand; bridge-throughput planning; multi-AP floor decisions; neighboring signal measurement; dummy-AP walk tests; far-corner access tests for hidden EMI; stocked-inventory materials; and wired-integration planning, using NetSpot, VisiWave, iBwave, or inSSIDer, with heat maps exposing dead zones.",
-tags: ["network-plus", "site-survey"]
-},
-{
-front: "What is a wireless bridge?",
-back: "An AP-to-AP link joining two networks or two remote parts of one network; it needs far more throughput than any single client.",
-tags: ["network-plus", "wireless-bridge"]
-},
-{
-front: "How must enterprise APs share identity for roaming?",
-back: "All APs join one ESS under one ESSID so clients glide between coverage cells.",
+front: "What is an ESSID?",
+back: "Extended service set identifier: the identifier shared by clients that belong to the same ESS, which is what lets them roam between APs.",
 tags: ["network-plus", "essid"]
 },
 {
-front: "What do you configure on a SOHO router, and what about DHCP?",
-back: "Admin password (not the Wi-Fi password), SSID and broadcast choice, security type and credentials, and DHCP options. Do not run DHCP on the AP when another DHCP server already serves the LAN. Botched configs reset via the pinhole button (unplug, hold 30 s while repowering).",
-tags: ["network-plus", "soho", "configuration"]
+front: "What is an IBSS?",
+back: "Independent basic service set: an ad hoc topology in which a small number of nodes transmit directly to one another without an access point.",
+tags: ["network-plus", "ibss"]
 },
 {
-front: "What are onboarding and offboarding (BYOD)?",
-back: "Onboarding installs an agent granting trusted access to mail, files, and admin features while checking OS, security settings, and malware. Offboarding removes it, including remote wipe (erase or brick a lost device remotely). Both are critical for BYOD: minimum OS versions, password and timeout rules, and monitoring or wipe consent.",
-tags: ["network-plus", "byod", "onboarding"]
+front: "What is a BSS?",
+back: "Basic service set: a group of nodes that share a single autonomous access point in an infrastructure topology.",
+tags: ["network-plus", "bss"]
 },
 {
-front: "Why are open SSIDs insecure, and what are the two fixes?",
-back: "802.11 has no built-in security: knowing a broadcast SSID (or probing a hidden one) is enough to join. Fix with authentication (SSID password or server credentials, optionally MAC filtering, which is tedious and spoofable) and encryption (scrambling over-the-air data).",
-tags: ["network-plus", "authentication", "encryption"]
+front: "What is an ESS?",
+back: "Extended service set: multiple APs, often lightweight ones managed by a WLC, cooperating under one ESSID to cover a larger area fault-tolerantly.",
+tags: ["network-plus", "ess"]
 },
 {
-front: "What are WEP OSA vs SKA, and why is WEP dead?",
-back: "OSA (Open System Authentication): no key, a single-use code, no encryption, no real authentication. SKA (Shared Key Authentication): one static network key (passphrase) for auth and encryption across all clients. 64/128/256-bit keys still fall in minutes, keys never rotate, and there is no end-to-end protection.",
+front: "How does a lightweight AP differ from an autonomous AP?",
+back: "An autonomous AP manages and is configured by itself. A lightweight AP depends on a wireless LAN controller for configuration and centralized management.",
+tags: ["network-plus", "lap", "autonomous-ap"]
+},
+{
+front: "What does a wireless LAN controller provide?",
+back: "Centralized authentication, load balancing, channel management, AP redundancy when an AP fails, and detection of rogue access points.",
+tags: ["network-plus", "wlc"]
+},
+{
+front: "What is a SOHO network?",
+back: "A home or small office network, typically one central AP plus optional range extenders, often built into a single wireless router.",
+tags: ["network-plus", "soho"]
+},
+{
+front: "What functions does a SOHO wireless router combine?",
+back: "Routing, switching, wireless access, and gateway functions for connecting clients to the LAN and the Internet.",
+tags: ["network-plus", "soho"]
+},
+{
+front: "Which port connects a SOHO router to the modem?",
+back: "The WAN port, often labeled Internet and set apart from the LAN ports.",
+tags: ["network-plus", "soho"]
+},
+{
+front: "What distance and obstacle factors guide AP placement?",
+back: "Consider typical distances to clients and the standard's range limits, plus the type and number of obstacles. Concrete floors or a long narrow building may require more APs.",
+tags: ["network-plus", "placement"]
+},
+{
+front: "Where should an AP be mounted for best coverage?",
+back: "In a high spot such as a shelf, rack, or drop ceiling, away from interference sources.",
+tags: ["network-plus", "placement"]
+},
+{
+front: "What common devices interfere with Wi-Fi placement?",
+back: "Cordless phones, fluorescent lights, and microwave ovens.",
+tags: ["network-plus", "interference"]
+},
+{
+front: "What is a wireless site survey?",
+back: "An assessment of client requirements, facility characteristics, and coverage areas that produces a report determining AP arrangement.",
+tags: ["network-plus", "site-survey"]
+},
+{
+front: "Why does a wireless bridge need high throughput?",
+back: "It connects two networks or two remote portions of one network, so it carries traffic for many clients rather than one device.",
+tags: ["network-plus", "wireless-bridge"]
+},
+{
+front: "What is a heat map used for in a site survey?",
+back: "Mapping Wi-Fi signals and noise across a location to spot weak coverage and dead zones.",
+tags: ["network-plus", "site-survey"]
+},
+{
+front: "What is a dead zone?",
+back: "A gap in Wi-Fi coverage where clients drop connections or slow down, identified with a heat map.",
+tags: ["network-plus", "site-survey"]
+},
+{
+front: "What must every AP in an ESS share?",
+back: "The same ESSID and security credentials, so clients can move between coverage areas without losing service.",
+tags: ["network-plus", "ess"]
+},
+{
+front: "What are the steps to reset a SOHO router?",
+back: "Disconnect data cables and unplug power, hold the pinhole reset while restoring power for at least 30 seconds, then release to restore factory defaults.",
+tags: ["network-plus", "soho"]
+},
+{
+front: "Why should an AP not run DHCP when the network already has a DHCP server?",
+back: "Two DHCP servers hand out conflicting addressing, causing address problems on the network.",
+tags: ["network-plus", "dhcp"]
+},
+{
+front: "What does onboarding a device involve?",
+back: "Installing an agent that gives the device trusted access to parts of the network and can check for OS updates, required security settings, and malware.",
+tags: ["network-plus", "onboarding"]
+},
+{
+front: "What is offboarding?",
+back: "Removing the onboarding agent and the device's trusted access, remotely if the device is lost or stolen.",
+tags: ["network-plus", "offboarding"]
+},
+{
+front: "What is BYOD?",
+back: "Bring your own device: an environment where employee-owned devices access network resources, requiring onboarding and offboarding policies that protect the network.",
+tags: ["network-plus", "byod"]
+},
+{
+front: "What security does 802.11 provide on its own?",
+back: "None. A client only needs the SSID, which many APs broadcast, so authentication and encryption must be configured separately.",
+tags: ["network-plus", "security"]
+},
+{
+front: "What is the difference between authentication and encryption on a WLAN?",
+back: "Authentication lets a client log on with a password or user credentials. Encryption scrambles transmitted data so an intercepted signal cannot be read.",
+tags: ["network-plus", "security"]
+},
+{
+front: "What is MAC filtering, and why is it weak?",
+back: "It refuses association to devices whose MAC addresses are not on an approved list. Maintaining the list is time consuming and MAC addresses are easily impersonated.",
+tags: ["network-plus", "mac-filtering"]
+},
+{
+front: "What is WEP?",
+back: "Wired Equivalent Privacy: the original optional 802.11 encryption, now insecure because it uses one or a few static shared keys.",
 tags: ["network-plus", "wep"]
 },
 {
-front: "What did WPA and TKIP fix, and what stayed weak?",
-back: "WPA (802.11i subset) gave every transmission its own key via TKIP: per-packet key distribution, RC4 encryption, and Michael message-integrity codes. But TKIP only wrapped WEP-era RC4 (still insecure), surviving today just for legacy clients.",
-tags: ["network-plus", "wpa", "tkip"]
+front: "What key sizes has WEP supported?",
+back: "Originally 64-bit, later 128-bit and 256-bit. Even 128-bit keys can be cracked in minutes.",
+tags: ["network-plus", "wep"]
 },
 {
-front: "What are stream vs block ciphers?",
-back: "Stream ciphers encrypt a byte or bit at a time; block ciphers encrypt large blocks per calculation.",
+front: "What is 802.11i?",
+back: "The IEEE wireless security standard that included WPA as a subset and whose progressive improvements eventually produced WPA3.",
+tags: ["network-plus", "wpa"]
+},
+{
+front: "What is WPA?",
+back: "Wi-Fi Protected Access: a replacement for WEP that dynamically assigns every transmission its own key.",
+tags: ["network-plus", "wpa"]
+},
+{
+front: "What is TKIP?",
+back: "Temporal Key Integrity Protocol: the key generation and management scheme in 802.11i and WPA that improves security for legacy WEP devices.",
+tags: ["network-plus", "tkip"]
+},
+{
+front: "What three improvements did TKIP bring?",
+back: "Key distribution with a key per transmission, encryption with RC4, and message integrity through the Michael code.",
+tags: ["network-plus", "tkip"]
+},
+{
+front: "What is RC4, and where is it used?",
+back: "Rivest Cipher 4: a now-insecure stream cipher used by WEP and by WPA's TKIP.",
+tags: ["network-plus", "rc4"]
+},
+{
+front: "What is Michael?",
+back: "The message integrity code in TKIP that ensures incoming packets come from their declared source, also called packet authentication.",
+tags: ["network-plus", "michael"]
+},
+{
+front: "What is WPA2?",
+back: "The version of WPA that replaced TKIP's confidentiality methods with CCMP, which uses AES for stronger encryption and packet authentication.",
+tags: ["network-plus", "wpa2"]
+},
+{
+front: "What does CCMP stand for, and what does it provide?",
+back: "Counter Mode with CBC MAC Protocol. It supplies message integrity through CBC-MAC and encryption through AES.",
+tags: ["network-plus", "ccmp"]
+},
+{
+front: "Why is AES stronger than TKIP for wireless encryption?",
+back: "AES is a block cipher with a more sophisticated family of ciphers and multiple stages of data transformation, giving faster and more secure encryption.",
+tags: ["network-plus", "aes"]
+},
+{
+front: "How do stream and block ciphers differ?",
+back: "A stream cipher encrypts one byte or bit at a time. A block cipher encrypts much larger chunks in each calculation.",
 tags: ["network-plus", "ciphers"]
 },
 {
-front: "What does WPA2 with CCMP and AES provide?",
-back: "Future-focused confidentiality: CBC-MAC integrity plus AES encryption, much faster and stronger than TKIP, standard on consumer APs.",
-tags: ["network-plus", "wpa2", "ccmp", "aes"]
-},
-{
-front: "What does WPA3 add over WPA2?",
-back: "Released 2018, mandatory on certified gear since mid-2020: no legacy protocols, user-chosen passwords, SAE mutual handshake (both sides authenticate, closing the WPA2 capture-and-crack flaw), 128-bit AES minimum and stronger management-frame protection in Enterprise. Flaws are already emerging, so expect another round.",
-tags: ["network-plus", "wpa3", "sae"]
+front: "What is WPA3, and when did it arrive?",
+back: "The Wi-Fi Alliance released it in 2018 and required WPA3 support on certified devices from mid-2020. It disallows legacy protocols and strengthens encryption and management frame protection.",
+tags: ["network-plus", "wpa3"]
 },
 {
 front: "What is SAE?",
-back: "Simultaneous Authentication of Equals: client and AP authenticate each other, so sniffed traffic from another device no longer yields an offline-crackable password hash, protecting even simple passwords.",
+back: "Simultaneous Authentication of Equals: the WPA3 handshake in which both the client and the AP authenticate to each other, defeating offline password guessing from captured traffic.",
 tags: ["network-plus", "sae"]
 },
 {
-front: "WPA-Personal (PSK) vs WPA-Enterprise?",
-back: "Personal (WPA-PSK): one shared passphrase for all, no server; passphrase plus SSID derives per-device keys; home use. Enterprise: per-user credentials via 802.1X/EAP against a RADIUS server; business and campus use. WPA3 Personal adds SAE; WPA3 Enterprise adds stronger protections plus mandatory PMF (Protected Management Frames).",
-tags: ["network-plus", "psk", "enterprise"]
+front: "What are protected management frames?",
+back: "A protection for management traffic that WPA3 requires and WPA2 offers only optionally, guarding frames such as disassociation and deauthentication.",
+tags: ["network-plus", "wpa3", "pmf"]
 },
 {
-front: "What are authentication vs authorization?",
-back: "Authentication signs you in (correct credentials admit you). Authorization sets what you may do inside (only admins edit accounts).",
-tags: ["network-plus", "authentication", "authorization"]
+front: "What does PSK mean, and which networks use it?",
+back: "Pre-shared key. WPA-Personal modes use a passphrase, which is the typical home configuration.",
+tags: ["network-plus", "psk"]
 },
 {
-front: "What are RADIUS, EAP, EAPoL, 802.1X, and PNAC?",
-back: "RADIUS (Remote Authentication Dial-In User Service, e.g. FreeRADIUS, Microsoft NPS) is the central auth server. EAP is only the auth framework (no crypto itself), flexible across passwords and biometrics. EAPoL carries EAP over LANs under 802.1X (network access control). PNAC (port-based access control) admits only EAPoL on a port until auth succeeds. Flow: supplicant to authenticator (AP/switch) to RADIUS, encapsulated EAP inside RADIUS, with 802.11 association (WPA2/3) as the precursor.",
-tags: ["network-plus", "radius", "eap", "802-1x"]
+front: "How is a per-device key derived in WPA2-Personal and WPA3-Personal?",
+back: "From the shared passphrase plus the SSID characters, producing a unique encryption key for each device.",
+tags: ["network-plus", "psk"]
 },
 {
-front: "What are the three EAP entities?",
-back: "Supplicant (device requesting auth), authenticator (AP or switch starting it), authentication server (RADIUS deciding it).",
+front: "What makes WPA-Enterprise more secure than WPA-Personal?",
+back: "It combines WPA with an authentication server, usually RADIUS, so each user authenticates individually instead of sharing one passphrase.",
+tags: ["network-plus", "enterprise"]
+},
+{
+front: "What is RADIUS?",
+back: "Remote Authentication Dial-In User Service: an open-source authentication and authorization service that provides a central authentication point for wireless, mobile, and remote users.",
+tags: ["network-plus", "radius"]
+},
+{
+front: "Name two RADIUS implementations.",
+back: "FreeRADIUS and Microsoft NPS (Network Policy Server).",
+tags: ["network-plus", "radius"]
+},
+{
+front: "How does authorization differ from authentication?",
+back: "Authentication verifies identity at sign-in. Authorization determines what that identity may do once connected.",
+tags: ["network-plus", "authentication"]
+},
+{
+front: "What does EAP actually provide?",
+back: "Only the framework for authenticating clients and servers. It does not encrypt or verify credentials itself; it incorporates other schemes to do that.",
 tags: ["network-plus", "eap"]
 },
 {
-front: "What extra Wi-Fi security options should you configure?",
-back: "Center the AP (not on an outside wall) with tuned power; geofencing for location-based access; an isolated guest network with its own SSID, passphrase, and rules; a captive portal with terms (warn: open, unencrypted, traceable); wireless client isolation (gateway-only); hardened IoT (renamed, strong passwords, best crypto, 2FA, separate network, patched, never managed over public Wi-Fi). Captive portals can jam on custom DNS, blockers, autofill, or HTTPS: fall back to a plain HTTP page like neverssl.com.",
-tags: ["network-plus", "guest-network", "captive-portal"]
+front: "Who are the three EAP entities?",
+back: "The supplicant requesting authentication, the authenticator such as an AP or switch that initiates the process, and the authentication server such as RADIUS.",
+tags: ["network-plus", "eap"]
 },
 {
-front: "What are war driving, war chalking, evil twin, WPA attacks, and WPS attacks?",
-back: "War driving: hunting open nets by car with a sniffer (once lifted cleartext card data from a retailer lot). War chalking: chalk symbols marking open nets. Evil twin: rogue AP cloning a legit SSID to harvest logins. WPA attacks: exploiting handshake flaws (WPA2 capture-and-crack, answered by WPA3 SAE). WPS attacks: brute-forcing the simple Wi-Fi Protected Setup PIN.",
-tags: ["network-plus", "threats", "evil-twin"]
+front: "What is EAPoL?",
+back: "EAP over LAN: EAP adapted in the 802.1X standard to travel in Ethernet frames on wired and wireless LANs.",
+tags: ["network-plus", "eapol"]
 },
 {
-front: "What are skimming and electronic pickpocketing, and how do you stop them?",
-back: "Skimming: a reader planted on a pump or ATM harvesting magnetic-strip or RFID data for later pickup. Electronic pickpocketing: brushing an RFID reader past your pocket or bag. Defenses: inspect and tug terminals, watch neighbors, use RFID-blocking wallets or foil; EMV chips help with unique per-transaction numbers but contactless RFID variants still leak.",
-tags: ["network-plus", "skimming", "rfid"]
+front: "What is PNAC?",
+back: "Port-based network access control: the 802.1X behavior that permits only EAPoL traffic on a switch or AP port until the client authenticates.",
+tags: ["network-plus", "pnac"]
 },
 {
-front: "Spectrum analyzer vs Wi-Fi analyzer?",
-back: "Spectrum analyzer: hardware scanning a whole band for any signals and noise (finds non-Wi-Fi interference). Wi-Fi analyzer: software rating Wi-Fi availability, tuning settings, and flagging Wi-Fi threats and channel use. Both map coverage and hunt rogues; heat maps expose dead zones. Keep neighboring 2.4 GHz nets on non-overlapping 1, 6, 11 (or 1-5-9-13 where 14 channels exist).",
-tags: ["network-plus", "spectrum-analyzer", "wifi-analyzer"]
+front: "What is geofencing?",
+back: "A security technique that detects a client's geographic position and activates resources or allows access only within a defined area.",
+tags: ["network-plus", "geofencing"]
 },
 {
-front: "No Wi-Fi connection at all: what eight pitfalls block association?",
-back: "Wrong case-sensitive SSID (worse when hidden); encryption-protocol mismatch; wrong passphrase; client pinned to the wrong static channel; wrong RF band (e.g. 2.4-only camera vs 5 GHz AP); wrong 802.11 standard; stalled association at range edge or during frequent re-roams; roaming misconfig with mismatched SSIDs or credentials across APs.",
-tags: ["network-plus", "troubleshooting", "association"]
+front: "What is a guest network?",
+back: "An isolated network with its own SSID and passphrase that gives visitors Internet access without exposing the main LAN.",
+tags: ["network-plus", "guest-network"]
 },
 {
-front: "Slow Wi-Fi: what twelve culprits should you check?",
-back: "Too far or blocked (verify RSSI, raise the AP); wrong power (too low drops roamers, maxed overlaps cells, start at 50 percent, watch near-far asymmetry); EMI (lights, machinery, phones, microwaves); channel overlap (re-scan and move, possibly switch bands); outdated standard for the workload; wired-plus-wireless conflict (disable one); untested firmware; wrong antenna type (unidirectional dome beats omnidirectional sphere from a 30-foot ceiling); mismatched polarization (align per vendor, often vertical); AP overcapacity (SOHO 10-15 clients, Wi-Fi 5+ multiplexes better); disassociation on fat bonded channels or interference (narrow to 20/40 MHz).",
-tags: ["network-plus", "troubleshooting", "slow-wifi"]
+front: "What is a captive portal?",
+back: "The first page a new guest client sees in its browser, usually requiring agreement to terms before further access is granted.",
+tags: ["network-plus", "captive-portal"]
 },
 {
-front: "What is antenna polarization?",
-back: "Whether waves leave along the antenna vertical or horizontal axis; align AP and client antennas (usually vertical, multi-antenna kits splayed per vendor) or suffer. Laptop lid antennas suffer most when the lid tilts oddly.",
-tags: ["network-plus", "polarization"]
+front: "What is wireless client isolation?",
+back: "A firewall rule set that lets a wireless client reach only the default gateway and the Internet, not other devices on the local network.",
+tags: ["network-plus", "client-isolation"]
+},
+{
+front: "How should an IoT network be hardened?",
+back: "Change default names, usernames, and passwords; use strong passwords and the strongest encryption offered; enable two-factor authentication where possible; put devices on a separate network; disable unused features; apply firmware updates.",
+tags: ["network-plus", "iot"]
+},
+{
+front: "What is war driving?",
+back: "Searching for unprotected wireless networks by driving around with a laptop or smartphone configured to capture wireless transmissions.",
+tags: ["network-plus", "war-driving"]
+},
+{
+front: "What is war chalking?",
+back: "Marking a symbol on a building or sidewalk to tell other attackers an open wireless network is nearby.",
+tags: ["network-plus", "war-chalking"]
+},
+{
+front: "What is an evil twin?",
+back: "A rogue access point that masquerades as a legitimate AP, often copying its SSID, so users connect and expose credentials or data.",
+tags: ["network-plus", "evil-twin"]
+},
+{
+front: "What is WPS, and what is its weakness?",
+back: "Wi-Fi Protected Setup simplifies joining a network, often with a PIN. That PIN can be brute forced to gain access.",
+tags: ["network-plus", "wps"]
+},
+{
+front: "What is a brute force attack?",
+back: "Trying every possible combination of passwords or keys until the correct one is found. Longer, more complex keys take far longer to break.",
+tags: ["network-plus", "brute-force"]
+},
+{
+front: "What is skimming?",
+back: "Installing a card reader on a payment terminal such as a gas pump or ATM to collect data from magnetic strips or RFID chips.",
+tags: ["network-plus", "skimming"]
+},
+{
+front: "What is electronic pickpocketing?",
+back: "Reading RFID-enabled credit cards with a reader held near a victim's pocket or bag, without any physical contact with the card.",
+tags: ["network-plus", "rfid", "skimming"]
+},
+{
+front: "What is a rogue access point?",
+back: "An unauthorized AP. A wireless LAN controller can detect one when it attempts to connect to the network.",
+tags: ["network-plus", "rogue-ap"]
+},
+{
+front: "What is a spectrum analyzer used for?",
+back: "Assessing wireless signal quality by scanning a band of frequencies for signals and noise, which shows where interference is worst.",
+tags: ["network-plus", "spectrum-analyzer"]
+},
+{
+front: "What is a Wi-Fi analyzer used for?",
+back: "Evaluating Wi-Fi availability, optimizing signal settings, identifying nearby channels, and spotting Wi-Fi security threats.",
+tags: ["network-plus", "wifi-analyzer"]
+},
+{
+front: "Which tool finds non-Wi-Fi interference, and which focuses on Wi-Fi?",
+back: "A spectrum analyzer scans the whole band for any signal or noise. A Wi-Fi analyzer evaluates Wi-Fi networks and channels.",
+tags: ["network-plus", "tools"]
+},
+{
+front: "Which 2.4 GHz channels are used in the United States to avoid overlap?",
+back: "1, 6, and 11.",
+tags: ["network-plus", "channels"]
+},
+{
+front: "Where 14 channels are available, which channel spread maximizes bandwidth?",
+back: "1, 5, 9, and 13, though 1, 6, and 11 may still be chosen for compatibility with devices from other regions.",
+tags: ["network-plus", "channels"]
+},
+{
+front: "Why can a client fail to join a visible SSID?",
+back: "SSIDs are case sensitive, so the client must be configured with the exact characters. MYHOUSE and MyHouse are different networks.",
+tags: ["network-plus", "troubleshooting"]
+},
+{
+front: "What happens when the client and AP disagree on encryption?",
+back: "The client must support and allow the protocols the AP offers. A mismatch prevents authentication from completing.",
+tags: ["network-plus", "troubleshooting"]
+},
+{
+front: "What is static channel utilization?",
+back: "A client configured to use only one channel or frequency while the AP uses another, which prevents association.",
+tags: ["network-plus", "troubleshooting"]
+},
+{
+front: "What is a mismatched RF band?",
+back: "A device designed for only one band, such as a 2.4 GHz-only camera, cannot associate with an AP offering only 5 GHz.",
+tags: ["network-plus", "troubleshooting"]
+},
+{
+front: "What happens when the AP and client require different 802.11 standards?",
+back: "A client configured for only one standard will not find or join an AP broadcasting a different one, even if its hardware supports several standards.",
+tags: ["network-plus", "troubleshooting", "standards"]
+},
+{
+front: "What causes a stalled AP association?",
+back: "A client at the edge of coverage or moving between coverage areas cannot exchange enough packets to finish associating because the signal is too weak.",
+tags: ["network-plus", "troubleshooting"]
+},
+{
+front: "What breaks roaming between APs?",
+back: "APs configured with different SSIDs or security credentials, which makes each AP a separate network instead of one ESS.",
+tags: ["network-plus", "troubleshooting"]
+},
+{
+front: "At what power level should AP coverage tuning begin?",
+back: "About 50 percent, then adjust incrementally. Too little power drops edge clients; too much creates excessive overlap.",
+tags: ["network-plus", "troubleshooting"]
 },
 {
 front: "What is the near-far effect?",
-back: "A high-power AP reaches the client, but the weak client return cannot reach back, so the link fails despite great bars on the client.",
+back: "A client can hear a distant high-power AP, but its own weaker return signal cannot reach the AP, so communication fails asymmetrically.",
 tags: ["network-plus", "near-far"]
 },
 {
-front: "Overlapping same-channel APs under one ESSID slow to a crawl: what is wrong?",
-back: "Same-channel overlap: neighbors on one channel force endless CSMA/CA deferrals, collisions, and retransmits. Spread overlapping APs across non-overlapping channels (1, 6, 11) while keeping the shared ESSID for roaming.",
-tags: ["network-plus", "channel-overlap", "ess"]
+front: "How does antenna type affect coverage in a high-ceiling factory?",
+back: "An omnidirectional antenna wastes energy above and around the ceiling. A directional antenna aimed down concentrates coverage on the floor.",
+tags: ["network-plus", "antenna"]
 },
 {
-front: "Which measurement maps a dead-zone edge, and which tool sees non-Wi-Fi noise?",
-back: "RSSI walk-tests map dead-zone edges (falling dBm marks the boundary). A spectrum analyzer (not a Wi-Fi analyzer) reveals all frequencies present, including non-Wi-Fi interference.",
-tags: ["network-plus", "rssi", "spectrum-analyzer"]
+front: "What is antenna polarization, and why does it matter?",
+back: "The axis along which radio waves radiate. Most Wi-Fi antennas are vertically polarized, so mismatched orientation, such as a tilted laptop lid, degrades the connection.",
+tags: ["network-plus", "polarization"]
+},
+{
+front: "What is client saturation?",
+back: "An AP overwhelmed by more connections than it can handle. A SOHO AP may support only about 10 to 15 devices before performance drops.",
+tags: ["network-plus", "capacity"]
+},
+{
+front: "What helps a client that frequently disassociates?",
+back: "Move it off a crowded channel and consider a narrower channel such as 20 or 40 MHz instead of a large bonded channel, and check for interference.",
+tags: ["network-plus", "troubleshooting"]
 }
 ]
 });
